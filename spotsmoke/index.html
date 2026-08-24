@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spot Smoke</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="preview-backdrop"></div>
+  <canvas id="smoke-canvas"></canvas>
+  <canvas id="overlay-canvas"></canvas>
+
+  <!-- Settings panel -->
+  <div id="settings-menu">
+    <div class="menu-header">
+      <h2>Spot Smoke</h2>
+      <div class="menu-header-buttons">
+        <button id="help-button" aria-label="Show setup guide" aria-haspopup="dialog">?</button>
+        <button id="checkerboard-button" aria-label="Toggle checkerboard pattern" aria-pressed="false">▚</button>
+        <button id="flip-side-button" aria-label="Move menu to other side">⇄</button>
+        <button id="close-menu-button" aria-label="Close settings">✕</button>
+      </div>
+    </div>
+
+    <p class="hint">Double-click the background to set the smoke spot.</p>
+
+    <div class="settings-section" data-section="shape">
+      <button id="shape-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="shape-controls" data-section-toggle><span id="shape-toggle-icon" class="section-toggle-icon" aria-hidden="true">⏷</span>Smoke shape</button>
+      <div id="shape-controls" class="section-panel">
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <label for="size-slider"><span>Size</span></label>
+              <div class="range-row">
+                <input id="size-slider" type="range" min="0.25" max="4" step="0.05" />
+              </div>
+            </div>
+            <span class="value-label" id="size-value"></span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <label for="duration-slider"><span>Duration (s)</span></label>
+              <div class="range-row">
+                <input id="duration-slider" type="range" min="1" max="60" step="1" />
+              </div>
+            </div>
+            <span class="value-label" id="duration-value"></span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <label for="intensity-slider"><span>Intensity</span></label>
+              <div class="range-row">
+                <input id="intensity-slider" type="range" min="1" max="10" step="1" />
+              </div>
+            </div>
+            <span class="value-label" id="intensity-value"></span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <label for="lifetime-slider"><span>Lifetime (s)</span></label>
+              <div class="range-row">
+                <input id="lifetime-slider" type="range" min="1" max="60" step="1" />
+              </div>
+            </div>
+            <span class="value-label" id="lifetime-value"></span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <label for="width-slider"><span>Width (px)</span></label>
+              <div class="range-row">
+                <input id="width-slider" type="range" min="0" max="400" step="5" />
+              </div>
+            </div>
+            <span class="value-label" id="width-value"></span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <label for="turbulence-slider"><span>Turbulence</span></label>
+              <div class="range-row">
+                <input id="turbulence-slider" type="range" min="0" max="100" step="1" />
+              </div>
+            </div>
+            <span class="value-label" id="turbulence-value"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="color">
+      <button id="color-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="color-controls" data-section-toggle><span id="color-toggle-icon" class="section-toggle-icon" aria-hidden="true">⏵</span>Smoke color</button>
+      <div id="color-controls" class="section-panel" hidden>
+        <div id="color-picker" aria-label="Smoke color picker"></div>
+        <div class="row">
+          <input id="color-input" type="text" inputmode="text" maxlength="7" spellcheck="false" aria-label="Smoke color hex value" />
+          <button id="color-reset-button" class="small-button">Reset Color ඞ</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="effects">
+      <button id="effects-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="effects-controls" data-section-toggle><span id="effects-toggle-icon" class="section-toggle-icon" aria-hidden="true">⏵</span>Effects</button>
+      <div id="effects-controls" class="section-panel" hidden>
+        <div class="effect-control">
+          <label class="switch-row">
+            <input id="pixelation-toggle" type="checkbox" />
+            <span>Pixelation</span>
+          </label>
+          <div class="range-control">
+            <div class="range-details">
+              <label for="pixel-cell-size-slider"><span>Cell size</span></label>
+              <div class="range-row">
+                <input id="pixel-cell-size-slider" type="range" min="1" max="32" step="1" />
+              </div>
+            </div>
+            <span class="value-label" id="pixel-cell-size-value"></span>
+          </div>
+        </div>
+
+        <div class="effect-control">
+          <label class="switch-row">
+            <input id="glitch-toggle" type="checkbox" />
+            <span>Glitch</span>
+          </label>
+          <div class="range-control">
+            <div class="range-details">
+              <label for="glitch-intensity-slider"><span>Intensity</span></label>
+              <div class="range-row">
+                <input id="glitch-intensity-slider" type="range" min="0" max="40" step="1" />
+              </div>
+            </div>
+            <span class="value-label" id="glitch-intensity-value"></span>
+          </div>
+          <div class="range-control">
+            <div class="range-details">
+              <label for="glitch-frequency-slider"><span>Frequency</span></label>
+              <div class="range-row">
+                <input id="glitch-frequency-slider" type="range" min="0.5" max="12" step="0.5" />
+              </div>
+            </div>
+            <span class="value-label" id="glitch-frequency-value"></span>
+          </div>
+          <div class="range-control">
+            <div class="range-details">
+              <label for="glitch-fringe-slider"><span>Chromatic fringe</span></label>
+              <div class="range-row">
+                <input id="glitch-fringe-slider" type="range" min="0" max="30" step="1" />
+              </div>
+            </div>
+            <span class="value-label" id="glitch-fringe-value"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="test-button">Test smoke</button>
+    <button id="reset-button">Reset all ඞ</button>
+
+    <div class="setting-group">
+      <button id="copy-url-button" class="small-button">Copy URL</button>
+      <button id="copy-url-obs-button" class="small-button">Copy URL for OBS</button>
+    </div>
+  </div>
+
+  <div id="help-overlay" role="dialog" aria-modal="true" aria-label="Spot Smoke setup guide" hidden>
+    <button id="help-close-button" aria-label="Close setup guide">✕</button>
+    <img id="help-image" src="spotsmoke-howto.jpg" alt="Spot Smoke setup guide" />
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+  <script src="app.js?v=5"></script>
+</body>
+</html>
