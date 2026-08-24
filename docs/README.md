@@ -38,6 +38,6 @@ When adding a new doc, add a row to the index table above.
 
 | Resource | Path |
 |----------|------|
-| Landing page | [webroot/index.html](../webroot/index.html) |
-| Logo | [webroot/img/seshhelpers.png](../webroot/img/seshhelpers.png) |
+| Landing page | [index.html](../index.html) |
+| Logo | [img/seshhelpers.png](../img/seshhelpers.png) |
 | License | [LICENSE](../LICENSE) |

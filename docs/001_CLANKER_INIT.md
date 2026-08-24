@@ -35,23 +35,22 @@ When stuck, check **Known gaps / TBD** below before inventing architecture. Ask 
 
 ```text
 sesh-helpers/
-├── README.md                 # Short human overview (start here if you are meat)
+├── index.html                # Landing page (GitHub Pages webroot)
+├── README.md                 # Human overview; rendered on index.html
 ├── LICENSE                   # AGPL-3.0
+├── img/
+│   └── seshhelpers.png       # Project logo / brand asset
 ├── docs/
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point
 │   └── Control_UI.md         # Configuration menu spec (template, not implemented)
-└── webroot/
-    ├── index.html            # Placeholder landing page
-    └── img/
-        └── seshhelpers.png   # Project logo / brand asset
 ```
 
 | Path | Status | Notes |
 |------|--------|-------|
 | `docs/` | **Exists** | Living documentation; extend as project grows |
-| `webroot/index.html` | **Exists** | Static placeholder; no build step yet |
-| `webroot/img/seshhelpers.png` | **Exists** | Brand reference for UI styling |
+| `index.html` | **Exists** | Landing page; fetches and renders `README.md` |
+| `img/seshhelpers.png` | **Exists** | Brand reference for UI styling |
 | Application code | **Not yet** | No backend, no Control UI implementation |
 | Build tooling / CI | **Not yet** | TBD |
 | Deployment | **Not yet** | TBD |
@@ -108,8 +107,8 @@ These are intentionally undecided. Do not guess; update docs or ask.
 |----------|------|
 | Documentation index | [`docs/README.md`](README.md) |
 | Control UI spec (template) | [`Control_UI.md`](Control_UI.md) |
-| Landing page | [`webroot/index.html`](../webroot/index.html) |
-| Logo asset | [`webroot/img/seshhelpers.png`](../webroot/img/seshhelpers.png) |
+| Landing page | [`index.html`](../index.html) |
+| Logo asset | [`img/seshhelpers.png`](../img/seshhelpers.png) |
 | Root README | [`README.md`](../README.md) |
 
 ---

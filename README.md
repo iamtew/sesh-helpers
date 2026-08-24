@@ -8,10 +8,6 @@ Helper apps for the Sesh Sofa show.
 
 [docs/README.md](docs/README.md) — project docs, specs, and the AI agent entry point ([001_CLANKER_INIT.md](docs/001_CLANKER_INIT.md)).
 
-## Web
-
-[webroot/index.html](webroot/index.html) — placeholder landing page. Open locally in a browser or serve `webroot/` as static files.
-
 ## License
 
 AGPL-3.0 — see [LICENSE](LICENSE).
