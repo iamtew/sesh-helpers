@@ -20,7 +20,7 @@ This project is in **bootstrap phase**. Docs are written down first; code follow
 | Document | Audience | Description |
 |----------|----------|-------------|
 | [001_CLANKER_INIT.md](001_CLANKER_INIT.md) | AI agents (mortals welcome) | Project entry point — read first |
-| [Control_UI.md](Control_UI.md) | Product + implementers | Configuration menu spec (fill-in template) |
+| [Control_UI.md](Control_UI.md) | Implementers + clankers | Settings menu framework pattern |
 
 ---
 
