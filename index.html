@@ -13,10 +13,6 @@
       padding: 0;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       background-color: #000000;
       color: #e8e8e8;
@@ -49,70 +45,49 @@
          1px 0 0 rgba(255, 0, 255, 0.45);
     }
 
-    .readme {
-      max-width: 42rem;
+    .projects {
+      max-width: 28rem;
       margin: 0 auto;
-      text-align: left;
+      text-align: center;
     }
 
-    .readme h1 {
-      display: none;
+    .projects h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #666666;
+      margin-bottom: 1rem;
     }
 
-    .readme h2 {
-      margin: 2rem 0 0.75rem;
-      font-size: 1.25rem;
-      color: #ffffff;
-      text-shadow: -1px 0 0 rgba(0, 255, 255, 0.3);
+    .projects ul {
+      list-style: none;
     }
 
-    .readme h2:first-child {
-      margin-top: 0;
-    }
-
-    .readme p {
-      margin: 0.75rem 0;
-      color: #cccccc;
-    }
-
-    .readme blockquote {
-      margin: 1rem 0;
-      padding: 0.75rem 1rem;
-      border-left: 3px solid #ff00ff;
-      background: rgba(255, 0, 255, 0.08);
-      color: #bbbbbb;
-    }
-
-    .readme a {
+    .projects a {
+      display: block;
+      padding: 0.85rem 1.25rem;
+      border: 1px solid rgba(0, 255, 255, 0.35);
       color: #00ffff;
       text-decoration: none;
       text-shadow: 1px 0 0 rgba(255, 0, 255, 0.25);
+      letter-spacing: 0.04em;
+      transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
     }
 
-    .readme a:hover {
+    .projects a:hover {
       color: #ff00ff;
+      border-color: #ff00ff;
+      background: rgba(255, 0, 255, 0.08);
       text-shadow: -1px 0 0 rgba(0, 255, 255, 0.4);
     }
 
-    .readme ul {
-      margin: 0.75rem 0;
-      padding-left: 1.5rem;
-      color: #cccccc;
-    }
-
-    .readme li {
-      margin: 0.25rem 0;
-    }
-
-    .readme .loading,
-    .readme .error {
-      text-align: center;
-      color: #666666;
-      font-size: 0.875rem;
-    }
-
-    .readme .error {
-      color: #ff6666;
+    .projects a span {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.8rem;
+      color: #888888;
+      text-shadow: none;
     }
 
     footer {
@@ -143,32 +118,20 @@
     <p class="tagline">Helper apps for the Sesh Sofa show.</p>
   </header>
 
-  <article id="readme" class="readme">
-    <p class="loading">Loading README…</p>
-  </article>
+  <section class="projects" aria-label="Projects">
+    <h2>Projects</h2>
+    <ul>
+      <li>
+        <a href="spotsmoke/">
+          Spot Smoke
+          <span>OBS smoke emitter</span>
+        </a>
+      </li>
+    </ul>
+  </section>
 
   <footer>
     <a href="docs/README.md">Documentation</a>
   </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script>
-    marked.setOptions({ gfm: true, breaks: false });
-
-    const readmeEl = document.getElementById('readme');
-
-    fetch('README.md')
-      .then(function (response) {
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        return response.text();
-      })
-      .then(function (markdown) {
-        readmeEl.innerHTML = marked.parse(markdown);
-      })
-      .catch(function () {
-        readmeEl.innerHTML =
-          '<p class="error">Could not load README.md. Serve this repo over HTTP (e.g. GitHub Pages) rather than opening the file directly.</p>';
-      });
-  </script>
 </body>
 </html>

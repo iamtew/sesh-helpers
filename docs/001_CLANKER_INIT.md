@@ -35,27 +35,29 @@ When stuck, check **Known gaps / TBD** below before inventing architecture. Ask 
 
 ```text
 sesh-helpers/
-├── index.html                # Landing page (GitHub Pages webroot)
-├── README.md                 # Human overview; rendered on index.html
+├── index.html                # Landing page — logo + project list
+├── README.md                 # Human overview
 ├── LICENSE                   # AGPL-3.0
 ├── img/
 │   └── seshhelpers.png       # Project logo / brand asset
+├── spotsmoke/                # Spot Smoke helper app (OBS Browser Source)
 ├── docs/
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point
-│   └── Control_UI.md         # Configuration menu spec (template, not implemented)
+│   ├── Control_UI.md         # Settings menu framework pattern
+│   └── TYPOGRAPHY.md         # Shared fonts
 ```
 
 | Path | Status | Notes |
 |------|--------|-------|
 | `docs/` | **Exists** | Living documentation; extend as project grows |
-| `index.html` | **Exists** | Landing page; fetches and renders `README.md` |
+| `index.html` | **Exists** | Landing page with project list (add new apps here) |
 | `img/seshhelpers.png` | **Exists** | Brand reference for UI styling |
-| Application code | **Not yet** | No backend, no Control UI implementation |
+| `spotsmoke/` | **Exists** | First helper app; Control UI reference impl |
 | Build tooling / CI | **Not yet** | TBD |
-| Deployment | **Not yet** | TBD |
+| Deployment | GitHub Pages | Repo root is the webroot |
 
-Future directories (apps, services, config) will appear as features land. Update this table when they do.
+When you add a helper app: put it in its own directory, link it from `index.html`, and update this map.
 
 ---
 
@@ -92,12 +94,11 @@ These are intentionally undecided. Do not guess; update docs or ask.
 
 | Topic | Status |
 |-------|--------|
-| Tech stack (frontend framework, backend, language) | TBD |
-| Control UI implementation | Spec template only — see [`Control_UI.md`](Control_UI.md) |
-| Deployment / hosting | TBD |
-| Show-specific integrations (hardware, APIs, broadcast) | TBD |
+| Tech stack | Static HTML/JS/CSS per helper app (for now) |
+| Control UI | Framework in [`Control_UI.md`](Control_UI.md); reference in `spotsmoke/` |
+| Deployment / hosting | GitHub Pages (repo root) |
+| Shared Control UI module | TBD — extract from Spot Smoke if useful |
 | Authentication / operator roles | TBD |
-| Data persistence strategy | TBD |
 
 ---
 
@@ -106,8 +107,10 @@ These are intentionally undecided. Do not guess; update docs or ask.
 | Resource | Path |
 |----------|------|
 | Documentation index | [`docs/README.md`](README.md) |
-| Control UI spec (template) | [`Control_UI.md`](Control_UI.md) |
+| Control UI framework | [`Control_UI.md`](Control_UI.md) |
+| Typography | [`TYPOGRAPHY.md`](TYPOGRAPHY.md) |
 | Landing page | [`index.html`](../index.html) |
+| Spot Smoke | [`spotsmoke/`](../spotsmoke/) |
 | Logo asset | [`img/seshhelpers.png`](../img/seshhelpers.png) |
 | Root README | [`README.md`](../README.md) |
 

@@ -2,7 +2,13 @@
 
 Helper apps for the Sesh Sofa show.
 
-> Early bootstrap — most features are not built yet. See [documentation](docs/README.md) for specs and agent onboarding.
+> Early bootstrap — see [documentation](docs/README.md) for specs and agent onboarding.
+
+## Projects
+
+| App | Path |
+|-----|------|
+| Spot Smoke | [spotsmoke/](spotsmoke/) |
 
 ## Documentation
 
