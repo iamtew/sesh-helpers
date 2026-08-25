@@ -11,17 +11,17 @@
   --sesh-glass-border: rgba(255, 230, 90, 0.32);
   --sesh-glass-inset-highlight: rgba(255, 255, 255, 0.18);
   --sesh-glass-shadow: rgba(0, 0, 0, 0.25);
-  --sesh-outline-inner: #000;
-  --sesh-outline-outer: #fff;
+  --sesh-outline-opacity: 0.6;
+  --sesh-outline-inner: rgba(0, 0, 0, var(--sesh-outline-opacity));
+  --sesh-outline-outer: rgba(255, 255, 255, var(--sesh-outline-opacity));
   --sesh-outline-width: 0.25rem;
 
   --sesh-blur-amount: 12px;
   --sesh-saturate-amount: 120%;
   --sesh-radius-panel: 16px;
 
-  --sesh-aberration-primary: rgba(255, 80, 0, 0.6);
-  --sesh-aberration-red: rgba(255, 13, 40, 0.35);
-  --sesh-aberration-lime: rgba(200, 255, 13, 0.3);
+  --sesh-aberration-primary: rgba(255, 0, 255, 0.6);
+  --sesh-aberration-soft: rgba(255, 0, 255, 0.35);
 
   /* Opposite of glass gradient (#E5F20D → #F20D0D), masked into Ben-Day dots */
   --sesh-halftone-grad-a: #e5f20d;
@@ -37,8 +37,7 @@
 
   --theme-text-shadow:
     0 0 6px var(--sesh-aberration-primary),
-    2px 0 4px var(--sesh-aberration-red),
-    -2px 0 4px var(--sesh-aberration-lime);
+    0 0 12px var(--sesh-aberration-soft);
 
   /* Host apps that already use --banner-* tokens pick these up without extra CSS */
   --banner-bg: linear-gradient(135deg, var(--sesh-glass-grad-a), var(--sesh-glass-grad-b));
@@ -52,7 +51,7 @@
   --banner-blur: var(--sesh-blur-amount);
   --banner-saturate: var(--sesh-saturate-amount);
   --banner-radius-base: var(--sesh-radius-panel);
-  --banner-accent: var(--sesh-aberration-lime);
+  --banner-accent: var(--sesh-text-primary);
 }
 
 [data-theme="sesh-glass"] .theme-panel {

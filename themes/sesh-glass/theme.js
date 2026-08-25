@@ -8,15 +8,12 @@
     const intensity = 0.2 + pulse * 0.8;
 
     const glowSpread = 4 + intensity * 16;
-    const sideOffset = 1.5 + intensity * 5;
     const primaryAlpha = 0.2 + intensity * 0.55;
-    const secondaryAlpha = 0.12 + intensity * 0.3;
-    const tertiaryAlpha = 0.08 + intensity * 0.25;
+    const softAlpha = 0.1 + intensity * 0.3;
 
     return (
-      `0px 0px ${glowSpread}px rgba(255, 80, 0, ${primaryAlpha}), ` +
-      `${sideOffset}px 0px ${glowSpread - 4}px rgba(255, 13, 40, ${secondaryAlpha}), ` +
-      `${-sideOffset}px 0px ${glowSpread - 4}px rgba(200, 255, 13, ${tertiaryAlpha})`
+      `0px 0px ${glowSpread}px rgba(255, 0, 255, ${primaryAlpha}), ` +
+      `0px 0px ${glowSpread + 8}px rgba(255, 0, 255, ${softAlpha})`
     );
   }
 
@@ -65,7 +62,7 @@
       id: THEME_ID,
       name: "Sesh Glass",
       description:
-        "Frosted red-to-lime glass with a retro halftone screen. Orange/red/lime chromatic fringing pulses on the text."
+        "Frosted red-to-lime glass with a retro halftone screen. Magenta (#FF00FF) glow pulses on the text."
     });
   }
 

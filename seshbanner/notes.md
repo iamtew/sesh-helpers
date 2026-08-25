@@ -63,13 +63,13 @@ Persistent demo layer at 0.75 opacity. Independent of the header ▚ toggle.
 See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from layout and fonts.
 
 - **LCD Glass** — frosted navy-cyan glass with pulsing magenta/cyan LCD fringing.
-- **Sesh Glass** — frosted red-to-lime glass with a retro halftone screen and pulsing orange/red/lime fringing.
+- **Sesh Glass** — frosted red-to-lime glass with a retro halftone screen and pulsing magenta glow.
 
 ## Layouts
 
-1. **Inline** — `title | message` with a cyan bar delimiter between them.
+1. **Inline** — `title | message` with a font-colored bar delimiter between them (chromatic fringe from the active theme).
 2. YouTube playlist — scaffolding only (`playlist.js`); paste URL for later extract.
-3. **Stacked accent** — title over message, left cyan accent bar (lower-third feel).
+3. **Stacked accent** — title over message, left font-colored accent bar (lower-third feel).
 
 ## Size
 

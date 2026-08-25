@@ -158,8 +158,12 @@ body.settings-mode #banner.dragging {
   width: var(--banner-accent-w);
   flex-shrink: 0;
   border-radius: 2px;
-  background: var(--banner-accent);
+  background: currentColor;
   align-self: stretch;
+  /* Pulse with theme chromatic shadow (theme.js writes --theme-text-shadow) */
+  box-shadow: var(--theme-text-shadow,
+    0 0 6px rgba(255, 0, 255, 0.6),
+    0 0 12px rgba(255, 0, 255, 0.35));
 }
 
 .banner-title {
@@ -182,7 +186,7 @@ body.settings-mode #banner.dragging {
   word-break: normal;
 }
 
-/* Layout 1 — title | message (inline, cyan bar delimiter) */
+/* Layout 1 — title | message (inline, font-colored bar delimiter) */
 #banner[data-layout="1"] .banner-text-layout {
   display: flex;
   flex-direction: row;

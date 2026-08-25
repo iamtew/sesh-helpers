@@ -50,7 +50,7 @@ Frosted navy-cyan glass, ice-blue text, magenta/cyan chromatic pulse. Extracted 
 
 ## Sesh Glass
 
-Frosted red-to-lime glass (`#F20D0D` → `#E5F20D`), warm readout text, orange/red/lime chromatic pulse, and a halftone dot screen over the panel. Same glass + pulse behavior as LCD Glass with a warmer palette. Extracted from `tmp/seshglass.html`.
+Frosted red-to-lime glass (`#F20D0D` → `#E5F20D`), warm readout text, magenta (`#FF00FF`) glow pulse, and a halftone dot screen over the panel. Same glass + pulse behavior as LCD Glass with a warmer palette. Extracted from `tmp/seshglass.html`.
 
 ---
 
