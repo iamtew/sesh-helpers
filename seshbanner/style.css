@@ -162,8 +162,8 @@ body.settings-mode #banner.dragging {
   align-self: stretch;
   /* Pulse with theme chromatic shadow (theme.js writes --theme-text-shadow) */
   box-shadow: var(--theme-text-shadow,
-    0 0 6px rgba(255, 0, 255, 0.6),
-    0 0 12px rgba(255, 0, 255, 0.35));
+    0 0 6px rgba(242, 13, 13, 0.6),
+    0 0 12px rgba(242, 13, 13, 0.35));
 }
 
 .banner-title {

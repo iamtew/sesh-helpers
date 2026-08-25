@@ -12,8 +12,8 @@
     const softAlpha = 0.1 + intensity * 0.3;
 
     return (
-      `0px 0px ${glowSpread}px rgba(255, 0, 255, ${primaryAlpha}), ` +
-      `0px 0px ${glowSpread + 8}px rgba(255, 0, 255, ${softAlpha})`
+      `0px 0px ${glowSpread}px rgba(242, 13, 13, ${primaryAlpha}), ` +
+      `0px 0px ${glowSpread + 8}px rgba(242, 13, 13, ${softAlpha})`
     );
   }
 
@@ -62,7 +62,7 @@
       id: THEME_ID,
       name: "Sesh Glass",
       description:
-        "Frosted red-to-lime glass with a retro halftone screen. Magenta (#FF00FF) glow pulses on the text."
+        "Frosted red-to-lime glass with a retro halftone screen. Red (#F20D0D) glow pulses on the text."
     });
   }
 

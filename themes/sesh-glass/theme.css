@@ -20,8 +20,8 @@
   --sesh-saturate-amount: 120%;
   --sesh-radius-panel: 16px;
 
-  --sesh-aberration-primary: rgba(255, 0, 255, 0.6);
-  --sesh-aberration-soft: rgba(255, 0, 255, 0.35);
+  --sesh-aberration-primary: rgba(242, 13, 13, 0.6);
+  --sesh-aberration-soft: rgba(242, 13, 13, 0.35);
 
   /* Opposite of glass gradient (#E5F20D → #F20D0D), masked into Ben-Day dots */
   --sesh-halftone-grad-a: #e5f20d;

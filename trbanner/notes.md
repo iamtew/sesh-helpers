@@ -64,7 +64,7 @@ Persistent demo layer at 0.75 opacity. Independent of the header ▚ toggle.
 See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from fonts and background.
 
 - **LCD Glass** — frosted navy-cyan glass with pulsing magenta/cyan LCD fringing.
-- **Sesh Glass** — frosted red-to-lime glass with a retro halftone screen and pulsing magenta glow.
+- **Sesh Glass** — frosted red-to-lime glass with a retro halftone screen and pulsing red glow.
 
 ## Size
 
