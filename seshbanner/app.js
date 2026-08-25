@@ -20,6 +20,7 @@ const defaults = {
   title: "TITLE",
   message: "Message",
   layout: "1",
+  theme: "lcd-glass",
   titleFont: "Monster Chiller",
   messageFont: "Better VCR",
   titleSize: 38,
@@ -54,6 +55,25 @@ function normalizeLayout(value) {
   return layout === "1" || layout === "2" || layout === "3" ? layout : defaults.layout;
 }
 
+function getThemeCatalog() {
+  const catalog = window.SeshThemes && Array.isArray(window.SeshThemes.catalog)
+    ? window.SeshThemes.catalog
+    : [];
+  if (catalog.length) return catalog;
+  return [{ id: "lcd-glass", name: "LCD Glass", description: "" }];
+}
+
+const THEMES = getThemeCatalog();
+
+function normalizeTheme(value) {
+  const id = String(value || "");
+  return THEMES.some(theme => theme.id === id) ? id : defaults.theme;
+}
+
+function findTheme(id) {
+  return THEMES.find(theme => theme.id === id) || THEMES[0];
+}
+
 function pickFont(value, allowed, fallback) {
   return allowed.includes(value) ? value : fallback;
 }
@@ -81,6 +101,12 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function readCssPx(name, fallback) {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const value = Number.parseFloat(raw);
+  return Number.isFinite(value) ? value : fallback;
+}
+
 function getSizeParam(key, fallback, min, max) {
   return clamp(getNumberParam(key, fallback), min, max);
 }
@@ -98,6 +124,7 @@ let state = {
   title: getParam("title", defaults.title),
   message: getParam("message", defaults.message),
   layout: normalizeLayout(getParam("layout", defaults.layout)),
+  theme: normalizeTheme(getParam("theme", defaults.theme)),
   titleFont: resolveFontParam(getParam("titleFont", "0"), DISPLAY_FONTS, defaults.titleFont),
   messageFont: resolveFontParam(getParam("messageFont", "0"), REGULAR_FONTS, defaults.messageFont),
   titleSize: getSizeParam("titleSize", defaults.titleSize, 16, 96),
@@ -144,6 +171,8 @@ const widthValue = document.getElementById("width-value");
 const heightSlider = document.getElementById("height-slider");
 const heightValue = document.getElementById("height-value");
 const layoutRadios = document.querySelectorAll('input[name="layout"]');
+const themeSelect = document.getElementById("theme-select");
+const themeDescription = document.getElementById("theme-description");
 
 const resetButton = document.getElementById("reset-button");
 const copyUrlButton = document.getElementById("copy-url-button");
@@ -367,6 +396,7 @@ function updateURL() {
   params.delete("message");
 
   params.set("layout", state.layout);
+  params.set("theme", state.theme);
   params.set("titleFont", String(fontIndex(state.titleFont, DISPLAY_FONTS)));
   params.set("messageFont", String(fontIndex(state.messageFont, REGULAR_FONTS)));
   params.set("titleSize", String(state.titleSize));
@@ -418,6 +448,7 @@ function applySize() {
   const h = state.height / 100;
   // Uniform type scale from the smaller axis — never stretch glyphs.
   const fontScale = Math.min(w, h);
+  const radiusBase = readCssPx("--banner-radius-base", 6);
 
   document.documentElement.style.setProperty(
     "--banner-max-width",
@@ -437,7 +468,7 @@ function applySize() {
   );
   document.documentElement.style.setProperty(
     "--banner-radius",
-    `${Math.max(2, 6 * fontScale).toFixed(2)}px`
+    `${Math.max(2, radiusBase * fontScale).toFixed(2)}px`
   );
   document.documentElement.style.setProperty(
     "--banner-title-size",
@@ -464,6 +495,23 @@ function applyFonts() {
 function applyContent() {
   bannerTitle.textContent = state.title;
   bannerMessage.textContent = state.message;
+}
+
+function applyTheme() {
+  document.documentElement.dataset.theme = state.theme;
+
+  const effects = (window.SeshThemes && window.SeshThemes.effects) || {};
+  for (const [id, effect] of Object.entries(effects)) {
+    if (typeof effect.stop === "function" && id !== state.theme) {
+      effect.stop(banner);
+    }
+  }
+  const active = effects[state.theme];
+  if (active && typeof active.start === "function") {
+    active.start(banner);
+  }
+
+  applySize();
 }
 
 function applyLayout() {
@@ -506,6 +554,7 @@ function applyLayout() {
 
 function applyAll() {
   applyContent();
+  applyTheme();
   applyFonts();
   applyLayout();
   applyBannerPosition();
@@ -531,6 +580,9 @@ function syncInputs() {
   for (const radio of layoutRadios) {
     radio.checked = radio.value === state.layout;
   }
+  themeSelect.value = state.theme;
+  const themeMeta = findTheme(state.theme);
+  themeDescription.textContent = themeMeta && themeMeta.description ? themeMeta.description : "";
   playlistGroup.hidden = state.layout !== "2";
   positionValue.textContent = `${state.bannerX.toFixed(0)}% / ${state.bannerY.toFixed(0)}%`;
 }
@@ -723,6 +775,13 @@ for (const radio of layoutRadios) {
   });
 }
 
+themeSelect.addEventListener("change", () => {
+  state.theme = normalizeTheme(themeSelect.value);
+  applyTheme();
+  syncInputs();
+  updateURL();
+});
+
 resetButton.addEventListener("click", () => {
   state = { ...defaults };
   closeAllFontPickers();
@@ -742,6 +801,13 @@ copyUrlObsButton.addEventListener("click", () => {
 });
 
 // --- INIT --------------------------------------------------------------
+
+for (const theme of THEMES) {
+  const option = document.createElement("option");
+  option.value = theme.id;
+  option.textContent = theme.name;
+  themeSelect.appendChild(option);
+}
 
 syncInputs();
 applyAll();

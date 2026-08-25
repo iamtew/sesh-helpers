@@ -42,6 +42,8 @@ sesh-helpers/
 │   └── seshhelpers.png       # Project logo / brand asset
 ├── spotsmoke/                # Spot Smoke helper app (OBS Browser Source)
 ├── seshbanner/               # Sesh Banner helper app (OBS Browser Source)
+├── themes/                   # Shared overlay themes (see THEMES.md)
+│   └── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
 ├── docs/
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point
@@ -56,6 +58,7 @@ sesh-helpers/
 | `img/seshhelpers.png` | **Exists** | Brand reference for UI styling |
 | `spotsmoke/` | **Exists** | First helper app; Control UI reference impl |
 | `seshbanner/` | **Exists** | Banner overlay; Control UI + layouts |
+| `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
 | Build tooling / CI | **Not yet** | TBD |
 | Deployment | GitHub Pages | Repo root is the webroot |
 
@@ -101,6 +104,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 |-------|--------|
 | Tech stack | Static HTML/JS/CSS per helper app (for now) |
 | Control UI | Framework in [`Control_UI.md`](Control_UI.md); reference in `spotsmoke/` |
+| Overlay themes | [`THEMES.md`](THEMES.md); first theme LCD Glass |
 | Deployment / hosting | GitHub Pages (repo root) |
 | Shared Control UI module | TBD — extract from Spot Smoke if useful |
 | Authentication / operator roles | TBD |
@@ -114,6 +118,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 | Documentation index | [`docs/README.md`](README.md) |
 | Control UI framework | [`Control_UI.md`](Control_UI.md) |
 | Typography | [`TYPOGRAPHY.md`](TYPOGRAPHY.md) |
+| Overlay themes | [`THEMES.md`](THEMES.md) |
 | Landing page | [`index.html`](../index.html) |
 | Spot Smoke | [`spotsmoke/`](../spotsmoke/) |
 | Sesh Banner | [`seshbanner/`](../seshbanner/) |

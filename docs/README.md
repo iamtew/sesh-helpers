@@ -21,6 +21,7 @@ This project is in **bootstrap phase**. Docs are written down first; code follow
 |----------|----------|-------------|
 | [001_CLANKER_INIT.md](001_CLANKER_INIT.md) | AI agents (mortals welcome) | Project entry point — read first |
 | [Control_UI.md](Control_UI.md) | Implementers + clankers | Settings menu framework pattern |
+| [THEMES.md](THEMES.md) | Implementers + clankers | Shared overlay themes (LCD Glass, …) |
 | [TYPOGRAPHY.md](TYPOGRAPHY.md) | Implementers | Shared regular + display fonts |
 
 ---

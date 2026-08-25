@@ -1,0 +1,56 @@
+/* LCD Glass — reusable overlay theme
+   Host: set data-theme="lcd-glass" on <html> and class="theme-panel" on the glass surface.
+   Pulse: themes/lcd-glass/theme.js writes --theme-text-shadow on the panel (or an ancestor). */
+
+[data-theme="lcd-glass"] {
+  --lcd-text-primary: #e0fefe;
+  --lcd-text-base: #eee;
+
+  --lcd-glass-grad-a: rgba(14, 34, 62, 0.55);
+  --lcd-glass-grad-b: rgba(48, 92, 144, 0.28);
+  --lcd-glass-border: rgba(170, 220, 255, 0.22);
+  --lcd-glass-inset-highlight: rgba(255, 255, 255, 0.18);
+  --lcd-glass-shadow: rgba(0, 0, 0, 0.25);
+
+  --lcd-blur-amount: 12px;
+  --lcd-saturate-amount: 120%;
+  --lcd-radius-panel: 16px;
+
+  --lcd-aberration-primary: rgba(209, 76, 255, 0.6);
+  --lcd-aberration-magenta: rgba(255, 0, 255, 0.35);
+  --lcd-aberration-cyan: rgba(0, 255, 255, 0.25);
+
+  --theme-text-shadow:
+    0 0 6px var(--lcd-aberration-primary),
+    2px 0 4px var(--lcd-aberration-magenta),
+    -2px 0 4px var(--lcd-aberration-cyan);
+
+  /* Host apps that already use --banner-* tokens pick these up without extra CSS */
+  --banner-bg: linear-gradient(135deg, var(--lcd-glass-grad-a), var(--lcd-glass-grad-b));
+  --banner-border: var(--lcd-glass-border);
+  --banner-text: var(--lcd-text-primary);
+  --banner-shadow:
+    inset 0 1px 0 var(--lcd-glass-inset-highlight),
+    0 10px 30px var(--lcd-glass-shadow);
+  --banner-blur: var(--lcd-blur-amount);
+  --banner-saturate: var(--lcd-saturate-amount);
+  --banner-radius-base: var(--lcd-radius-panel);
+  --banner-accent: var(--lcd-aberration-cyan);
+}
+
+[data-theme="lcd-glass"] .theme-panel {
+  color: var(--lcd-text-primary);
+  background: linear-gradient(135deg, var(--lcd-glass-grad-a), var(--lcd-glass-grad-b));
+  border: 1px solid var(--lcd-glass-border);
+  border-radius: var(--banner-radius, var(--lcd-radius-panel));
+  box-shadow:
+    inset 0 1px 0 var(--lcd-glass-inset-highlight),
+    0 10px 30px var(--lcd-glass-shadow);
+  backdrop-filter: blur(var(--lcd-blur-amount)) saturate(var(--lcd-saturate-amount));
+  -webkit-backdrop-filter: blur(var(--lcd-blur-amount)) saturate(var(--lcd-saturate-amount));
+  text-shadow: var(--theme-text-shadow);
+}
+
+[data-theme="lcd-glass"] .theme-panel * {
+  text-shadow: var(--theme-text-shadow);
+}

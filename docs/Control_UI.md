@@ -194,3 +194,4 @@ Copy shell + contracts. Do not copy Spot Smoke's sliders unless the app needs th
 - [`spotsmoke/notes.md`](../spotsmoke/notes.md) — operator notes
 - [`seshbanner/`](../seshbanner/) — banner + layouts (Control UI consumer)
 - [TYPOGRAPHY.md](TYPOGRAPHY.md)
+- [THEMES.md](THEMES.md)

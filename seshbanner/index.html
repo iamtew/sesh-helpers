@@ -4,21 +4,22 @@
   <meta charset="UTF-8" />
   <title>Sesh Banner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css?v=10" />
+  <link rel="stylesheet" href="style.css?v=11" />
+  <link rel="stylesheet" href="../themes/lcd-glass/theme.css" />
 </head>
 <body>
   <div id="preview-backdrop"></div>
 
   <div id="banner" data-layout="1" aria-live="polite">
     <!-- Layout 1 & 3: title + message -->
-    <div class="banner-content banner-text-layout">
+    <div class="banner-content theme-panel banner-text-layout">
       <div class="banner-title"></div>
       <div class="banner-accent" aria-hidden="true"></div>
       <div class="banner-message"></div>
     </div>
 
     <!-- Layout 2: YouTube playlist scaffolding (future work) -->
-    <div class="banner-content banner-playlist-layout" hidden>
+    <div class="banner-content theme-panel banner-playlist-layout" hidden>
       <div class="playlist-thumb" aria-hidden="true"></div>
       <div class="playlist-copy">
         <div class="playlist-title">Playlist title</div>
@@ -82,6 +83,17 @@
           <label for="playlist-input"><span>Playlist URL</span></label>
           <input id="playlist-input" type="url" spellcheck="false" autocomplete="off" placeholder="https://youtube.com/playlist?list=…" />
           <p class="field-hint">Scaffolding only — extract comes later.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="theme">
+      <button id="theme-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="theme-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Theme</button>
+      <div id="theme-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <label for="theme-select"><span>Theme</span></label>
+          <select id="theme-select"></select>
+          <p class="field-hint" id="theme-description"></p>
         </div>
       </div>
     </div>
@@ -182,6 +194,7 @@
   </div>
 
   <script src="playlist.js"></script>
-  <script src="app.js?v=9"></script>
+  <script src="../themes/lcd-glass/theme.js"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>
