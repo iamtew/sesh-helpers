@@ -199,6 +199,19 @@ const copyUrlObsButton = document.getElementById("copy-url-obs-button");
 
 const sectionToggles = document.querySelectorAll("[data-section-toggle]");
 
+/** Brief filled flash for footer actions — OBS Interact needs a clear click signal. */
+function flashMenuAction(button, tempLabel) {
+  if (!button) return;
+  const original = button.textContent;
+  button.classList.add("is-clicked");
+  if (tempLabel) button.textContent = tempLabel;
+  clearTimeout(button._flashTimer);
+  button._flashTimer = setTimeout(() => {
+    button.classList.remove("is-clicked");
+    if (tempLabel) button.textContent = original;
+  }, 550);
+}
+
 // --- FONT PICKER ------------------------------------------------------
 
 function createFontPicker(root, fonts, labelledBy, getValue, setValue) {
@@ -876,6 +889,7 @@ themeSelect.addEventListener("change", () => {
 });
 
 resetButton.addEventListener("click", () => {
+  flashMenuAction(resetButton);
   state = { ...defaults };
   closeAllFontPickers();
   syncInputs();
@@ -884,10 +898,12 @@ resetButton.addEventListener("click", () => {
 });
 
 copyUrlButton.addEventListener("click", () => {
+  flashMenuAction(copyUrlButton, "Copied!");
   navigator.clipboard.writeText(location.href);
 });
 
 copyUrlObsButton.addEventListener("click", () => {
+  flashMenuAction(copyUrlObsButton, "Copied!");
   const url = new URL(location.href);
   url.searchParams.set("menu", "DISABLE");
   navigator.clipboard.writeText(url.toString());

@@ -122,6 +122,19 @@ const resetButton = document.getElementById("reset-button");
 const copyUrlButton = document.getElementById("copy-url-button");
 const copyUrlObsButton = document.getElementById("copy-url-obs-button");
 
+/** Brief filled flash for footer actions — OBS Interact needs a clear click signal. */
+function flashMenuAction(button, tempLabel) {
+  if (!button) return;
+  const original = button.textContent;
+  button.classList.add("is-clicked");
+  if (tempLabel) button.textContent = tempLabel;
+  clearTimeout(button._flashTimer);
+  button._flashTimer = setTimeout(() => {
+    button.classList.remove("is-clicked");
+    if (tempLabel) button.textContent = original;
+  }, 550);
+}
+
 function closeHelpOverlay() {
   helpOverlay.hidden = true;
   helpOverlay.classList.remove("zoomed");
@@ -793,6 +806,7 @@ glitchFringeSlider.addEventListener("input", e => {
 });
 
 testButton.addEventListener("click", () => {
+  flashMenuAction(testButton);
   if (spawning) {
     stopSpawn();
   } else {
@@ -801,6 +815,7 @@ testButton.addEventListener("click", () => {
 });
 
 resetButton.addEventListener("click", () => {
+  flashMenuAction(resetButton);
   state = { ...defaults };
   syncInputs();
   applySettingsMode();
@@ -820,10 +835,12 @@ for (const radio of bgRadios) {
 }
 
 copyUrlButton.addEventListener("click", () => {
+  flashMenuAction(copyUrlButton, "Copied!");
   navigator.clipboard.writeText(location.href);
 });
 
 copyUrlObsButton.addEventListener("click", () => {
+  flashMenuAction(copyUrlObsButton, "Copied!");
   const url = new URL(location.href);
   url.searchParams.set("menu", "DISABLE");
   navigator.clipboard.writeText(url.toString());
