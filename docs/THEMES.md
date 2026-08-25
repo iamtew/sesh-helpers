@@ -20,7 +20,9 @@ themes/
     └── theme.js
 ```
 
-Each theme folder has a `theme.json` next to its CSS/JS:
+Each theme folder has a `theme.json` next to its CSS/JS. The JSON is descriptive
+metadata for meat bags and tooling; current apps load the catalog entry registered by
+`theme.js`, so keep both descriptions synchronized.
 
 | Field | Meaning |
 |-------|---------|
@@ -35,7 +37,7 @@ Each theme folder has a `theme.json` next to its CSS/JS:
 1. Link the theme CSS and JS from the app HTML (path relative to the app folder).
 2. Set `document.documentElement.dataset.theme` to the theme `id`.
 3. Put `class="theme-panel"` on the glass surface (the banner box, not the page).
-4. Settings dropdowns read `window.SeshThemes.catalog` (each theme.js registers itself).
+4. Settings dropdowns read `window.SeshThemes.catalog` (each `theme.js` registers itself).
 5. Effects: `window.SeshThemes.effects[id].start(el)` / `.stop(el)` — pass the panel or an ancestor. Glass themes write `--theme-text-shadow` so child text pulses.
 
 Persist the choice as URL param `theme` (see [`Control_UI.md`](Control_UI.md) live-update contract).
@@ -46,11 +48,12 @@ Page background stays **transparent**.
 
 ## LCD Glass
 
-Frosted navy-cyan glass, ice-blue text, magenta/cyan chromatic pulse. Extracted from `tmp/trglass.html`.
+Frosted navy-cyan glass, ice-blue text, and a magenta/cyan chromatic pulse.
 
 ## Sesh Glass
 
-Frosted red-to-lime glass (`#F20D0D` → `#E5F20D`), warm readout text, red (`#F20D0D`) glow pulse, and a halftone dot screen over the panel. Same glass + pulse behavior as LCD Glass with a warmer palette. Extracted from `tmp/seshglass.html`.
+Frosted red-to-lime glass (`#F20D0D` → `#E5F20D`), warm readout text, a red
+(`#F20D0D`) glow pulse, and a halftone dot screen over the panel.
 
 ---
 
@@ -58,15 +61,19 @@ Frosted red-to-lime glass (`#F20D0D` → `#E5F20D`), warm readout text, red (`#F
 
 1. Create `themes/<id>/` with `theme.json`, `theme.css`, and `theme.js` if it has motion.
 2. Scope CSS to `[data-theme="<id>"]`. Do not style `#settings-menu`.
-3. Register in `theme.js` (`SeshThemes.catalog` + `SeshThemes.effects` if needed).
-4. Link the new CSS/JS from each app that should offer it.
+3. Add matching `id`, `name`, and `description` values to `theme.json` and the
+   `SeshThemes.catalog` registration in `theme.js`.
+4. Register motion in `SeshThemes.effects` if needed. `start()` must cancel an existing
+   runner for the same element; `stop()` must cancel animation and remove inline theme
+   properties so another theme starts cleanly.
+5. Link the new CSS/JS from each app that should offer it.
+6. Test switching themes repeatedly. One panel should have one animation runner—no
+   multiplying clanker heartbeats.
 
 ---
 
 ## Related
 
 - [Control_UI.md](Control_UI.md)
-- [`seshbanner/`](../seshbanner/) — first consumer
+- [`seshbanner/`](../seshbanner/) — banner theme consumer
 - [`trbanner/`](../trbanner/) — Trick Request Banner consumer
-- [`tmp/trglass.html`](../tmp/trglass.html) — LCD Glass source
-- [`tmp/seshglass.html`](../tmp/seshglass.html) — Sesh Glass source

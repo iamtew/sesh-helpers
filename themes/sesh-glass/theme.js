@@ -1,6 +1,8 @@
 (function (global) {
   const THEME_ID = "sesh-glass";
 
+  // The shared API kept its chromatic-pulse name; this theme intentionally
+  // produces a monochrome red glow rather than LCD-style color separation.
   function chromaticShadow(timestamp, pulseSpeed) {
     const speed = pulseSpeed == null ? 3 : pulseSpeed;
     const speedScale = speed <= 0 ? 0 : Math.max(0.1, speed / 5);
@@ -62,7 +64,7 @@
       id: THEME_ID,
       name: "Sesh Glass",
       description:
-        "Frosted red-to-lime glass with a retro halftone screen. Red (#F20D0D) glow pulses on the text."
+        "Frosted red-to-lime glass with a retro halftone screen. A translucent #F20D0D → #E5F20D gradient sits behind smoked glass (blur + saturate), and a red (#F20D0D) glow pulses on the text."
     });
   }
 

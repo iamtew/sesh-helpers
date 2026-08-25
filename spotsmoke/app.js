@@ -1,3 +1,5 @@
+// Spot Smoke runtime. Clanker contract: the query string is the complete,
+// shareable configuration for meat bags and OBS.
 // --- CONFIG ---------------------------------------------------------
 
 const BG_NONE = "0";
@@ -313,7 +315,7 @@ function spawnParticle() {
   const exposureRoll = Math.random();
   const exposure = exposureRoll < 0.6 ? 1 : exposureRoll < 0.85 ? 0.72 : 0.45;
 
-  // each particle is a small cluster of puffs, giving the cloud a mottled, billowy texture
+  // Each particle is a puff cluster, giving the cloud a mottled, billowy texture.
   const puffCount = 3 + Math.floor(Math.random() * 3);
   const puffs = [];
   for (let i = 0; i < puffCount; i++) {
@@ -399,7 +401,7 @@ function updateAndDrawSmoke(dt, now) {
     }
 
     for (const puff of p.puffs) {
-      // two out-of-phase sine waves fake turbulent noise in each puff's density and size
+      // Two out-of-phase sine waves fake turbulent noise in each puff's density and size.
       const noise = 0.7 + 0.15 * Math.sin(p.age * puff.freq + puff.phase) +
         0.15 * Math.sin(p.age * puff.freq * 1.7 + puff.phase * 1.3);
 

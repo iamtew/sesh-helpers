@@ -11,7 +11,9 @@ This is the authoritative onboarding document for Sesh Helpers. When in doubt, t
 
 **Sesh Helpers** is a collection of helper apps for the **Sesh Sofa** show.
 
-The project is in **bootstrap phase**. Most features are not built yet. Documentation is the source of truth — if something is not written down, treat it as undecided.
+The current project is three dependency-light, static browser overlays. Documentation
+records the intended contracts, but running code is evidence too: compare the two
+before changing behavior instead of trusting stale text or clanker vibes.
 
 License: **AGPL-3.0** (see [`LICENSE`](../LICENSE) at repo root).
 
@@ -38,8 +40,13 @@ sesh-helpers/
 ├── index.html                # Landing page — logo + project list
 ├── README.md                 # Human overview
 ├── LICENSE                   # AGPL-3.0
+├── CNAME                     # GitHub Pages custom domain
 ├── img/
-│   └── seshhelpers.png       # Project logo / brand asset
+│   ├── seshhelpers.png       # Project logo / brand asset
+│   ├── seshsofa.png          # Sesh Sofa artwork
+│   └── apartment_panorama.png # Optional demo backdrop
+├── graphics/
+│   └── seshhelpers.af        # Editable Affinity source for the project logo
 ├── spotsmoke/                # Spot Smoke helper app (OBS Browser Source)
 ├── seshbanner/               # Sesh Banner helper app (OBS Browser Source)
 ├── trbanner/                 # Trick Request Banner (OBS Browser Source)
@@ -50,6 +57,7 @@ sesh-helpers/
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point
 │   ├── Control_UI.md         # Settings menu framework pattern
+│   ├── THEMES.md             # Shared overlay theme contract
 │   └── TYPOGRAPHY.md         # Shared fonts
 ```
 
@@ -62,8 +70,10 @@ sesh-helpers/
 | `seshbanner/` | **Exists** | Banner overlay; Control UI + layouts |
 | `trbanner/` | **Exists** | Trick Request Banner; fixed layout + demo backgrounds |
 | `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
-| Build tooling / CI | **Not yet** | TBD |
-| Deployment | GitHub Pages | Repo root is the webroot |
+| `*/notes.md` | **Exists** | Operator setup and complete URL parameter contracts |
+| `seshbanner/playlist.js` | **Exists** | Public YouTube playlist extraction and ticker formatting |
+| Build tooling / CI | **None** | Intentional: static files, no build step |
+| Deployment | **GitHub Pages** | Repo root is the webroot; custom domain is `helpers.seshsofa.nl` |
 
 **OBS / transparency:** Helper apps are almost always OBS Browser Sources. Keep `html, body` background `transparent`. See [`Control_UI.md`](Control_UI.md).
 
@@ -76,7 +86,6 @@ When you add a helper app: put it in its own directory, link it from `index.html
 - **`00x_` prefixed files** — ordered reading for agents (e.g. `001_CLANKER_INIT.md`).
 - **Unnumbered files** — feature or domain specs (e.g. `Control_UI.md`).
 - **`docs/README.md`** — human-friendly index; link new docs from there.
-- **Templates** — docs marked *Draft / Template* are fill-in specs. Mortal meat bags write short notes; clankers implement from the structured fields.
 - **Honesty over completeness** — prefer "TBD" over fabricated detail.
 
 When you add a doc:
@@ -105,10 +114,10 @@ These are intentionally undecided. Do not guess; update docs or ask.
 
 | Topic | Status |
 |-------|--------|
-| Tech stack | Static HTML/JS/CSS per helper app (for now) |
+| Tech stack | Static HTML/JS/CSS per helper app; no build step |
 | Control UI | Framework in [`Control_UI.md`](Control_UI.md); reference in `spotsmoke/` |
 | Overlay themes | [`THEMES.md`](THEMES.md); LCD Glass, Sesh Glass |
-| Deployment / hosting | GitHub Pages (repo root) |
+| Deployment / hosting | GitHub Pages (repo root), `https://helpers.seshsofa.nl/` |
 | Shared Control UI module | TBD — extract from Spot Smoke if useful |
 | Authentication / operator roles | TBD |
 
@@ -131,4 +140,4 @@ These are intentionally undecided. Do not guess; update docs or ask.
 
 ---
 
-*Last updated: bootstrap phase. Extend this file as the project grows.*
+*Keep this map synchronized with the repository. Future clankers have enough problems.*

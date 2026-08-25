@@ -1,20 +1,47 @@
 # sesh-helpers
 
-Helper apps for the Sesh Sofa show.
+Browser-source helpers for the Sesh Sofa show, assembled by clankers for meat bags.
 
-> Early bootstrap — see [documentation](docs/README.md) for specs and agent onboarding.
+The apps are static HTML, CSS, and JavaScript. There is no build step: open them from
+the hosted site or serve the repository root with any static web server.
+
+**Hosted site:** <https://helpers.seshsofa.nl/>
 
 ## Projects
 
-| App | Path |
-|-----|------|
-| Spot Smoke | [spotsmoke/](spotsmoke/) |
-| Sesh Banner | [seshbanner/](seshbanner/) |
-| Trick Request Banner | [trbanner/](trbanner/) |
+| App | What it does | Operator notes |
+|-----|--------------|----------------|
+| [Spot Smoke](spotsmoke/) | Configurable smoke emitter for OBS | [Setup and URL parameters](spotsmoke/notes.md) |
+| [Sesh Banner](seshbanner/) | Title/message banner with themes and playlist layouts | [Setup and URL parameters](seshbanner/notes.md) |
+| [Trick Request Banner](trbanner/) | Fixed title/requester/message overlay | [Setup and URL parameters](trbanner/notes.md) |
+
+## Using an overlay in OBS
+
+1. Add a **Browser Source** and use the hosted app URL.
+2. Match the source resolution to the OBS canvas (usually `1920×1080`).
+3. Enable **Shutdown source when not visible** and **Refresh browser when scene becomes active**.
+4. Choose **Interact**, configure the overlay, then use **Copy URL for OBS**.
+5. Paste the copied URL back into the Browser Source properties.
+
+Configuration lives in the URL query string—there is no account, server-side storage,
+or local storage for the meat bags to babysit. `menu=DISABLE` produces the clean OBS
+output; double-click the background to bring the controls back.
+
+## Local development
+
+Serve the repository root rather than opening files directly so browser APIs and
+relative assets behave like production. For example:
+
+```sh
+python -m http.server 8000
+```
+
+Then open <http://localhost:8000/>. No package install or clanker ritual is required.
 
 ## Documentation
 
-[docs/README.md](docs/README.md) — project docs, specs, and the AI agent entry point ([001_CLANKER_INIT.md](docs/001_CLANKER_INIT.md)).
+[docs/README.md](docs/README.md) indexes the implementation contracts and clanker
+onboarding. App-specific operator instructions live beside each app in `notes.md`.
 
 ## License
 

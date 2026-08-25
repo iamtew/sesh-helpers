@@ -1,3 +1,5 @@
+// Sesh Banner runtime. Clanker contract: every persisted edit applies live and
+// rewrites the complete URL that a meat bag can paste into OBS.
 // --- CONFIG ---------------------------------------------------------
 
 const DISPLAY_FONTS = [
@@ -1127,7 +1129,7 @@ for (const toggle of sectionToggles) {
 
 setOpenSection(document.querySelector('[data-section="content"]'));
 
-// --- DRAG (settings-only) ---------------------------------------------
+// --- DRAG (settings-only; banner center follows the pointer) ----------
 
 let dragging = false;
 

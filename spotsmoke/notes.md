@@ -1,80 +1,64 @@
-# Promo / How To Install
+# Spot Smoke — operator notes
 
-Notes and ramblings for the installation documentation.
-
-## Installation:
-- Create OBS Browser Source
-- URL: https://iamtew.github.io/vibes/spotsmoke/
-- Resolution same as your canvas. `1920x1080` is most common.
-- Enable checkboxes. See Checkbox-reference.
-
-## Configuration:
-- Click "Interact" see Menu-reference.
-- Make window bigger if you want
-- Double Click anywhere on page where you want smoke to spawn!
-- Pixel Precision!
-- Configure smoke settings in settings menu!
-- Test smoke with test button!
-- Close settings menu
-
-Hide / unhide your new browser source, smoke will start when it page loads.
-
-## Save Configuration:
-- Make sure browser source is visible.
-- Click "Interact" see Menu-reference.
-- Double click anywhere on screen to open settings menu.
-- Click "Copy URL For OBS".
-- Click "Properties" see Menu-reference.
-- In URL field, paste new URL.
-- Save, close, bingo bango, flip-flop, the party has started! 
-
-# EXTRA SPICY
-
-Here comes the Clanker variation!
-
-# SpotSmoke® 0.2 - Installation & Setup  
-
-----
+OBS Browser Source smoke emitter with precise placement, optional pixelation/glitch
+effects, and URL-only configuration. Built by clankers so meat bags can make smoke
+without a fog machine.
 
 ## Installation
-- Create a **Browser Source** in OBS.  
-- Set the URL to:  
-  **https://iamtew.github.io/vibes/spotsmoke/**  
-- Set the **Resolution** to match your canvas (most common: **1920×1080**).  
-- Enable the two required checkboxes:  
-  - *Shutdown source when not visible*  
-  - *Refresh browser when scene becomes active*  
 
----
+1. Create an OBS **Browser Source**.
+2. Use `https://helpers.seshsofa.nl/spotsmoke/`.
+3. Match the resolution to the OBS canvas (usually `1920×1080`).
+4. Enable **Shutdown source when not visible** and
+   **Refresh browser when scene becomes active**.
+5. Choose **Interact** to configure the source.
 
-## Configuration
-- Click **Interact** to open the control window.  
-- Resize the window if you want more space.  
-- **Double-click anywhere** on page to open the **Settings Menu** to configure smoke behavior.
-- Pick any place on the grid and **double‑click** to place a smoke emitter with pixel‑perfect precision using the *SpotSmoke Laser Guided Crosshair™* 
-- Use the **Test** button to preview your smoke effect.  
-- Close the menu when finished.  
-- Hide/unhide the browser source — smoke begins automatically when the page loads.
+The smoke run starts about 0.8 seconds after the page loads. Hiding and showing a
+source starts a fresh run when OBS reloads it.
 
----
+## Configuration and saving
 
-## Save Your Configuration - To Survive a Refresh!!!
-- Make sure the browser source is **visible**.  
-- Click **Interact** again.  
-- Double‑click anywhere to reopen the settings menu.  
-- Click **Copy URL For OBS** to generate your personalized configuration URL.  
-- Click **Properties**.  
-- Paste the new URL into the **URL field**.  
-- Save and close — **the effect syncs with the lattice, whispering into the *chrome* like a forgotten protocol.**
+- Double-click the background while the menu is open to place the yellow smoke
+  crosshair. The white crosshair follows the pointer.
+- When the menu is hidden, double-click anywhere to reopen it.
+- **Test smoke** starts or stops a preview with the current settings.
+- The ▚ header button toggles a setup-only checkerboard.
+- Background choices are persistent demo backdrops; choose **None** for clean OBS.
+- **Copy URL** copies the current operator URL.
+- **Copy URL for OBS** copies the same configuration with `menu=DISABLE`.
 
+Paste the copied OBS URL into the Browser Source properties. Every control updates the
+address bar immediately; there is no save button, account, or secret clanker vault.
 
-## URL params (clanker cheat sheet)
+## URL parameters
 
-| Param | Default | Notes |
-|-------|---------|-------|
-| `menu` | `ON` | `DISABLE` for clean OBS |
-| `side` | `right` | Settings panel edge |
-| `bg` | `0` | Demo backdrop: `0` None · `1` Session · `2` Linear · `3` Radial |
-| `checkerboard` | `false` | Settings-mode preview only |
+| Parameter | Default | Meaning |
+|-----------|---------|---------|
+| `spotX` / `spotY` | `50` / `70` | Smoke origin as viewport percentages |
+| `duration` | `6` | Seconds to spawn particles (`1`–`60`) |
+| `intensity` | `5` | Spawn rate and opacity (`1`–`10`) |
+| `lifetime` | `4` | Particle lifetime in seconds (`1`–`60`, capped at duration) |
+| `color` | `#d8d8d8` | Six-digit smoke color |
+| `size` | `1` | Overall particle scale (`0.25`–`4`) |
+| `width` | `60` | Horizontal spread in pixels (`0`–`400`) |
+| `turbulence` | `30` | Sway and drift amount (`0`–`100`) |
+| `pixelation` | `false` | Enable pixelated rendering |
+| `pixelSize` | `8` | Pixel cell size (`1`–`32`) |
+| `glitch` | `false` | Enable position jitter and chromatic fringe |
+| `glitchIntensity` | `0` | Jitter distance in pixels (`0`–`40`) |
+| `glitchFrequency` | `2` | Jitter updates per second (`0.5`–`12`) |
+| `glitchFringe` | `0` | Red/blue fringe offset in pixels (`0`–`30`) |
+| `bg` | `0` | Demo backdrop: `0` none, `1` session, `2` linear, `3` radial |
+| `checkerboard` | `false` | Setup-only checkerboard preview |
+| `menu` | `ON` | `DISABLE` hides controls and crosshairs |
+| `side` | `right` | Settings panel edge: `left` or `right` |
 
+Example clean-output URL:
 
+`https://helpers.seshsofa.nl/spotsmoke/?spotX=50&spotY=70&duration=6&intensity=5&menu=DISABLE&bg=0`
+
+## Runtime dependency
+
+The visual color picker loads `@jaames/iro` from jsDelivr. If that CDN is unavailable,
+the picker is hidden but the hex color field still works. The smoke renderer itself
+has no external runtime dependency.

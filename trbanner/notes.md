@@ -1,6 +1,8 @@
 # Trick Request Banner — operator notes
 
-OBS Browser Source overlay: title / user / message banner with fixed layout, fonts, drag positioning, and optional demo backgrounds. Config lives entirely in the URL.
+OBS Browser Source overlay: title / user / message banner with fixed layout, fonts,
+drag positioning, and optional demo backgrounds. Config lives entirely in the URL,
+because clankers enjoy portability and meat bags enjoy not losing settings.
 
 ## Transparent background (OBS)
 
@@ -11,18 +13,21 @@ Page background is **transparent** so the banner composites over your scene. Do 
 
 ## Installation
 
-1. Browser Source → URL → canvas resolution (e.g. `1920×1080`).
+1. Browser Source → URL `https://helpers.seshsofa.nl/trbanner/` → canvas resolution (e.g. `1920×1080`).
 2. Enable *Shutdown when not visible* + *Refresh when scene becomes active*.
 3. Interact → configure live → ✕ close → **Copy URL for OBS** → paste into source URL.
 
 ## Configuration
 
 - Double-click background to open the settings menu when hidden.
-- Drag the banner (settings open only) to set position — saved as `bannerX` / `bannerY`.
+- Drag the banner (settings open only) from any grab point to set its top-left
+  position — saved as `bannerX` / `bannerY`.
 - Banner cannot move when `menu=DISABLE`.
 - Layout is fixed (title + user on the left, message on the right). No Layout section.
 - **Theme** picks the overlay look. LCD Glass is the default; Sesh Glass is also available.
 - Banner grows to fit title, user, and message (no marquee / clipping).
+- Every edit updates the address bar immediately. **Copy URL for OBS** copies that
+  state with `menu=DISABLE`; paste it back into the Browser Source properties.
 
 ## URL params
 
@@ -46,7 +51,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 
 Example:
 
-`trbanner/?title=Trick%20Request%20by:&user=Modney%20Rullen&message=Do%20a%20kickflip!&menu=DISABLE&bg=0`
+`https://helpers.seshsofa.nl/trbanner/?title=Trick%20Request%20by:&user=Modney%20Rullen&message=Do%20a%20kickflip!&menu=DISABLE&bg=0`
 
 ## Background (`bg`)
 

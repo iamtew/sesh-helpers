@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | **Status** | Framework pattern (from Spot Smoke) |
-| **Reference impl** | [`spotsmoke/`](../spotsmoke/) |
+| **Reference impls** | [`spotsmoke/`](../spotsmoke/) (canvas), [`seshbanner/`](../seshbanner/) and [`trbanner/`](../trbanner/) (drag + themes) |
 | **Audience** | Clankers re-implementing this menu |
 
 > High-level only. App-specific controls live in each project's docs/code — not here.
@@ -110,7 +110,9 @@ control event
 
 Operators tweak until it looks right, then Copy. Clipboard must match what they see.
 
-**Persistence:** no localStorage, no server. URL query string = config. OBS Browser Source URL = the file.
+**Persistence:** no `localStorage`, account, or configuration server. The URL query
+string is the complete config, so a meat bag can copy one string and reproduce the
+same overlay.
 
 | Rule | Detail |
 |------|--------|
@@ -124,14 +126,16 @@ Operators tweak until it looks right, then Copy. Clipboard must match what they 
 
 **Minimum params:** `menu` (`DISABLE` = hidden), `side` (`left` \| `right`).
 
-App params: see [`spotsmoke/app.js`](../spotsmoke/app.js) `defaults` + `updateURL()`.
+App params: see each app's `defaults` + `updateURL()` and operator notes:
+[`spotsmoke`](../spotsmoke/notes.md), [`seshbanner`](../seshbanner/notes.md),
+[`trbanner`](../trbanner/notes.md).
 
 ---
 
 ## OBS operator flow
 
 1. Browser Source → URL → canvas resolution.
-2. Enable *Shutdown when not visible* + *Refresh when scene active*.
+2. Enable *Shutdown source when not visible* + *Refresh browser when scene becomes active*.
 3. Interact → double-click open → configure (live) → test → ✕ close.
 4. **Copy URL for OBS** → paste into source URL → save.
 
@@ -151,7 +155,7 @@ If refresh loses settings, live URL sync is broken — fix that first.
 
 ---
 
-## Agent checklist
+## Clanker checklist
 
 - [ ] `#settings-menu` shell: header, accordion, footer
 - [ ] `settingsMode` ON / DISABLE + `menu` URL param
@@ -182,7 +186,7 @@ Copy shell + contracts. Do not copy Spot Smoke's sliders unless the app needs th
 
 ## Decisions
 
-- **Shared CSS/JS module:** Yes if extractable / lightly rewritten for multiple simple webapps.
+- **Shared CSS/JS module:** TBD — extract only when the repeated app code can share one contract cleanly.
 - **Double-click hide:** No. Double-click only shows. Inside the menu, double-click may do something else (e.g. place spot).
 
 ---
@@ -193,6 +197,8 @@ Copy shell + contracts. Do not copy Spot Smoke's sliders unless the app needs th
 - [`spotsmoke/`](../spotsmoke/) — reference impl
 - [`spotsmoke/notes.md`](../spotsmoke/notes.md) — operator notes
 - [`seshbanner/`](../seshbanner/) — banner + layouts (Control UI consumer)
+- [`seshbanner/notes.md`](../seshbanner/notes.md) — Sesh Banner operator contract
 - [`trbanner/`](../trbanner/) — Trick Request Banner (Control UI consumer)
+- [`trbanner/notes.md`](../trbanner/notes.md) — Trick Request operator contract
 - [TYPOGRAPHY.md](TYPOGRAPHY.md)
 - [THEMES.md](THEMES.md)

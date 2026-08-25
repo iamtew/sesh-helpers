@@ -1,6 +1,7 @@
 /**
- * Layout 3 — YouTube playlist extract + ticker formatting.
- * Public playlists via Invidious, with RSS relays as fallback (no API key).
+ * Banner layout=3 — YouTube playlist extraction + ticker formatting.
+ * Public playlists only: try public Invidious instances, then third-party RSS
+ * relays. No API key, but meat bags may see ticker errors when those services nap.
  */
 (function (global) {
   "use strict";
@@ -39,6 +40,7 @@
       : DEFAULT_DELIMITER_ID;
   }
 
+  // Public instances are best-effort and can disappear or rate-limit requests.
   const INVIDIOUS_HOSTS = [
     "https://inv.nadeko.net",
     "https://inv.tux.pizza",
@@ -147,7 +149,8 @@
   }
 
   /**
-   * Fetch playlist title + items. Throws if the playlist cannot be loaded.
+   * Fetch a public playlist's title + items through third-party services.
+   * Returns null for an invalid/empty id; throws when every service fails.
    * @param {string} url
    * @returns {Promise<{ playlistTitle: string, items: { title: string, channel: string }[] }|null>}
    */

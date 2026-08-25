@@ -1,6 +1,8 @@
 # Sesh Banner — operator notes
 
-OBS Browser Source overlay: title/message banner with layouts, fonts, and drag positioning. Config lives entirely in the URL.
+OBS Browser Source overlay: title/message banner with layouts, fonts, drag positioning,
+and an optional public YouTube playlist ticker. Config lives entirely in the URL—one
+less state machine for the meat bags to feed.
 
 ## Transparent background (OBS)
 
@@ -11,14 +13,15 @@ Page background is **transparent** so the banner composites over your scene. Do 
 
 ## Installation
 
-1. Browser Source → URL → canvas resolution (e.g. `1920×1080`).
+1. Browser Source → URL `https://helpers.seshsofa.nl/seshbanner/` → canvas resolution (e.g. `1920×1080`).
 2. Enable *Shutdown when not visible* + *Refresh when scene becomes active*.
 3. Interact → configure live → ✕ close → **Copy URL for OBS** → paste into source URL.
 
 ## Configuration
 
 - Double-click background to open the settings menu when hidden.
-- Drag the banner (settings open only) to set position — saved as `bannerX` / `bannerY`.
+- Drag the banner (settings open only) to set position — its center follows the
+  pointer and is saved as `bannerX` / `bannerY`.
 - Banner cannot move when `menu=DISABLE`.
 - **Theme** section (between Layout and Size) picks the overlay look. LCD Glass is the default; Sesh Glass is also available.
 
@@ -31,6 +34,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `prefix` | Optional playlist prefix (layout 3) | empty |
 | `prefixEnabled` | Show prefix before playlist content | `false` |
 | `prefixAlign` | Prefix text alignment `left` · `center` · `right` | `left` |
+| `nameAlign` | Playlist-name alignment `left` · `center` · `right` | `left` |
 | `prefixFont` | Prefix font index (0–9, layout 3) | `0` |
 | `prefixSize` | Prefix font size (px, 16–96, layout 3) | `38` |
 | `layout` | `1` inline · `2` stacked accent · `3` YouTube playlist | `1` |
@@ -53,7 +57,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 
 Example:
 
-`seshbanner/?title=LIVE&message=Starting%20soon&layout=1&menu=DISABLE&bg=0`
+`https://helpers.seshsofa.nl/seshbanner/?title=LIVE&message=Starting%20soon&layout=1&menu=DISABLE&bg=0`
 
 ## Background (`bg`)
 
@@ -98,3 +102,13 @@ See [`docs/TYPOGRAPHY.md`](../docs/TYPOGRAPHY.md). Title and message pickers sha
 **Combined index (`titleFont` / `messageFont`):** `0` Monster Chiller · `1` YouMurderer BB · `2` Streetmark · `3` Germania One · `4` Konstruktor · `5` Better VCR · `6` Flapdoodle · `7` Londrina Solid · `8` Pill Gothic 600mg · `9` Segoe UI
 
 Legacy URLs that still use font names are accepted on load, then rewritten to indices.
+
+## Playlist data
+
+Layout 3 accepts a public YouTube playlist URL or bare playlist ID. The clanker first
+tries a small list of public Invidious instances, then YouTube's public RSS feed
+through feed-to-JSON relays. No API key is required.
+
+These are third-party network services and may be unavailable or rate-limited. The
+banner reports fetch errors in the ticker; private or unlisted playlists are not
+guaranteed to load. Regular text layouts do not use these services.
