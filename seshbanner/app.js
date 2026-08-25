@@ -31,6 +31,7 @@ const defaults = {
   prefix: "",
   prefixEnabled: false,
   prefixAlign: "left",
+  nameAlign: "left",
   layout: "1",
   theme: "lcd-glass",
   titleFont: "Monster Chiller",
@@ -119,9 +120,21 @@ function isPrefixActive() {
   return state.prefixEnabled && String(state.prefix || "").trim().length > 0;
 }
 
-function normalizePrefixAlign(value) {
+function normalizeTextAlign(value, fallback) {
   const align = String(value || "");
-  return align === "left" || align === "center" || align === "right" ? align : defaults.prefixAlign;
+  return align === "left" || align === "center" || align === "right" ? align : fallback;
+}
+
+function normalizePrefixAlign(value) {
+  return normalizeTextAlign(value, defaults.prefixAlign);
+}
+
+function normalizeNameAlign(value) {
+  return normalizeTextAlign(value, defaults.nameAlign);
+}
+
+function isNameAlignLayout() {
+  return state.playlistLayout !== "4";
 }
 
 function normalizeBg(value) {
@@ -203,6 +216,7 @@ let state = {
   prefix: getParam("prefix", defaults.prefix),
   prefixEnabled: getBooleanParam("prefixEnabled", defaults.prefixEnabled),
   prefixAlign: normalizePrefixAlign(getParam("prefixAlign", defaults.prefixAlign)),
+  nameAlign: normalizeNameAlign(getParam("nameAlign", defaults.nameAlign)),
   layout: normalizeLayout(getParam("layout", defaults.layout)),
   theme: normalizeTheme(getParam("theme", defaults.theme)),
   titleFont: resolveFontParam(getParam("titleFont", "0"), ALL_FONTS, defaults.titleFont),
@@ -260,6 +274,8 @@ const prefixInput = document.getElementById("prefix-input");
 const prefixInputGroup = document.getElementById("prefix-input-group");
 const prefixAlignGroup = document.getElementById("prefix-align-group");
 const prefixAlignButtons = document.querySelectorAll("[data-prefix-align]");
+const nameAlignGroup = document.getElementById("name-align-group");
+const nameAlignButtons = document.querySelectorAll("[data-name-align]");
 const prefixFontGroup = document.getElementById("prefix-font-group");
 const positionValue = document.getElementById("position-value");
 const playlistInput = document.getElementById("playlist-input");
@@ -635,6 +651,7 @@ function updateURL() {
   params.set("prefix", state.prefix);
   params.set("prefixEnabled", String(state.prefixEnabled));
   params.set("prefixAlign", state.prefixAlign);
+  params.set("nameAlign", state.nameAlign);
   params.set("prefixFont", String(fontIndex(state.prefixFont, ALL_FONTS)));
   params.set("prefixSize", String(state.prefixSize));
   history.replaceState({}, "", "?" + params.toString());
@@ -763,6 +780,12 @@ function applyPlaylistControls() {
   if (playlistDelimiterCustomGroup) {
     playlistDelimiterCustomGroup.classList.toggle("is-disabled", !isCustom);
   }
+  if (nameAlignGroup) {
+    nameAlignGroup.hidden = !isPlaylistLayout(state.layout) || !isNameAlignLayout();
+  }
+  for (const button of nameAlignButtons) {
+    button.classList.toggle("is-active", button.dataset.nameAlign === state.nameAlign);
+  }
 }
 
 function applyFontControls() {
@@ -890,6 +913,7 @@ function renderMarqueeScrolling(parts) {
 
 function applyPlaylistBanner() {
   banner.dataset.playlistLayout = state.playlistLayout;
+  banner.dataset.nameAlign = state.nameAlign;
   applyPlaylistPrefix();
   playlistName.textContent = "Playlist title";
 
@@ -1214,6 +1238,15 @@ for (const button of prefixAlignButtons) {
   });
 }
 
+for (const button of nameAlignButtons) {
+  button.addEventListener("click", () => {
+    state.nameAlign = normalizeNameAlign(button.dataset.nameAlign);
+    applyPlaylistControls();
+    applyPlaylistBanner();
+    updateURL();
+  });
+}
+
 playlistInput.addEventListener("input", e => {
   state.playlist = e.target.value;
   if (currentListId() !== loadedListId) {
@@ -1320,6 +1353,7 @@ for (const radio of playlistLayoutRadios) {
   radio.addEventListener("change", e => {
     if (!e.target.checked) return;
     state.playlistLayout = normalizePlaylistLayout(e.target.value);
+    applyPlaylistControls();
     applyPlaylistBanner();
     updateURL();
   });

@@ -414,6 +414,14 @@ body.settings-mode #banner.dragging {
   flex-shrink: 0;
 }
 
+#banner[data-layout="3"][data-playlist-layout="2"] .playlist-name,
+#banner[data-layout="3"][data-playlist-layout="3"] .playlist-name {
+  overflow-wrap: normal;
+  word-break: normal;
+  flex-shrink: 0;
+  max-width: 45%;
+}
+
 /* Playlist layout 4 — ticker only */
 #banner[data-layout="3"][data-playlist-layout="4"] .playlist-main {
   display: flex;
@@ -610,7 +618,8 @@ body.settings-mode #banner.dragging {
 }
 
 #prefix-font-group[hidden],
-#prefix-align-group[hidden] {
+#prefix-align-group[hidden],
+#name-align-group[hidden] {
   display: none;
 }
 
@@ -623,6 +632,18 @@ body.settings-mode #banner.dragging {
 }
 
 #banner[data-prefix-align="right"] .playlist-prefix {
+  text-align: right;
+}
+
+#banner[data-name-align="left"] .playlist-name {
+  text-align: left;
+}
+
+#banner[data-name-align="center"] .playlist-name {
+  text-align: center;
+}
+
+#banner[data-name-align="right"] .playlist-name {
   text-align: right;
 }
 
