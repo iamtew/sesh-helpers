@@ -2,204 +2,186 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Framework pattern (extracted from Spot Smoke) |
+| **Status** | Framework pattern (from Spot Smoke) |
 | **Reference impl** | [`spotsmoke/`](../spotsmoke/) |
-| **Audience** | Clankers re-implementing this menu on new Sesh Helpers apps |
+| **Audience** | Clankers re-implementing this menu |
 
-> High-level notes only. App-specific settings (sliders, toggles, etc.) belong in each project's own docs or code — not here.
+> High-level only. App-specific controls live in each project's docs/code — not here.
 
 ---
 
 ## What this is
 
-A **reusable settings-menu pattern** for full-screen helper webapps — typically OBS Browser Sources with a transparent background. Operators open a panel, tweak settings, preview the effect, copy a URL, and hide the panel for clean broadcast output.
+Reusable settings-menu pattern for full-screen helper webapps (usually OBS Browser Sources, transparent bg). Operators open a panel, tweak live, copy a URL, hide the panel for clean output.
 
-Copy this framework per project. Swap the title, sections, and controls; keep the behavior contract.
+Copy the **contracts** below. Swap title, sections, and controls per app.
 
 ---
 
 ## Visibility contract
 
-Two modes, stored in app state as `settingsMode`:
+`settingsMode`: `ON` | `DISABLE`. URL param: `menu=DISABLE` hides; anything else (or omit) = show.
 
-| Mode | Menu | Operator overlays | Broadcast output |
-|------|------|-------------------|------------------|
-| `ON` | Visible | Shown (crosshairs, guides, etc.) | Panel + guides visible in interact view |
-| `DISABLE` | Hidden | Hidden | Effect only — clean for OBS |
+| Mode | Menu | Operator overlays | OBS output |
+|------|------|-------------------|------------|
+| `ON` | Visible | Shown | Panel + guides in Interact |
+| `DISABLE` | Hidden | Hidden | Effect only |
 
-**Persist as URL param:** `menu=DISABLE` hides; omit or any other value = show.
-
-### Input map
-
-| Input | When menu hidden | When menu visible |
-|-------|------------------|-------------------|
-| **Double-click** background | Show menu | App-specific *(Spot Smoke: place spot — see reference)* |
-| **✕ Close** (header) | — | Hide menu |
+| Input | Menu hidden | Menu visible |
+|-------|-------------|--------------|
+| **Double-click** background | Show menu | App-specific (Spot Smoke: place spot) |
+| **✕ Close** | — | Hide menu |
 | Load `?menu=DISABLE` | Start hidden | — |
-| **Copy URL for OBS** | — | Copy full config URL with `menu=DISABLE` |
+| **Copy URL for OBS** | — | Copy config URL with `menu=DISABLE` |
 
-**Rule for clankers:** double-click always reaches the menu when hidden. Hide is always explicit (close button or OBS URL). Clicks inside `#settings-menu` never propagate to the background handler.
-
-**DOM hooks:**
-
-- `#settings-menu.open` — panel visible
-- `body.settings-mode` — app is in operator/configure mode (enable overlays, preview backdrops, etc.)
+- Double-click always opens when hidden. Hide only via ✕ or OBS URL.
+- Clicks inside `#settings-menu` never hit the background handler.
+- Hooks: `#settings-menu.open`, `body.settings-mode`.
 
 ---
 
 ## Shell layout
 
-Fixed panel, one screen edge. ~300px wide, scrollable, dark glass + blur.
+Fixed panel, one edge, ~300px, scrollable, dark glass + blur.
 
 ```text
 ┌──────────────────────────────┐
-│ [App title]    [utils…][✕]  │  header
-│ Hint text (optional)         │
-│ ▼ Section A                  │  accordion (one open)
+│ [App title]    [utils…][✕]  │
+│ Hint (optional)              │
+│ ▼ Section A   (one open)     │
 │   …controls…                 │
 │ ▶ Section B                  │
-│ ▶ Section C                  │
-│ [ Primary action ]           │  footer actions
-│ [ Reset ]                    │
+│ [ Test ] [ Reset ]           │
 │ [ Copy URL ] [ Copy for OBS ]│
 └──────────────────────────────┘
 ```
 
-### Header
-
-| Slot | Required | Purpose |
-|------|----------|---------|
+| Slot | Required | Notes |
+|------|----------|-------|
 | Title | yes | App name |
-| Utility buttons | optional | Help, preview toggles, flip side — app-specific |
-| ✕ Close | yes | Hide menu (`menu=DISABLE`) |
+| Utils | optional | Help, checkerboard, flip side… |
+| ✕ Close | yes | Sets `menu=DISABLE` |
+| Accordion | yes | One section open; `aria-expanded` + `hidden` |
+| Flip side | optional | `side=left\|right` in URL |
 
-**Flip side:** optional `side=left|right` — moves panel to other edge. Persist in URL.
+**Controls:** range (label + slider + value, on `input`), toggle (+ disable dependents), color (picker + hex sync), buttons (primary / destructive / small).
 
-### Body — accordion sections
-
-- One section expanded at a time.
-- Toggle buttons with `aria-expanded` + `hidden` panels.
-- Each section groups related controls.
-
-**Control types to reuse:**
-
-| Type | Pattern |
-|------|---------|
-| Range slider | Label + slider + live value readout; update on `input` |
-| Toggle | Checkbox row; disable dependent sliders when off |
-| Color | Picker + hex field, kept in sync |
-| Button | Full-width; primary / destructive / small variants |
-
-All controls update state **live** — no Save/Cancel batch.
-
-### Footer actions
+### Footer
 
 | Button | Required | Behavior |
 |--------|----------|----------|
-| Test / Preview | recommended | Trigger effect preview (runtime only, not persisted) |
-| Reset all | recommended | Restore defaults, sync UI, rewrite URL |
-| Copy URL | yes | Clipboard ← current `location.href` |
-| Copy URL for OBS | yes | Clipboard ← current URL + `menu=DISABLE` |
+| Test / Preview | recommended | Runtime only — not URL-persisted |
+| Reset all | recommended | Defaults → apply live → rewrite URL |
+| Copy URL | yes | Clipboard ← `location.href` as-is |
+| Copy URL for OBS | yes | Clone URL → set `menu=DISABLE` → copy |
+
+Copy buttons **only** read the address bar. They never assemble params. Stale URL = broken OBS save.
 
 ---
 
-## State and persistence
+## Live update contract — IMPERATIVE
 
-**No localStorage. No server.** Config lives in URL query params.
+On **every** setting change, do **both** in the **same** handler. No Save. No reload. No “export later.”
+
+1. **Page live** — effect / canvas / overlays update immediately.
+2. **URL live** — full query string rewritten via `history.replaceState` so `location.href` matches state.
 
 ```text
-on change → update state object → history.replaceState(?params)
-on load   → parse URLSearchParams → hydrate state → sync UI
+control event
+  → update state
+  → apply to page (effect, labels, overlays)
+  → write ALL persisted params → history.replaceState
 ```
 
-Every persisted setting gets a URL param. Booleans as `"true"` / `"false"`. Keep param names short and stable — OBS URLs are the config file.
+| DO | DO NOT |
+|----|--------|
+| Fire on `input` while dragging | Wait for Save, blur, or menu close |
+| Apply to the running render path now | Defer visuals until refresh |
+| Rewrite the **full** param set each time | Leave URL stale until Copy |
+| Keep readouts synced | Treat URL as a separate export step |
 
-Minimum params every app should support:
+Operators tweak until it looks right, then Copy. Clipboard must match what they see.
 
-| Param | Purpose |
-|-------|---------|
-| `menu` | `DISABLE` = hidden menu |
-| `side` | `left` \| `right` panel position |
+**Persistence:** no localStorage, no server. URL query string = config. OBS Browser Source URL = the file.
 
-App-specific params are defined per project. See [`spotsmoke/app.js`](../spotsmoke/app.js) `defaults` for one example.
+| Rule | Detail |
+|------|--------|
+| Every persisted setting | Has a URL query param |
+| On load | Parse params → hydrate state → sync UI → apply to page; missing → defaults |
+| Runtime-only (e.g. Test) | No URL param; still update page live |
+| Booleans | `"true"` / `"false"` |
+| Param names | Short, stable |
+| Copy URL | `navigator.clipboard.writeText(location.href)` |
+| Copy URL for OBS | Clone → `menu=DISABLE` → copy |
+
+**Minimum params:** `menu` (`DISABLE` = hidden), `side` (`left` \| `right`).
+
+App params: see [`spotsmoke/app.js`](../spotsmoke/app.js) `defaults` + `updateURL()`.
 
 ---
 
 ## OBS operator flow
 
-1. Browser Source → set URL → match canvas resolution.
-2. Enable *Shutdown source when not visible* + *Refresh browser when scene becomes active*.
-3. **Interact** → double-click to open menu → configure → test → close with ✕.
-4. **Copy URL for OBS** → paste into Browser Source URL → save. Config survives refresh.
+1. Browser Source → URL → canvas resolution.
+2. Enable *Shutdown when not visible* + *Refresh when scene active*.
+3. Interact → double-click open → configure (live) → test → ✕ close.
+4. **Copy URL for OBS** → paste into source URL → save.
 
-Effect runs independently of menu visibility.
+If refresh loses settings, live URL sync is broken — fix that first.
 
 ---
 
 ## Visual language
 
-Shared look across Sesh Helpers apps:
-
 | Token | Value |
 |-------|-------|
-| Accent | `#0ff` cyan |
+| Accent | `#0ff` |
 | Reset / destructive | `#f40` |
-| Panel bg | `rgba(10, 10, 20, 0.95)` + backdrop blur |
-| Title / action font | `Better VCR` or project monospace |
-| Page background | `transparent` (OBS overlay) |
-
-Range rows: label column + slider + bold value. Buttons: bordered, uppercase, accent-colored.
+| Panel bg | `rgba(10, 10, 20, 0.95)` + blur |
+| Title / actions | `Better VCR` (see [`TYPOGRAPHY.md`](TYPOGRAPHY.md)) |
+| Page bg | `transparent` |
 
 ---
 
-## Agent checklist — new helper app
+## Agent checklist
 
-When implementing Control UI on a new project:
-
-- [ ] Add `#settings-menu` panel with header, accordion sections, footer actions
-- [ ] Implement `settingsMode` ON / DISABLE with `menu` URL param
-- [ ] Double-click background shows menu when hidden; ignore clicks inside panel
-- [ ] ✕ close hides menu and updates URL
-- [ ] All settings → state object → URL params via `replaceState`
-- [ ] Load hydrates state from URL on init
-- [ ] Copy URL + Copy URL for OBS buttons
-- [ ] `body.settings-mode` toggles operator overlays
-- [ ] Transparent page bg; effect canvas separate from menu DOM
-- [ ] Document app-specific params and sections in that project's docs — not here
+- [ ] `#settings-menu` shell: header, accordion, footer
+- [ ] `settingsMode` ON / DISABLE + `menu` URL param
+- [ ] Double-click shows menu when hidden; ignore clicks inside panel
+- [ ] ✕ hides menu and updates URL
+- [ ] **Live page:** every setting change updates the effect immediately
+- [ ] **Live URL:** every setting change rewrites full query via `replaceState`
+- [ ] Every persisted setting ↔ URL param; load hydrates from URL
+- [ ] Copy URL = `location.href`; Copy for OBS = same + `menu=DISABLE`
+- [ ] Verify: drag slider → effect changes → URL changes → copy → new tab matches
+- [ ] `body.settings-mode` for overlays; transparent page bg
+- [ ] Document app-specific params in that project's docs — not here
 
 ---
 
 ## App-specific extensions
 
-Optional hooks beyond the shared shell — define per app:
-
-| Extension | Example (Spot Smoke) |
-|-----------|---------------------|
+| Extension | Spot Smoke example |
+|-----------|-------------------|
 | Canvas interaction | Double-click places spot when menu open |
-| Operator overlay | Crosshair canvas, only in `settings-mode` |
-| Preview backdrop | Checkerboard toggle for transparency check |
-| Help modal | Full-screen setup image |
+| Operator overlay | Crosshairs only in `settings-mode` |
+| Preview backdrop | Checkerboard toggle |
+| Help modal | Setup image |
 
-Do not copy Spot Smoke's sliders into other apps unless the app needs them. Copy the **shell and contracts** above.
+Copy shell + contracts. Do not copy Spot Smoke's sliders unless the app needs them.
 
 ---
 
-## Open questions
+## Decisions
 
-- [Y] Extract shared CSS/JS module from Spot Smoke?
-
-If you can extract atomic code, or slightly rewrite, for making compatible with iomplementation across multiple "simple web apps" let's do it. 
-
-- [Y] Should double-click toggle hide as well as show?
-
-No, double-click will only show the menu. When inside the menu, double-click might be used for something else.
-
-
+- **Shared CSS/JS module:** Yes if extractable / lightly rewritten for multiple simple webapps.
+- **Double-click hide:** No. Double-click only shows. Inside the menu, double-click may do something else (e.g. place spot).
 
 ---
 
 ## Related
 
-- [001_CLANKER_INIT.md](001_CLANKER_INIT.md) — project entry point
-- [`spotsmoke/`](../spotsmoke/) — reference implementation (read the code for concrete defaults)
-- [`spotsmoke/notes.md`](../spotsmoke/notes.md) — operator install ramblings
+- [001_CLANKER_INIT.md](001_CLANKER_INIT.md)
+- [`spotsmoke/`](../spotsmoke/) — reference impl
+- [`spotsmoke/notes.md`](../spotsmoke/notes.md) — operator notes
+- [TYPOGRAPHY.md](TYPOGRAPHY.md)
