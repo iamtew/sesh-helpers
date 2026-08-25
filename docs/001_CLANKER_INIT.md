@@ -42,6 +42,7 @@ sesh-helpers/
 │   └── seshhelpers.png       # Project logo / brand asset
 ├── spotsmoke/                # Spot Smoke helper app (OBS Browser Source)
 ├── seshbanner/               # Sesh Banner helper app (OBS Browser Source)
+├── trbanner/                 # Trick Request Banner (OBS Browser Source)
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   └── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
 ├── docs/
@@ -58,6 +59,7 @@ sesh-helpers/
 | `img/seshhelpers.png` | **Exists** | Brand reference for UI styling |
 | `spotsmoke/` | **Exists** | First helper app; Control UI reference impl |
 | `seshbanner/` | **Exists** | Banner overlay; Control UI + layouts |
+| `trbanner/` | **Exists** | Trick Request Banner; fixed layout + demo backgrounds |
 | `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
 | Build tooling / CI | **Not yet** | TBD |
 | Deployment | GitHub Pages | Repo root is the webroot |
@@ -122,6 +124,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 | Landing page | [`index.html`](../index.html) |
 | Spot Smoke | [`spotsmoke/`](../spotsmoke/) |
 | Sesh Banner | [`seshbanner/`](../seshbanner/) |
+| Trick Request Banner | [`trbanner/`](../trbanner/) |
 | Logo asset | [`img/seshhelpers.png`](../img/seshhelpers.png) |
 | Root README | [`README.md`](../README.md) |
 

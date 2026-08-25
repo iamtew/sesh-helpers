@@ -59,4 +59,5 @@ Frosted navy-cyan glass, ice-blue text, magenta/cyan chromatic pulse. Extracted 
 
 - [Control_UI.md](Control_UI.md)
 - [`seshbanner/`](../seshbanner/) — first consumer
+- [`trbanner/`](../trbanner/) — Trick Request Banner consumer
 - [`tmp/trglass.html`](../tmp/trglass.html) — LCD Glass source

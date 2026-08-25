@@ -10,6 +10,7 @@ Helper apps for the Sesh Sofa show.
 |-----|------|
 | Spot Smoke | [spotsmoke/](spotsmoke/) |
 | Sesh Banner | [seshbanner/](seshbanner/) |
+| Trick Request Banner | [trbanner/](trbanner/) |
 
 ## Documentation
 

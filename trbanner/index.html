@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trick Request Banner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="../themes/lcd-glass/theme.css" />
+</head>
+<body>
+  <div id="demo-backdrop" data-bg="0" aria-hidden="true"></div>
+  <div id="preview-backdrop"></div>
+
+  <div id="banner" aria-live="polite">
+    <div class="banner-content theme-panel">
+      <div class="banner-left">
+        <div class="banner-title" id="title-text"></div>
+        <div class="banner-user" id="user-text"></div>
+      </div>
+      <div class="banner-accent" aria-hidden="true"></div>
+      <div class="banner-message" id="message-text"></div>
+    </div>
+  </div>
+
+  <div id="settings-menu">
+    <div class="menu-header">
+      <h2>Trick Request</h2>
+      <div class="menu-header-buttons">
+        <button id="checkerboard-button" aria-label="Toggle checkerboard pattern" aria-pressed="false">▚</button>
+        <button id="flip-side-button" aria-label="Move menu to other side">⇄</button>
+        <button id="close-menu-button" aria-label="Close settings">✕</button>
+      </div>
+    </div>
+
+    <p class="hint">Drag the banner to reposition. Double-click background to reopen this menu.</p>
+
+    <div class="settings-section" data-section="content">
+      <button id="content-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="content-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Content</button>
+      <div id="content-controls" class="section-panel">
+        <div class="setting-group">
+          <label for="title-input"><span>Title</span></label>
+          <input id="title-input" type="text" spellcheck="false" autocomplete="off" />
+        </div>
+        <div class="setting-group">
+          <label for="user-input"><span>User</span></label>
+          <input id="user-input" type="text" spellcheck="false" autocomplete="off" />
+        </div>
+        <div class="setting-group">
+          <label for="message-input"><span>Message</span></label>
+          <input id="message-input" type="text" spellcheck="false" autocomplete="off" />
+        </div>
+        <div class="setting-group">
+          <div class="setting-inline-reset">
+            <div class="position-readout">
+              Position <span id="position-value">2% / 4%</span>
+            </div>
+            <button type="button" class="reset-param" data-reset="position" aria-label="Reset position" title="Reset position">↺</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="theme">
+      <button id="theme-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="theme-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Theme</button>
+      <div id="theme-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <label for="theme-select"><span>Theme</span></label>
+          <select id="theme-select"></select>
+          <p class="field-hint" id="theme-description"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="background">
+      <button id="background-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="background-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Background</button>
+      <div id="background-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <label class="bg-option">
+            <input type="radio" name="bg" value="0" />
+            <span>None</span>
+          </label>
+          <label class="bg-option">
+            <input type="radio" name="bg" value="1" />
+            <span>Session</span>
+          </label>
+          <label class="bg-option">
+            <input type="radio" name="bg" value="2" />
+            <span>Linear Gradient</span>
+          </label>
+          <label class="bg-option">
+            <input type="radio" name="bg" value="3" />
+            <span>Radial Gradient</span>
+          </label>
+          <p class="field-hint">Persistent demo backdrop (opacity 0.75). Independent of the header ▚ preview.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="size">
+      <button id="size-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="size-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Size</button>
+      <div id="size-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="width-slider"><span>Width</span></label>
+              </div>
+              <div class="range-row">
+                <input id="width-slider" type="range" min="25" max="1000" step="5" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="width" aria-label="Reset width" title="Reset width">↺</button>
+              <span class="value-label" id="width-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="height-slider"><span>Height</span></label>
+              </div>
+              <div class="range-row">
+                <input id="height-slider" type="range" min="25" max="1000" step="5" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="height" aria-label="Reset height" title="Reset height">↺</button>
+              <span class="value-label" id="height-value"></span>
+            </div>
+          </div>
+          <p class="field-hint">Sizes the banner box. Type scales with the smaller axis so fonts never stretch.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="fonts">
+      <button id="fonts-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="fonts-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Fonts</button>
+      <div id="fonts-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <div class="setting-inline-reset">
+            <span class="field-label" id="title-font-label">Title font</span>
+            <button type="button" class="reset-param" data-reset="titleFont" aria-label="Reset title font" title="Reset title font">↺</button>
+          </div>
+          <div class="font-picker" id="title-font-picker" data-font-role="title"></div>
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="title-size-slider"><span>Title size</span></label>
+              </div>
+              <div class="range-row">
+                <input id="title-size-slider" type="range" min="12" max="96" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="titleSize" aria-label="Reset title size" title="Reset title size">↺</button>
+              <span class="value-label" id="title-size-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="setting-inline-reset">
+            <span class="field-label" id="user-font-label">User font</span>
+            <button type="button" class="reset-param" data-reset="userFont" aria-label="Reset user font" title="Reset user font">↺</button>
+          </div>
+          <div class="font-picker" id="user-font-picker" data-font-role="user"></div>
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="user-size-slider"><span>User size</span></label>
+              </div>
+              <div class="range-row">
+                <input id="user-size-slider" type="range" min="12" max="96" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="userSize" aria-label="Reset user size" title="Reset user size">↺</button>
+              <span class="value-label" id="user-size-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="setting-inline-reset">
+            <span class="field-label" id="message-font-label">Message font</span>
+            <button type="button" class="reset-param" data-reset="messageFont" aria-label="Reset message font" title="Reset message font">↺</button>
+          </div>
+          <div class="font-picker" id="message-font-picker" data-font-role="message"></div>
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="message-size-slider"><span>Message size</span></label>
+              </div>
+              <div class="range-row">
+                <input id="message-size-slider" type="range" min="12" max="96" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="messageSize" aria-label="Reset message size" title="Reset message size">↺</button>
+              <span class="value-label" id="message-size-value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="reset-button">Reset all</button>
+
+    <div class="setting-group copy-row">
+      <button id="copy-url-button" class="small-button">Copy URL</button>
+      <button id="copy-url-obs-button" class="small-button">Copy URL for OBS</button>
+    </div>
+  </div>
+
+  <script src="../themes/lcd-glass/theme.js"></script>
+  <script src="app.js?v=3"></script>
+</body>
+</html>
