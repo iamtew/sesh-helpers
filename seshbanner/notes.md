@@ -28,16 +28,24 @@ Page background is **transparent** so the banner composites over your scene. Do 
 |-------|---------|---------|
 | `title` | Banner title | `TITLE` |
 | `message` | Banner message | `Message` |
-| `layout` | `1` inline · `2` playlist stub · `3` stacked accent | `1` |
+| `prefix` | Optional playlist prefix (layout 3) | empty |
+| `prefixEnabled` | Show prefix before playlist content | `false` |
+| `prefixAlign` | Prefix text alignment `left` · `center` · `right` | `left` |
+| `prefixFont` | Prefix font index (0–9, layout 3) | `0` |
+| `prefixSize` | Prefix font size (px, 16–96, layout 3) | `38` |
+| `layout` | `1` inline · `2` stacked accent · `3` YouTube playlist | `1` |
 | `theme` | Overlay theme id (`lcd-glass` · `sesh-glass`) | `lcd-glass` |
-| `titleFont` | Display font **index** (0–4) | `0` = Monster Chiller |
-| `messageFont` | Regular font **index** (0–4) | `0` = Better VCR |
+| `titleFont` / `messageFont` | Font **index** in combined list (0–9) | title `0` Monster Chiller · message `5` Better VCR |
 | `titleSize` | Title font size (px, 16–96) | `38` |
 | `messageSize` | Message font size (px, 12–64) | `18` |
 | `width` | Banner width size (%, 25–1000) | `100` |
 | `height` | Banner height size (%, 25–1000) | `100` |
 | `bannerX` / `bannerY` | Position (% of viewport) | `50` / `85` |
-| `playlist` | YouTube playlist URL (layout 2) | empty |
+| `playlist` | YouTube playlist URL or id (layout 3) | empty |
+| `playlistLayout` | Ticker layout `1`–`4` (layout 3) | `1` |
+| `playlistDelimiter` | Ticker item delimiter `0`–`5` (layout 3) | `0` (bullet) |
+| `playlistDelimiterCustom` | Custom delimiter text (1–5 chars, when `5`) | `•` |
+| `marqueeSpeed` | Ticker scroll speed `25`–`400`% (layout 3) | `100` |
 | `menu` | `ON` or `DISABLE` | `ON` |
 | `side` | Settings panel `left` \| `right` | `right` |
 | `bg` | Demo background `0`–`3` | `0` (None) |
@@ -68,8 +76,12 @@ See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from layout 
 ## Layouts
 
 1. **Inline** — `title | message` with a font-colored bar delimiter between them (chromatic fringe from the active theme).
-2. YouTube playlist — scaffolding only (`playlist.js`); paste URL for later extract.
-3. **Stacked accent** — title over message, left font-colored accent bar (lower-third feel).
+2. **Stacked accent** — title over message, left font-colored accent bar (lower-third feel).
+3. **YouTube playlist** — public playlist extract (`playlist.js`) with a left-scrolling ticker. Optional **Prefix** in Content (`prefix` + `prefixEnabled`) appears as `Prefix | …` before all sub-layouts. Sub-layouts (`playlistLayout`):
+   1. Playlist name over `title by channel` ticker
+   2. Playlist name | channel ticker
+   3. Playlist name | title ticker
+   4. `title by channel` ticker (no name)
 
 ## Size
 
@@ -81,10 +93,8 @@ Per-control **↺** resets that setting to its default (sliders, fonts, position
 
 ## Fonts
 
-See [`docs/TYPOGRAPHY.md`](../docs/TYPOGRAPHY.md). Title select = display fonts; message select = regular fonts. Size sliders sit under each font picker and persist as `titleSize` / `messageSize`.
+See [`docs/TYPOGRAPHY.md`](../docs/TYPOGRAPHY.md). Title and message pickers share one combined list (Display + Regular). In playlist layout, labels become **Playlist name** / **Ticker**; **Prefix font** appears in Fonts when prefix is enabled. Size sliders sit under each font picker and persist as `titleSize` / `messageSize`.
 
-**Display (`titleFont` index):** `0` Monster Chiller · `1` YouMurderer BB · `2` Streetmark · `3` Germania One · `4` Konstruktor
-
-**Regular (`messageFont` index):** `0` Better VCR · `1` Flapdoodle · `2` Londrina Solid · `3` Pill Gothic 600mg · `4` Segoe UI
+**Combined index (`titleFont` / `messageFont`):** `0` Monster Chiller · `1` YouMurderer BB · `2` Streetmark · `3` Germania One · `4` Konstruktor · `5` Better VCR · `6` Flapdoodle · `7` Londrina Solid · `8` Pill Gothic 600mg · `9` Segoe UI
 
 Legacy URLs that still use font names are accepted on load, then rewritten to indices.

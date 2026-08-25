@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Sesh Banner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css?v=13" />
+  <link rel="stylesheet" href="style.css?v=21" />
   <link rel="stylesheet" href="../themes/lcd-glass/theme.css" />
   <link rel="stylesheet" href="../themes/sesh-glass/theme.css" />
 </head>
@@ -12,20 +12,26 @@
   <div id="demo-backdrop" data-bg="0" aria-hidden="true"></div>
   <div id="preview-backdrop"></div>
 
-  <div id="banner" data-layout="1" aria-live="polite">
-    <!-- Layout 1 & 3: title + message -->
+  <div id="banner" data-layout="1" data-playlist-layout="1" aria-live="polite">
+    <!-- Layout 1 & 2: title + message -->
     <div class="banner-content theme-panel banner-text-layout">
       <div class="banner-title"></div>
       <div class="banner-accent" aria-hidden="true"></div>
       <div class="banner-message"></div>
     </div>
 
-    <!-- Layout 2: YouTube playlist scaffolding (future work) -->
+    <!-- Layout 3: YouTube playlist ticker -->
     <div class="banner-content theme-panel banner-playlist-layout" hidden>
-      <div class="playlist-thumb" aria-hidden="true"></div>
-      <div class="playlist-copy">
-        <div class="playlist-title">Playlist title</div>
-        <div class="playlist-meta">0 videos · scaffolding</div>
+      <div class="playlist-prefix-block" hidden>
+        <div class="playlist-prefix"></div>
+        <div class="banner-accent playlist-prefix-accent" aria-hidden="true"></div>
+      </div>
+      <div class="playlist-main">
+        <div class="playlist-name">Playlist title</div>
+        <div class="banner-accent playlist-main-accent" aria-hidden="true"></div>
+        <div class="playlist-marquee">
+          <div class="playlist-marquee-track is-static">Paste a playlist URL</div>
+        </div>
       </div>
     </div>
   </div>
@@ -45,13 +51,35 @@
     <div class="settings-section" data-section="content">
       <button id="content-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="content-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Content</button>
       <div id="content-controls" class="section-panel">
-        <div class="setting-group">
-          <label for="title-input"><span>Title</span></label>
-          <input id="title-input" type="text" spellcheck="false" autocomplete="off" />
+        <div id="content-text-fields">
+          <div class="setting-group">
+            <label for="title-input"><span>Title</span></label>
+            <input id="title-input" type="text" spellcheck="false" autocomplete="off" />
+          </div>
+          <div class="setting-group">
+            <label for="message-input"><span>Message</span></label>
+            <input id="message-input" type="text" spellcheck="false" autocomplete="off" />
+          </div>
         </div>
-        <div class="setting-group">
-          <label for="message-input"><span>Message</span></label>
-          <input id="message-input" type="text" spellcheck="false" autocomplete="off" />
+        <div id="content-prefix-fields" hidden>
+          <div class="setting-group">
+            <label class="layout-option">
+              <input type="checkbox" id="prefix-enabled" />
+              <span>Enable prefix</span>
+            </label>
+          </div>
+          <div class="setting-group" id="prefix-input-group">
+            <label for="prefix-input"><span>Prefix</span></label>
+            <input id="prefix-input" type="text" spellcheck="false" autocomplete="off" disabled />
+          </div>
+          <div class="setting-group" id="prefix-align-group" hidden>
+            <span class="field-label">Prefix alignment</span>
+            <div class="align-button-row">
+              <button type="button" class="small-button align-button" data-prefix-align="left">Left</button>
+              <button type="button" class="small-button align-button" data-prefix-align="center">Center</button>
+              <button type="button" class="small-button align-button" data-prefix-align="right">Right</button>
+            </div>
+          </div>
         </div>
         <div class="setting-group">
           <div class="setting-inline-reset">
@@ -74,17 +102,68 @@
           </label>
           <label class="layout-option">
             <input type="radio" name="layout" value="2" />
-            <span>2 — YouTube playlist (stub)</span>
+            <span>2 — Title + message (stacked accent)</span>
           </label>
           <label class="layout-option">
             <input type="radio" name="layout" value="3" />
-            <span>3 — Title + message (stacked accent)</span>
+            <span>3 — YouTube playlist</span>
           </label>
         </div>
-        <div class="setting-group" id="playlist-group" hidden>
-          <label for="playlist-input"><span>Playlist URL</span></label>
-          <input id="playlist-input" type="url" spellcheck="false" autocomplete="off" placeholder="https://youtube.com/playlist?list=…" />
-          <p class="field-hint">Scaffolding only — extract comes later.</p>
+        <div class="setting-group" id="playlist-group">
+          <label for="playlist-input"><span>Playlist URL or ID</span></label>
+          <input id="playlist-input" type="text" spellcheck="false" autocomplete="off" placeholder="youtube.com/playlist?list=… or PL…" disabled />
+          <p class="field-hint">Full URL or bare list id (e.g. PL…).</p>
+          <p class="field-hint" id="playlist-status" role="status"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="youtube-playlist" id="youtube-playlist-section" hidden>
+      <button id="youtube-playlist-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="youtube-playlist-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>YouTube Playlist</button>
+      <div id="youtube-playlist-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <label class="layout-option">
+            <input type="radio" name="playlist-layout" value="1" />
+            <span>1 — Name over title by channel ticker</span>
+          </label>
+          <label class="layout-option">
+            <input type="radio" name="playlist-layout" value="2" />
+            <span>2 — Name | channel ticker</span>
+          </label>
+          <label class="layout-option">
+            <input type="radio" name="playlist-layout" value="3" />
+            <span>3 — Name | title ticker</span>
+          </label>
+          <label class="layout-option">
+            <input type="radio" name="playlist-layout" value="4" />
+            <span>4 — Title by channel ticker</span>
+          </label>
+        </div>
+        <div class="setting-group">
+          <label for="playlist-delimiter-select"><span>Ticker delimiter</span></label>
+          <select id="playlist-delimiter-select"></select>
+        </div>
+        <div class="setting-group" id="playlist-delimiter-custom-group">
+          <label for="playlist-delimiter-custom"><span>Custom delimiter</span></label>
+          <input id="playlist-delimiter-custom" type="text" spellcheck="false" autocomplete="off" minlength="1" maxlength="5" disabled />
+          <p class="field-hint">1–5 characters. Spaces are added on each side in the ticker.</p>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="marquee-speed-slider"><span>Marquee speed</span></label>
+              </div>
+              <div class="range-row">
+                <input id="marquee-speed-slider" type="range" min="25" max="400" step="5" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="marqueeSpeed" aria-label="Reset marquee speed" title="Reset marquee speed">↺</button>
+              <span class="value-label" id="marquee-speed-value"></span>
+            </div>
+          </div>
+          <p class="field-hint">100% is the default ticker speed.</p>
         </div>
       </div>
     </div>
@@ -142,6 +221,27 @@
     <div class="settings-section" data-section="fonts">
       <button id="fonts-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="fonts-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Fonts</button>
       <div id="fonts-controls" class="section-panel" hidden>
+        <div class="setting-group" id="prefix-font-group" hidden>
+          <div class="setting-inline-reset">
+            <span class="field-label" id="prefix-font-label">Prefix font</span>
+            <button type="button" class="reset-param" data-reset="prefixFont" aria-label="Reset prefix font" title="Reset prefix font">↺</button>
+          </div>
+          <div class="font-picker" id="prefix-font-picker" data-font-role="prefix"></div>
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="prefix-size-slider"><span id="prefix-size-label">Prefix size</span></label>
+              </div>
+              <div class="range-row">
+                <input id="prefix-size-slider" type="range" min="16" max="96" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="prefixSize" aria-label="Reset prefix size" title="Reset prefix size">↺</button>
+              <span class="value-label" id="prefix-size-value"></span>
+            </div>
+          </div>
+        </div>
         <div class="setting-group">
           <div class="setting-inline-reset">
             <span class="field-label" id="title-font-label">Title font</span>
@@ -151,7 +251,7 @@
           <div class="range-control">
             <div class="range-details">
               <div class="range-label-row">
-                <label for="title-size-slider"><span>Title size</span></label>
+                <label for="title-size-slider"><span id="title-size-label">Title size</span></label>
               </div>
               <div class="range-row">
                 <input id="title-size-slider" type="range" min="16" max="96" step="1" />
@@ -172,7 +272,7 @@
           <div class="range-control">
             <div class="range-details">
               <div class="range-label-row">
-                <label for="message-size-slider"><span>Message size</span></label>
+                <label for="message-size-slider"><span id="message-size-label">Message size</span></label>
               </div>
               <div class="range-row">
                 <input id="message-size-slider" type="range" min="12" max="64" step="1" />
@@ -220,9 +320,9 @@
     </div>
   </div>
 
-  <script src="playlist.js"></script>
+  <script src="playlist.js?v=6"></script>
   <script src="../themes/lcd-glass/theme.js"></script>
   <script src="../themes/sesh-glass/theme.js"></script>
-  <script src="app.js?v=12"></script>
+  <script src="app.js?v=20"></script>
 </body>
 </html>

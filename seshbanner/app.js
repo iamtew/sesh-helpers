@@ -16,6 +16,9 @@ const REGULAR_FONTS = [
   "Segoe UI"
 ];
 
+/** Display + Regular — every content field can use either. */
+const ALL_FONTS = [...DISPLAY_FONTS, ...REGULAR_FONTS];
+
 const BG_NONE = "0";
 const BG_SESSION = "1";
 const BG_LINEAR = "2";
@@ -25,10 +28,15 @@ const BG_VALUES = new Set([BG_NONE, BG_SESSION, BG_LINEAR, BG_RADIAL]);
 const defaults = {
   title: "TITLE",
   message: "Message",
+  prefix: "",
+  prefixEnabled: false,
+  prefixAlign: "left",
   layout: "1",
   theme: "lcd-glass",
   titleFont: "Monster Chiller",
   messageFont: "Better VCR",
+  prefixFont: "Monster Chiller",
+  prefixSize: 38,
   titleSize: 38,
   messageSize: 18,
   width: 100,
@@ -36,6 +44,10 @@ const defaults = {
   bannerX: 50,
   bannerY: 85,
   playlist: "",
+  playlistLayout: "1",
+  playlistDelimiter: "0",
+  playlistDelimiterCustom: "•",
+  marqueeSpeed: 100,
   bg: BG_NONE,
   checkerboardEnabled: false,
   settingsMode: "ON",
@@ -60,6 +72,56 @@ function getNumberParam(key, fallback) {
 function normalizeLayout(value) {
   const layout = String(value || "");
   return layout === "1" || layout === "2" || layout === "3" ? layout : defaults.layout;
+}
+
+function normalizePlaylistLayout(value) {
+  const layout = String(value || "");
+  return layout === "1" || layout === "2" || layout === "3" || layout === "4"
+    ? layout
+    : defaults.playlistLayout;
+}
+
+function isPlaylistLayout(layout) {
+  return layout === "3";
+}
+
+function normalizePlaylistDelimiter(value) {
+  const api = window.SeshBannerPlaylist;
+  if (api && typeof api.normalizeDelimiterId === "function") {
+    return api.normalizeDelimiterId(value);
+  }
+  return defaults.playlistDelimiter;
+}
+
+function normalizePlaylistDelimiterCustom(value) {
+  const api = window.SeshBannerPlaylist;
+  if (api && typeof api.normalizeCustomDelimiterText === "function") {
+    return api.normalizeCustomDelimiterText(value);
+  }
+  const raw = String(value ?? "").trim();
+  return raw ? raw.slice(0, 5) : "•";
+}
+
+function isCustomPlaylistDelimiter() {
+  const api = window.SeshBannerPlaylist;
+  return !!(api && state.playlistDelimiter === api.CUSTOM_DELIMITER_ID);
+}
+
+function getPlaylistDelimiter() {
+  const api = window.SeshBannerPlaylist;
+  if (api && typeof api.getDelimiterById === "function") {
+    return api.getDelimiterById(state.playlistDelimiter, state.playlistDelimiterCustom);
+  }
+  return " • ";
+}
+
+function isPrefixActive() {
+  return state.prefixEnabled && String(state.prefix || "").trim().length > 0;
+}
+
+function normalizePrefixAlign(value) {
+  const align = String(value || "");
+  return align === "left" || align === "center" || align === "right" ? align : defaults.prefixAlign;
 }
 
 function normalizeBg(value) {
@@ -138,10 +200,19 @@ function getAxisSize(key) {
 let state = {
   title: getParam("title", defaults.title),
   message: getParam("message", defaults.message),
+  prefix: getParam("prefix", defaults.prefix),
+  prefixEnabled: getBooleanParam("prefixEnabled", defaults.prefixEnabled),
+  prefixAlign: normalizePrefixAlign(getParam("prefixAlign", defaults.prefixAlign)),
   layout: normalizeLayout(getParam("layout", defaults.layout)),
   theme: normalizeTheme(getParam("theme", defaults.theme)),
-  titleFont: resolveFontParam(getParam("titleFont", "0"), DISPLAY_FONTS, defaults.titleFont),
-  messageFont: resolveFontParam(getParam("messageFont", "0"), REGULAR_FONTS, defaults.messageFont),
+  titleFont: resolveFontParam(getParam("titleFont", "0"), ALL_FONTS, defaults.titleFont),
+  messageFont: resolveFontParam(
+    getParam("messageFont", String(fontIndex(defaults.messageFont, ALL_FONTS))),
+    ALL_FONTS,
+    defaults.messageFont
+  ),
+  prefixFont: resolveFontParam(getParam("prefixFont", "0"), ALL_FONTS, defaults.prefixFont),
+  prefixSize: getSizeParam("prefixSize", defaults.prefixSize, 16, 96),
   titleSize: getSizeParam("titleSize", defaults.titleSize, 16, 96),
   messageSize: getSizeParam("messageSize", defaults.messageSize, 12, 64),
   width: getAxisSize("width"),
@@ -149,6 +220,12 @@ let state = {
   bannerX: getNumberParam("bannerX", defaults.bannerX),
   bannerY: getNumberParam("bannerY", defaults.bannerY),
   playlist: getParam("playlist", defaults.playlist),
+  playlistLayout: normalizePlaylistLayout(getParam("playlistLayout", defaults.playlistLayout)),
+  playlistDelimiter: normalizePlaylistDelimiter(getParam("playlistDelimiter", defaults.playlistDelimiter)),
+  playlistDelimiterCustom: normalizePlaylistDelimiterCustom(
+    getParam("playlistDelimiterCustom", defaults.playlistDelimiterCustom)
+  ),
+  marqueeSpeed: getSizeParam("marqueeSpeed", defaults.marqueeSpeed, 25, 400),
   bg: normalizeBg(getParam("bg", defaults.bg)),
   checkerboardEnabled: getBooleanParam("checkerboard", defaults.checkerboardEnabled),
   settingsMode: getParam("menu", defaults.settingsMode) === "DISABLE" ? "DISABLE" : "ON",
@@ -161,10 +238,12 @@ const banner = document.getElementById("banner");
 const bannerTitle = banner.querySelector(".banner-title");
 const bannerMessage = banner.querySelector(".banner-message");
 const textLayout = banner.querySelector(".banner-text-layout");
-const playlistLayout = banner.querySelector(".banner-playlist-layout");
-const playlistTitle = banner.querySelector(".playlist-title");
-const playlistMeta = banner.querySelector(".playlist-meta");
-const playlistThumb = banner.querySelector(".playlist-thumb");
+const playlistPanel = banner.querySelector(".banner-playlist-layout");
+const playlistPrefixBlock = banner.querySelector(".playlist-prefix-block");
+const playlistPrefix = banner.querySelector(".playlist-prefix");
+const playlistMain = banner.querySelector(".playlist-main");
+const playlistName = banner.querySelector(".playlist-name");
+const playlistMarqueeTrack = banner.querySelector(".playlist-marquee-track");
 
 const demoBackdrop = document.getElementById("demo-backdrop");
 const settingsMenu = document.getElementById("settings-menu");
@@ -174,11 +253,37 @@ const closeSettingsButton = document.getElementById("close-menu-button");
 
 const titleInput = document.getElementById("title-input");
 const messageInput = document.getElementById("message-input");
+const contentTextFields = document.getElementById("content-text-fields");
+const contentPrefixFields = document.getElementById("content-prefix-fields");
+const prefixEnabledInput = document.getElementById("prefix-enabled");
+const prefixInput = document.getElementById("prefix-input");
+const prefixInputGroup = document.getElementById("prefix-input-group");
+const prefixAlignGroup = document.getElementById("prefix-align-group");
+const prefixAlignButtons = document.querySelectorAll("[data-prefix-align]");
+const prefixFontGroup = document.getElementById("prefix-font-group");
 const positionValue = document.getElementById("position-value");
-const playlistGroup = document.getElementById("playlist-group");
 const playlistInput = document.getElementById("playlist-input");
+const playlistStatus = document.getElementById("playlist-status");
+const youtubePlaylistSection = document.getElementById("youtube-playlist-section");
+const playlistLayoutRadios = document.querySelectorAll('input[name="playlist-layout"]');
+const playlistDelimiterSelect = document.getElementById("playlist-delimiter-select");
+const playlistDelimiterCustomGroup = document.getElementById("playlist-delimiter-custom-group");
+const playlistDelimiterCustomInput = document.getElementById("playlist-delimiter-custom");
+const marqueeSpeedSlider = document.getElementById("marquee-speed-slider");
+const marqueeSpeedValue = document.getElementById("marquee-speed-value");
 const titleFontPickerEl = document.getElementById("title-font-picker");
 const messageFontPickerEl = document.getElementById("message-font-picker");
+const prefixFontPickerEl = document.getElementById("prefix-font-picker");
+const prefixSizeSlider = document.getElementById("prefix-size-slider");
+const prefixSizeValue = document.getElementById("prefix-size-value");
+const titleFontLabel = document.getElementById("title-font-label");
+const messageFontLabel = document.getElementById("message-font-label");
+const titleSizeLabel = document.getElementById("title-size-label");
+const messageSizeLabel = document.getElementById("message-size-label");
+const titleFontResetButton = document.querySelector('[data-reset="titleFont"]');
+const messageFontResetButton = document.querySelector('[data-reset="messageFont"]');
+const titleSizeResetButton = document.querySelector('[data-reset="titleSize"]');
+const messageSizeResetButton = document.querySelector('[data-reset="messageSize"]');
 const titleSizeSlider = document.getElementById("title-size-slider");
 const titleSizeValue = document.getElementById("title-size-value");
 const messageSizeSlider = document.getElementById("message-size-slider");
@@ -374,11 +479,11 @@ function closeAllFontPickers(except) {
 
 const titleFontPicker = createFontPicker(
   titleFontPickerEl,
-  DISPLAY_FONTS,
+  ALL_FONTS,
   "title-font-label",
   () => state.titleFont,
   font => {
-    state.titleFont = pickFont(font, DISPLAY_FONTS, defaults.titleFont);
+    state.titleFont = pickFont(font, ALL_FONTS, defaults.titleFont);
     applyFonts();
     titleFontPicker.sync();
     updateURL();
@@ -387,18 +492,31 @@ const titleFontPicker = createFontPicker(
 
 const messageFontPicker = createFontPicker(
   messageFontPickerEl,
-  REGULAR_FONTS,
+  ALL_FONTS,
   "message-font-label",
   () => state.messageFont,
   font => {
-    state.messageFont = pickFont(font, REGULAR_FONTS, defaults.messageFont);
+    state.messageFont = pickFont(font, ALL_FONTS, defaults.messageFont);
     applyFonts();
     messageFontPicker.sync();
     updateURL();
   }
 );
 
-fontPickers.push(titleFontPicker, messageFontPicker);
+const prefixFontPicker = createFontPicker(
+  prefixFontPickerEl,
+  ALL_FONTS,
+  "prefix-font-label",
+  () => state.prefixFont,
+  font => {
+    state.prefixFont = pickFont(font, ALL_FONTS, defaults.prefixFont);
+    applyFonts();
+    prefixFontPicker.sync();
+    updateURL();
+  }
+);
+
+fontPickers.push(titleFontPicker, messageFontPicker, prefixFontPicker);
 
 document.addEventListener("click", e => {
   if (!(e.target instanceof Element)) {
@@ -492,8 +610,8 @@ function updateURL() {
 
   params.set("layout", state.layout);
   params.set("theme", state.theme);
-  params.set("titleFont", String(fontIndex(state.titleFont, DISPLAY_FONTS)));
-  params.set("messageFont", String(fontIndex(state.messageFont, REGULAR_FONTS)));
+  params.set("titleFont", String(fontIndex(state.titleFont, ALL_FONTS)));
+  params.set("messageFont", String(fontIndex(state.messageFont, ALL_FONTS)));
   params.set("titleSize", String(state.titleSize));
   params.set("messageSize", String(state.messageSize));
   params.set("width", String(state.width));
@@ -504,12 +622,21 @@ function updateURL() {
   params.set("bannerX", state.bannerX.toFixed(2));
   params.set("bannerY", state.bannerY.toFixed(2));
   params.set("playlist", state.playlist);
+  params.set("playlistLayout", state.playlistLayout);
+  params.set("playlistDelimiter", state.playlistDelimiter);
+  params.set("playlistDelimiterCustom", state.playlistDelimiterCustom);
+  params.set("marqueeSpeed", String(state.marqueeSpeed));
   params.set("bg", state.bg);
   params.set("checkerboard", String(state.checkerboardEnabled));
   params.set("menu", state.settingsMode);
   params.set("side", state.side);
   params.set("title", state.title);
   params.set("message", state.message);
+  params.set("prefix", state.prefix);
+  params.set("prefixEnabled", String(state.prefixEnabled));
+  params.set("prefixAlign", state.prefixAlign);
+  params.set("prefixFont", String(fontIndex(state.prefixFont, ALL_FONTS)));
+  params.set("prefixSize", String(state.prefixSize));
   history.replaceState({}, "", "?" + params.toString());
 }
 
@@ -574,6 +701,12 @@ function applySize() {
     "--banner-message-size",
     `${(state.messageSize * fontScale).toFixed(2)}px`
   );
+  document.documentElement.style.setProperty(
+    "--banner-prefix-size",
+    `${(state.prefixSize * fontScale).toFixed(2)}px`
+  );
+
+  syncMarqueeDuration();
 }
 
 function applyFonts() {
@@ -585,7 +718,82 @@ function applyFonts() {
     "--banner-message-font",
     `'${state.messageFont}', sans-serif`
   );
+  document.documentElement.style.setProperty(
+    "--banner-prefix-font",
+    `'${state.prefixFont}', sans-serif`
+  );
   applySize();
+}
+
+function applyFontLabels() {
+  const isPlaylist = isPlaylistLayout(state.layout);
+  const titleFontText = isPlaylist ? "Playlist name font" : "Title font";
+  const messageFontText = isPlaylist ? "Ticker font" : "Message font";
+  const titleSizeText = isPlaylist ? "Playlist name size" : "Title size";
+  const messageSizeText = isPlaylist ? "Ticker size" : "Message size";
+
+  titleFontLabel.textContent = titleFontText;
+  messageFontLabel.textContent = messageFontText;
+  titleSizeLabel.textContent = titleSizeText;
+  messageSizeLabel.textContent = messageSizeText;
+
+  if (titleFontResetButton) {
+    titleFontResetButton.setAttribute("aria-label", `Reset ${titleFontText.toLowerCase()}`);
+    titleFontResetButton.title = `Reset ${titleFontText.toLowerCase()}`;
+  }
+  if (messageFontResetButton) {
+    messageFontResetButton.setAttribute("aria-label", `Reset ${messageFontText.toLowerCase()}`);
+    messageFontResetButton.title = `Reset ${messageFontText.toLowerCase()}`;
+  }
+  if (titleSizeResetButton) {
+    titleSizeResetButton.setAttribute("aria-label", `Reset ${titleSizeText.toLowerCase()}`);
+    titleSizeResetButton.title = `Reset ${titleSizeText.toLowerCase()}`;
+  }
+  if (messageSizeResetButton) {
+    messageSizeResetButton.setAttribute("aria-label", `Reset ${messageSizeText.toLowerCase()}`);
+    messageSizeResetButton.title = `Reset ${messageSizeText.toLowerCase()}`;
+  }
+}
+
+function applyPlaylistControls() {
+  const isCustom = isCustomPlaylistDelimiter();
+  if (playlistDelimiterCustomInput) {
+    playlistDelimiterCustomInput.disabled = !isCustom;
+  }
+  if (playlistDelimiterCustomGroup) {
+    playlistDelimiterCustomGroup.classList.toggle("is-disabled", !isCustom);
+  }
+}
+
+function applyFontControls() {
+  const showPrefixOptions = isPlaylistLayout(state.layout) && state.prefixEnabled;
+  prefixFontGroup.hidden = !showPrefixOptions;
+  applyFontLabels();
+}
+
+function applyContentControls() {
+  const isPlaylist = isPlaylistLayout(state.layout);
+  contentTextFields.hidden = isPlaylist;
+  contentPrefixFields.hidden = !isPlaylist;
+  prefixInput.disabled = !state.prefixEnabled;
+  prefixInputGroup.classList.toggle("is-disabled", !state.prefixEnabled);
+  prefixAlignGroup.hidden = !state.prefixEnabled;
+  for (const button of prefixAlignButtons) {
+    button.classList.toggle("is-active", button.dataset.prefixAlign === state.prefixAlign);
+  }
+  applyFontControls();
+}
+
+function applyPlaylistPrefix() {
+  const showPrefix = isPrefixActive();
+  banner.dataset.prefixEnabled = showPrefix ? "true" : "false";
+  banner.dataset.prefixAlign = state.prefixAlign;
+  playlistPrefixBlock.hidden = !showPrefix;
+  if (showPrefix) {
+    playlistPrefix.textContent = String(state.prefix).trim();
+  } else {
+    playlistPrefix.textContent = "";
+  }
 }
 
 function applyContent() {
@@ -610,41 +818,211 @@ function applyTheme() {
   applySize();
 }
 
+let playlistData = null;
+let playlistError = null;
+let playlistLoading = false;
+let playlistFetchGen = 0;
+let playlistFetchTimer = 0;
+let loadedListId = null;
+
+function currentListId() {
+  const api = window.SeshBannerPlaylist;
+  if (!api) return null;
+  return api.parsePlaylistUrl(state.playlist).listId;
+}
+
+function setPlaylistStatus(msg, isError) {
+  if (!playlistStatus) return;
+  playlistStatus.textContent = msg || "";
+  playlistStatus.classList.toggle("is-error", !!isError);
+}
+
+function clearPlaylistFetch() {
+  playlistFetchGen += 1;
+  if (playlistFetchTimer) {
+    clearTimeout(playlistFetchTimer);
+    playlistFetchTimer = 0;
+  }
+  playlistLoading = false;
+}
+
+function resetPlaylistCache() {
+  clearPlaylistFetch();
+  playlistData = null;
+  playlistError = null;
+  loadedListId = null;
+  setPlaylistStatus("");
+}
+
+function syncMarqueeDuration() {
+  if (!playlistMarqueeTrack || playlistMarqueeTrack.classList.contains("is-static")) return;
+  if (!isPlaylistLayout(state.layout)) return;
+
+  playlistMarqueeTrack.style.animation = "none";
+  void playlistMarqueeTrack.offsetWidth;
+  const half = playlistMarqueeTrack.scrollWidth / 2;
+  const speedFactor = state.marqueeSpeed / 100;
+  const duration = Math.max(10, half / (45 * speedFactor));
+  playlistMarqueeTrack.style.setProperty("--marquee-duration", `${duration}s`);
+  playlistMarqueeTrack.style.animation = "";
+}
+
+function renderMarqueeStatic(message) {
+  playlistMarqueeTrack.classList.add("is-static");
+  playlistMarqueeTrack.style.removeProperty("--marquee-duration");
+  playlistMarqueeTrack.style.animation = "";
+  playlistMarqueeTrack.textContent = message;
+}
+
+function renderMarqueeScrolling(parts) {
+  const delimiter = getPlaylistDelimiter();
+  const unit = parts.join(delimiter) + delimiter;
+
+  playlistMarqueeTrack.classList.remove("is-static");
+  playlistMarqueeTrack.textContent = "";
+  const first = document.createElement("span");
+  first.textContent = unit;
+  const second = document.createElement("span");
+  second.textContent = unit;
+  playlistMarqueeTrack.append(first, second);
+  syncMarqueeDuration();
+}
+
+function applyPlaylistBanner() {
+  banner.dataset.playlistLayout = state.playlistLayout;
+  applyPlaylistPrefix();
+  playlistName.textContent = "Playlist title";
+
+  if (playlistLoading) {
+    if (playlistData && playlistData.playlistTitle) {
+      playlistName.textContent = playlistData.playlistTitle;
+    }
+    renderMarqueeStatic("Fetching playlist…");
+    return;
+  }
+
+  if (playlistError) {
+    renderMarqueeStatic(playlistError);
+    return;
+  }
+
+  if (!playlistData || !playlistData.items.length) {
+    const listId = currentListId();
+    renderMarqueeStatic(listId ? "No videos found" : "Paste a playlist URL");
+    return;
+  }
+
+  playlistName.textContent = playlistData.playlistTitle || "Playlist";
+  const api = window.SeshBannerPlaylist;
+  const parts = api
+    ? api.formatTickerItems(playlistData.items, state.playlistLayout)
+    : [];
+
+  if (!parts.length) {
+    renderMarqueeStatic("No videos found");
+    return;
+  }
+
+  renderMarqueeScrolling(parts);
+}
+
+async function runPlaylistFetch() {
+  const api = window.SeshBannerPlaylist;
+  if (!api || !isPlaylistLayout(state.layout)) return;
+
+  const listId = currentListId();
+  if (!listId) {
+    playlistData = null;
+    playlistError = null;
+    playlistLoading = false;
+    loadedListId = null;
+    setPlaylistStatus("");
+    applyPlaylistBanner();
+    return;
+  }
+
+  if (listId === loadedListId && playlistData && playlistData.items.length) {
+    playlistLoading = false;
+    playlistError = null;
+    setPlaylistStatus(`${playlistData.items.length} videos`);
+    applyPlaylistBanner();
+    return;
+  }
+
+  const gen = ++playlistFetchGen;
+  playlistLoading = true;
+  playlistError = null;
+  setPlaylistStatus("Fetching playlist…");
+  applyPlaylistBanner();
+
+  try {
+    const data = await api.fetchPlaylistData(state.playlist);
+    if (gen !== playlistFetchGen || !isPlaylistLayout(state.layout)) return;
+
+    playlistLoading = false;
+    playlistData = data;
+    loadedListId = listId;
+
+    if (!data || !data.items.length) {
+      playlistError = "No videos found. Is the playlist public?";
+      setPlaylistStatus(playlistError, true);
+    } else {
+      playlistError = null;
+      setPlaylistStatus(`${data.items.length} videos`);
+    }
+    applyPlaylistBanner();
+  } catch (err) {
+    if (gen !== playlistFetchGen || !isPlaylistLayout(state.layout)) return;
+    playlistLoading = false;
+    playlistData = null;
+    loadedListId = null;
+    playlistError = err.message || "Could not load playlist";
+    setPlaylistStatus(playlistError, true);
+    applyPlaylistBanner();
+  }
+}
+
+function refreshPlaylist(options) {
+  if (!isPlaylistLayout(state.layout)) return;
+
+  applyPlaylistBanner();
+
+  if (playlistFetchTimer) {
+    clearTimeout(playlistFetchTimer);
+    playlistFetchTimer = 0;
+  }
+
+  if (options && options.debounce) {
+    playlistFetchTimer = setTimeout(runPlaylistFetch, 500);
+    return;
+  }
+
+  runPlaylistFetch();
+}
+
 function applyLayout() {
   banner.dataset.layout = state.layout;
+  banner.dataset.playlistLayout = state.playlistLayout;
 
-  const isPlaylist = state.layout === "2";
+  const isPlaylist = isPlaylistLayout(state.layout);
   textLayout.hidden = isPlaylist;
-  playlistLayout.hidden = !isPlaylist;
-  playlistGroup.hidden = !isPlaylist;
+  playlistPanel.hidden = !isPlaylist;
+  playlistInput.disabled = !isPlaylist;
+  youtubePlaylistSection.hidden = !isPlaylist;
+  applyPlaylistControls();
+  applyContentControls();
 
   for (const radio of layoutRadios) {
     radio.checked = radio.value === state.layout;
   }
+  for (const radio of playlistLayoutRadios) {
+    radio.checked = radio.value === state.playlistLayout;
+  }
 
-  if (isPlaylist && window.SeshBannerPlaylist) {
-    window.SeshBannerPlaylist.applyPlaylistScaffold(
-      {
-        titleEl: playlistTitle,
-        metaEl: playlistMeta,
-        thumbEl: playlistThumb
-      },
-      null,
-      state.playlist
-    );
-
-    window.SeshBannerPlaylist.fetchPlaylistData(state.playlist).then(data => {
-      if (state.layout !== "2") return;
-      window.SeshBannerPlaylist.applyPlaylistScaffold(
-        {
-          titleEl: playlistTitle,
-          metaEl: playlistMeta,
-          thumbEl: playlistThumb
-        },
-        data,
-        state.playlist
-      );
-    });
+  if (isPlaylist) {
+    refreshPlaylist({ debounce: false });
+  } else {
+    clearPlaylistFetch();
   }
 }
 
@@ -663,9 +1041,14 @@ function applyAll() {
 function syncInputs() {
   titleInput.value = state.title;
   messageInput.value = state.message;
+  prefixInput.value = state.prefix;
+  prefixEnabledInput.checked = state.prefixEnabled;
   playlistInput.value = state.playlist;
   titleFontPicker.sync();
   messageFontPicker.sync();
+  prefixFontPicker.sync();
+  prefixSizeSlider.value = state.prefixSize;
+  prefixSizeValue.textContent = `${state.prefixSize}px`;
   titleSizeSlider.value = state.titleSize;
   titleSizeValue.textContent = `${state.titleSize}px`;
   messageSizeSlider.value = state.messageSize;
@@ -683,7 +1066,21 @@ function syncInputs() {
   themeSelect.value = state.theme;
   const themeMeta = findTheme(state.theme);
   themeDescription.textContent = themeMeta && themeMeta.description ? themeMeta.description : "";
-  playlistGroup.hidden = state.layout !== "2";
+  playlistInput.disabled = !isPlaylistLayout(state.layout);
+  youtubePlaylistSection.hidden = !isPlaylistLayout(state.layout);
+  if (playlistDelimiterSelect) {
+    playlistDelimiterSelect.value = state.playlistDelimiter;
+  }
+  if (playlistDelimiterCustomInput) {
+    playlistDelimiterCustomInput.value = state.playlistDelimiterCustom;
+  }
+  marqueeSpeedSlider.value = state.marqueeSpeed;
+  marqueeSpeedValue.textContent = `${state.marqueeSpeed}%`;
+  applyPlaylistControls();
+  applyContentControls();
+  for (const radio of playlistLayoutRadios) {
+    radio.checked = radio.value === state.playlistLayout;
+  }
   positionValue.textContent = `${state.bannerX.toFixed(0)}% / ${state.bannerY.toFixed(0)}%`;
 }
 
@@ -788,9 +1185,43 @@ messageInput.addEventListener("input", e => {
   updateURL();
 });
 
+prefixEnabledInput.addEventListener("change", e => {
+  state.prefixEnabled = e.target.checked;
+  applyContentControls();
+  applyPlaylistBanner();
+  updateURL();
+});
+
+prefixInput.addEventListener("input", e => {
+  state.prefix = e.target.value;
+  applyPlaylistBanner();
+  updateURL();
+});
+
+prefixSizeSlider.addEventListener("input", e => {
+  state.prefixSize = clamp(parseFloat(e.target.value), 16, 96);
+  prefixSizeValue.textContent = `${state.prefixSize}px`;
+  applyFonts();
+  updateURL();
+});
+
+for (const button of prefixAlignButtons) {
+  button.addEventListener("click", () => {
+    state.prefixAlign = normalizePrefixAlign(button.dataset.prefixAlign);
+    applyContentControls();
+    applyPlaylistPrefix();
+    updateURL();
+  });
+}
+
 playlistInput.addEventListener("input", e => {
   state.playlist = e.target.value;
-  applyLayout();
+  if (currentListId() !== loadedListId) {
+    playlistData = null;
+    playlistError = null;
+    loadedListId = null;
+  }
+  refreshPlaylist({ debounce: true });
   updateURL();
 });
 
@@ -847,12 +1278,22 @@ function resetParam(key) {
     case "messageFont":
       state.messageFont = defaults.messageFont;
       break;
+    case "prefixFont":
+      state.prefixFont = defaults.prefixFont;
+      break;
+    case "prefixSize":
+      state.prefixSize = defaults.prefixSize;
+      break;
+    case "marqueeSpeed":
+      state.marqueeSpeed = defaults.marqueeSpeed;
+      break;
     default:
       return;
   }
 
   if (key === "width" || key === "height") applySize();
-  if (key === "titleSize" || key === "messageSize" || key === "titleFont" || key === "messageFont") {
+  if (key === "marqueeSpeed") syncMarqueeDuration();
+  if (key === "titleSize" || key === "messageSize" || key === "prefixSize" || key === "titleFont" || key === "messageFont" || key === "prefixFont") {
     applyFonts();
   }
 
@@ -875,6 +1316,45 @@ for (const radio of layoutRadios) {
   });
 }
 
+for (const radio of playlistLayoutRadios) {
+  radio.addEventListener("change", e => {
+    if (!e.target.checked) return;
+    state.playlistLayout = normalizePlaylistLayout(e.target.value);
+    applyPlaylistBanner();
+    updateURL();
+  });
+}
+
+if (playlistDelimiterSelect) {
+  playlistDelimiterSelect.addEventListener("change", () => {
+    state.playlistDelimiter = normalizePlaylistDelimiter(playlistDelimiterSelect.value);
+    applyPlaylistControls();
+    applyPlaylistBanner();
+    updateURL();
+  });
+}
+
+if (playlistDelimiterCustomInput) {
+  playlistDelimiterCustomInput.addEventListener("input", e => {
+    const next = normalizePlaylistDelimiterCustom(e.target.value);
+    state.playlistDelimiterCustom = next;
+    if (e.target.value !== next) {
+      e.target.value = next;
+    }
+    if (isCustomPlaylistDelimiter()) {
+      applyPlaylistBanner();
+      updateURL();
+    }
+  });
+}
+
+marqueeSpeedSlider.addEventListener("input", e => {
+  state.marqueeSpeed = clamp(parseFloat(e.target.value), 25, 400);
+  marqueeSpeedValue.textContent = `${state.marqueeSpeed}%`;
+  syncMarqueeDuration();
+  updateURL();
+});
+
 for (const radio of bgRadios) {
   radio.addEventListener("change", e => {
     if (!e.target.checked) return;
@@ -894,6 +1374,7 @@ themeSelect.addEventListener("change", () => {
 resetButton.addEventListener("click", () => {
   flashMenuAction(resetButton);
   state = { ...defaults };
+  resetPlaylistCache();
   closeAllFontPickers();
   syncInputs();
   applyAll();
@@ -921,6 +1402,20 @@ for (const theme of THEMES) {
   themeSelect.appendChild(option);
 }
 
+const delimiterApi = window.SeshBannerPlaylist;
+if (playlistDelimiterSelect && delimiterApi && Array.isArray(delimiterApi.ITEM_DELIMITERS)) {
+  for (const entry of delimiterApi.ITEM_DELIMITERS) {
+    const option = document.createElement("option");
+    option.value = entry.id;
+    option.textContent = entry.label;
+    playlistDelimiterSelect.appendChild(option);
+  }
+}
+
 syncInputs();
 applyAll();
 updateURL();
+
+window.addEventListener("resize", () => {
+  if (isPlaylistLayout(state.layout)) syncMarqueeDuration();
+});
