@@ -422,6 +422,45 @@ body.settings-mode #banner.dragging {
   max-width: 45%;
 }
 
+#banner[data-layout="3"][data-playlist-layout="2"][data-prefix-enabled="true"] .playlist-prefix,
+#banner[data-layout="3"][data-playlist-layout="3"][data-prefix-enabled="true"] .playlist-prefix {
+  overflow-wrap: normal;
+  word-break: normal;
+  min-width: 0;
+}
+
+#banner[data-layout="3"][data-playlist-layout="2"][data-prefix-enabled="true"] .playlist-prefix-block,
+#banner[data-layout="3"][data-playlist-layout="3"][data-prefix-enabled="true"] .playlist-prefix-block {
+  flex: 0 0 25%;
+  width: 25%;
+  max-width: 25%;
+  min-width: 0;
+}
+
+#banner[data-layout="3"][data-playlist-layout="2"][data-prefix-enabled="true"] .banner-playlist-layout,
+#banner[data-layout="3"][data-playlist-layout="3"][data-prefix-enabled="true"] .banner-playlist-layout {
+  align-items: stretch;
+}
+
+#banner[data-layout="3"][data-playlist-layout="2"][data-prefix-enabled="true"] .playlist-main,
+#banner[data-layout="3"][data-playlist-layout="3"][data-prefix-enabled="true"] .playlist-main {
+  align-items: stretch;
+  min-width: 0;
+  flex: 1 1 0;
+}
+
+#banner[data-layout="3"][data-playlist-layout="2"][data-prefix-enabled="true"] .playlist-main-accent,
+#banner[data-layout="3"][data-playlist-layout="3"][data-prefix-enabled="true"] .playlist-main-accent {
+  align-self: stretch;
+}
+
+#banner[data-layout="3"][data-playlist-layout="2"][data-prefix-enabled="true"] .playlist-name,
+#banner[data-layout="3"][data-playlist-layout="3"][data-prefix-enabled="true"] .playlist-name {
+  flex-shrink: 0;
+  min-width: 0;
+  max-width: 68%;
+}
+
 /* Playlist layout 4 — ticker only */
 #banner[data-layout="3"][data-playlist-layout="4"] .playlist-main {
   display: flex;
