@@ -16,6 +16,14 @@ Reusable settings-menu pattern for full-screen helper webapps (usually OBS Brows
 
 Copy the **contracts** below. Swap title, sections, and controls per app.
 
+### OBS Browser Sources — transparent canvas
+
+Almost all simple web apps in this repo are meant for **OBS Browser Sources**. They must composite cleanly over the scene:
+
+- `html, body { background: transparent }` — never paint an opaque page fill.
+- Operator overlays (guides, checkerboard, settings chrome) only under `body.settings-mode`.
+- Clean output = `menu=DISABLE` (panel + overlays hidden; effect/banner only).
+
 ---
 
 ## Visibility contract
@@ -139,7 +147,7 @@ If refresh loses settings, live URL sync is broken — fix that first.
 | Reset / destructive | `#f40` |
 | Panel bg | `rgba(10, 10, 20, 0.95)` + blur |
 | Title / actions | `Better VCR` (see [`TYPOGRAPHY.md`](TYPOGRAPHY.md)) |
-| Page bg | `transparent` |
+| Page bg | `transparent` (required for OBS — see above) |
 
 ---
 
@@ -154,7 +162,7 @@ If refresh loses settings, live URL sync is broken — fix that first.
 - [ ] Every persisted setting ↔ URL param; load hydrates from URL
 - [ ] Copy URL = `location.href`; Copy for OBS = same + `menu=DISABLE`
 - [ ] Verify: drag slider → effect changes → URL changes → copy → new tab matches
-- [ ] `body.settings-mode` for overlays; transparent page bg
+- [ ] `body.settings-mode` for overlays; **transparent** page bg (OBS)
 - [ ] Document app-specific params in that project's docs — not here
 
 ---
@@ -184,4 +192,5 @@ Copy shell + contracts. Do not copy Spot Smoke's sliders unless the app needs th
 - [001_CLANKER_INIT.md](001_CLANKER_INIT.md)
 - [`spotsmoke/`](../spotsmoke/) — reference impl
 - [`spotsmoke/notes.md`](../spotsmoke/notes.md) — operator notes
+- [`seshbanner/`](../seshbanner/) — banner + layouts (Control UI consumer)
 - [TYPOGRAPHY.md](TYPOGRAPHY.md)

@@ -41,5 +41,6 @@ When adding a new doc, add a row to the index table above.
 |----------|------|
 | Landing page | [index.html](../index.html) |
 | Spot Smoke | [spotsmoke/](../spotsmoke/) |
+| Sesh Banner | [seshbanner/](../seshbanner/) |
 | Logo | [img/seshhelpers.png](../img/seshhelpers.png) |
 | License | [LICENSE](../LICENSE) |

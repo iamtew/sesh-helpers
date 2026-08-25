@@ -41,6 +41,7 @@ sesh-helpers/
 ├── img/
 │   └── seshhelpers.png       # Project logo / brand asset
 ├── spotsmoke/                # Spot Smoke helper app (OBS Browser Source)
+├── seshbanner/               # Sesh Banner helper app (OBS Browser Source)
 ├── docs/
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point
@@ -54,8 +55,11 @@ sesh-helpers/
 | `index.html` | **Exists** | Landing page with project list (add new apps here) |
 | `img/seshhelpers.png` | **Exists** | Brand reference for UI styling |
 | `spotsmoke/` | **Exists** | First helper app; Control UI reference impl |
+| `seshbanner/` | **Exists** | Banner overlay; Control UI + layouts |
 | Build tooling / CI | **Not yet** | TBD |
 | Deployment | GitHub Pages | Repo root is the webroot |
+
+**OBS / transparency:** Helper apps are almost always OBS Browser Sources. Keep `html, body` background `transparent`. See [`Control_UI.md`](Control_UI.md).
 
 When you add a helper app: put it in its own directory, link it from `index.html`, and update this map.
 
@@ -82,6 +86,7 @@ When you add a doc:
 - **Minimal scope** — smallest change that solves the task. No drive-by refactors.
 - **No over-engineering** — no abstractions for one-liners; no speculative error handling for impossible edges.
 - **Match existing conventions** — read surrounding code and docs before writing new patterns.
+- **OBS-first canvases** — helper apps use transparent page backgrounds for Browser Sources (see [`Control_UI.md`](Control_UI.md)).
 - **Document first when bootstrapping** — if you build something new, write down how it works.
 - **Tests when meaningful** — only add tests that cover real behavior, not obvious trivia.
 - **Do not commit unless asked** — mortal meat bags control git history.
@@ -111,6 +116,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 | Typography | [`TYPOGRAPHY.md`](TYPOGRAPHY.md) |
 | Landing page | [`index.html`](../index.html) |
 | Spot Smoke | [`spotsmoke/`](../spotsmoke/) |
+| Sesh Banner | [`seshbanner/`](../seshbanner/) |
 | Logo asset | [`img/seshhelpers.png`](../img/seshhelpers.png) |
 | Root README | [`README.md`](../README.md) |
 

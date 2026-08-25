@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sesh Banner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css?v=10" />
+</head>
+<body>
+  <div id="preview-backdrop"></div>
+
+  <div id="banner" data-layout="1" aria-live="polite">
+    <!-- Layout 1 & 3: title + message -->
+    <div class="banner-content banner-text-layout">
+      <div class="banner-title"></div>
+      <div class="banner-accent" aria-hidden="true"></div>
+      <div class="banner-message"></div>
+    </div>
+
+    <!-- Layout 2: YouTube playlist scaffolding (future work) -->
+    <div class="banner-content banner-playlist-layout" hidden>
+      <div class="playlist-thumb" aria-hidden="true"></div>
+      <div class="playlist-copy">
+        <div class="playlist-title">Playlist title</div>
+        <div class="playlist-meta">0 videos · scaffolding</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings-menu">
+    <div class="menu-header">
+      <h2>Sesh Banner</h2>
+      <div class="menu-header-buttons">
+        <button id="checkerboard-button" aria-label="Toggle checkerboard pattern" aria-pressed="false">▚</button>
+        <button id="flip-side-button" aria-label="Move menu to other side">⇄</button>
+        <button id="close-menu-button" aria-label="Close settings">✕</button>
+      </div>
+    </div>
+
+    <p class="hint">Drag the banner to reposition. Double-click background to reopen this menu.</p>
+
+    <div class="settings-section" data-section="content">
+      <button id="content-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="content-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Content</button>
+      <div id="content-controls" class="section-panel">
+        <div class="setting-group">
+          <label for="title-input"><span>Title</span></label>
+          <input id="title-input" type="text" spellcheck="false" autocomplete="off" />
+        </div>
+        <div class="setting-group">
+          <label for="message-input"><span>Message</span></label>
+          <input id="message-input" type="text" spellcheck="false" autocomplete="off" />
+        </div>
+        <div class="setting-group">
+          <div class="setting-inline-reset">
+            <div class="position-readout">
+              Position <span id="position-value">50% / 85%</span>
+            </div>
+            <button type="button" class="reset-param" data-reset="position" aria-label="Reset position" title="Reset position">↺</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="layout">
+      <button id="layout-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="layout-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Layout</button>
+      <div id="layout-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <label class="layout-option">
+            <input type="radio" name="layout" value="1" />
+            <span>1 — Title | message (inline)</span>
+          </label>
+          <label class="layout-option">
+            <input type="radio" name="layout" value="2" />
+            <span>2 — YouTube playlist (stub)</span>
+          </label>
+          <label class="layout-option">
+            <input type="radio" name="layout" value="3" />
+            <span>3 — Title + message (stacked accent)</span>
+          </label>
+        </div>
+        <div class="setting-group" id="playlist-group" hidden>
+          <label for="playlist-input"><span>Playlist URL</span></label>
+          <input id="playlist-input" type="url" spellcheck="false" autocomplete="off" placeholder="https://youtube.com/playlist?list=…" />
+          <p class="field-hint">Scaffolding only — extract comes later.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="size">
+      <button id="size-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="size-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Size</button>
+      <div id="size-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="width-slider"><span>Width</span></label>
+              </div>
+              <div class="range-row">
+                <input id="width-slider" type="range" min="25" max="1000" step="5" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="width" aria-label="Reset width" title="Reset width">↺</button>
+              <span class="value-label" id="width-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="height-slider"><span>Height</span></label>
+              </div>
+              <div class="range-row">
+                <input id="height-slider" type="range" min="25" max="1000" step="5" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="height" aria-label="Reset height" title="Reset height">↺</button>
+              <span class="value-label" id="height-value"></span>
+            </div>
+          </div>
+          <p class="field-hint">Sizes the banner box. Type scales with the smaller axis so fonts never stretch.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="fonts">
+      <button id="fonts-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="fonts-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Fonts</button>
+      <div id="fonts-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <div class="setting-inline-reset">
+            <span class="field-label" id="title-font-label">Title font</span>
+            <button type="button" class="reset-param" data-reset="titleFont" aria-label="Reset title font" title="Reset title font">↺</button>
+          </div>
+          <div class="font-picker" id="title-font-picker" data-font-role="title"></div>
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="title-size-slider"><span>Title size</span></label>
+              </div>
+              <div class="range-row">
+                <input id="title-size-slider" type="range" min="16" max="96" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="titleSize" aria-label="Reset title size" title="Reset title size">↺</button>
+              <span class="value-label" id="title-size-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="setting-inline-reset">
+            <span class="field-label" id="message-font-label">Message font</span>
+            <button type="button" class="reset-param" data-reset="messageFont" aria-label="Reset message font" title="Reset message font">↺</button>
+          </div>
+          <div class="font-picker" id="message-font-picker" data-font-role="message"></div>
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="message-size-slider"><span>Message size</span></label>
+              </div>
+              <div class="range-row">
+                <input id="message-size-slider" type="range" min="12" max="64" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="messageSize" aria-label="Reset message size" title="Reset message size">↺</button>
+              <span class="value-label" id="message-size-value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="reset-button">Reset all</button>
+
+    <div class="setting-group copy-row">
+      <button id="copy-url-button" class="small-button">Copy URL</button>
+      <button id="copy-url-obs-button" class="small-button">Copy URL for OBS</button>
+    </div>
+  </div>
+
+  <script src="playlist.js"></script>
+  <script src="app.js?v=9"></script>
+</body>
+</html>

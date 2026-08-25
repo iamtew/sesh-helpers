@@ -9,6 +9,7 @@ Helper apps for the Sesh Sofa show.
 | App | Path |
 |-----|------|
 | Spot Smoke | [spotsmoke/](spotsmoke/) |
+| Sesh Banner | [seshbanner/](seshbanner/) |
 
 ## Documentation
 
