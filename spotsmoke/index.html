@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="demo-backdrop" data-bg="0" aria-hidden="true"></div>
   <div id="preview-backdrop"></div>
   <canvas id="smoke-canvas"></canvas>
   <canvas id="overlay-canvas"></canvas>
@@ -168,10 +169,35 @@
       </div>
     </div>
 
+    <div class="settings-section" data-section="background">
+      <button id="background-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="background-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Background</button>
+      <div id="background-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <label class="bg-option">
+            <input type="radio" name="bg" value="0" />
+            <span>None</span>
+          </label>
+          <label class="bg-option">
+            <input type="radio" name="bg" value="1" />
+            <span>Session</span>
+          </label>
+          <label class="bg-option">
+            <input type="radio" name="bg" value="2" />
+            <span>Linear Gradient</span>
+          </label>
+          <label class="bg-option">
+            <input type="radio" name="bg" value="3" />
+            <span>Radial Gradient</span>
+          </label>
+          <p class="field-hint">Persistent demo backdrop (opacity 0.75). Independent of the header ▚ preview.</p>
+        </div>
+      </div>
+    </div>
+
     <button id="test-button">Test smoke</button>
     <button id="reset-button">Reset all ඞ</button>
 
-    <div class="setting-group">
+    <div class="setting-group copy-row">
       <button id="copy-url-button" class="small-button">Copy URL</button>
       <button id="copy-url-obs-button" class="small-button">Copy URL for OBS</button>
     </div>
@@ -183,6 +209,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

@@ -5,8 +5,10 @@
   --settings-border: rgba(255, 255, 255, 0.15);
   --settings-text: #f5f5f5;
   --accent: #0ff;
-  --spot-accent: #f40;
+  --destructive: #f40;
+  --spot-accent: var(--destructive);
   --font-vcr: 'Better VCR', monospace;
+  --demo-opacity: 0.75;
   --settings-pattern: repeating-conic-gradient(
     rgba(0, 255, 255, 0.05) 0% 25%,
     rgba(255, 0, 255, 0.05) 0% 50%
@@ -31,10 +33,37 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-#preview-backdrop {
+/* Persistent demo background — independent of settings-mode checkerboard */
+#demo-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: transparent;
+  transition: opacity 400ms ease;
+}
+
+#demo-backdrop[data-bg="1"],
+#demo-backdrop[data-bg="2"],
+#demo-backdrop[data-bg="3"] {
+  opacity: var(--demo-opacity);
+}
+
+#demo-backdrop[data-bg="1"] {
+  background:
+    url("../img/apartment_panorama.png") center / auto 100% no-repeat;
+}
+
+#demo-backdrop[data-bg="2"],
+#demo-backdrop[data-bg="3"] {
+  background-color: #0ff;
+}
+
+#preview-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
   opacity: 0;
   pointer-events: none;
   transition: opacity 500ms ease;
@@ -57,7 +86,7 @@ body.settings-mode {
   height: 100%;
   display: block;
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
 #overlay-canvas {
@@ -392,6 +421,27 @@ body.settings-mode #overlay-canvas {
   opacity: 0.8;
 }
 
+.field-hint {
+  font-size: 0.7rem;
+  opacity: 0.65;
+  margin-top: 0.25rem;
+  line-height: 1.3;
+}
+
+.bg-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin-bottom: 0.45rem;
+  cursor: pointer;
+  line-height: 1.3;
+}
+
+.bg-option input {
+  margin-top: 0.15rem;
+  accent-color: var(--accent);
+}
+
 #test-button,
 #reset-button,
 .small-button {
@@ -411,8 +461,15 @@ body.settings-mode #overlay-canvas {
 }
 
 #reset-button {
-  border-color: var(--spot-accent);
-  color: var(--spot-accent);
+  border-color: var(--destructive);
+  color: var(--destructive);
+}
+
+.copy-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
 }
 
 .small-button {

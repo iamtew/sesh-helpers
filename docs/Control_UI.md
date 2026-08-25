@@ -70,7 +70,7 @@ Fixed panel, one edge, ~300px, scrollable, dark glass + blur.
 | Utils | optional | Help, checkerboard, flip side… |
 | ✕ Close | yes | Sets `menu=DISABLE` |
 | Accordion | yes | One section open; `aria-expanded` + `hidden` |
-| Flip side | optional | `side=left\|right` in URL |
+| Flip side | optional | `side=left\|right` in URL; apps default to **right** |
 
 **Controls:** range (label + slider + value, on `input`), toggle (+ disable dependents), color (picker + hex sync), buttons (primary / destructive / small).
 

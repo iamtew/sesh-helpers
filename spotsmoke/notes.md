@@ -68,3 +68,13 @@ Here comes the Clanker variation!
 - Save and close — **the effect syncs with the lattice, whispering into the *chrome* like a forgotten protocol.**
 
 
+## URL params (clanker cheat sheet)
+
+| Param | Default | Notes |
+|-------|---------|-------|
+| `menu` | `ON` | `DISABLE` for clean OBS |
+| `side` | `right` | Settings panel edge |
+| `bg` | `0` | Demo backdrop: `0` None · `1` Session · `2` Linear · `3` Radial |
+| `checkerboard` | `false` | Settings-mode preview only |
+
+

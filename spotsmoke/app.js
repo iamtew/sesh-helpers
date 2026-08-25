@@ -1,5 +1,11 @@
 // --- CONFIG ---------------------------------------------------------
 
+const BG_NONE = "0";
+const BG_SESSION = "1";
+const BG_LINEAR = "2";
+const BG_RADIAL = "3";
+const BG_VALUES = new Set([BG_NONE, BG_SESSION, BG_LINEAR, BG_RADIAL]);
+
 const defaults = {
   spotX: 50, // percent of viewport width
   spotY: 70, // percent of viewport height
@@ -16,9 +22,10 @@ const defaults = {
   glitchIntensity: 0,
   glitchFrequency: 2,
   glitchFringe: 0,
+  bg: BG_NONE,
   checkerboardEnabled: false,
   settingsMode: "ON",
-  side: "left" // which screen edge the settings controls live on
+  side: "right" // which screen edge the settings controls live on
 };
 
 const params = new URLSearchParams(location.search);
@@ -34,6 +41,11 @@ function getBooleanParam(key, fallback) {
 function getNumberParam(key, fallback) {
   const value = Number.parseFloat(getParam(key, fallback));
   return Number.isFinite(value) ? value : fallback;
+}
+
+function normalizeBg(value) {
+  const bg = String(value ?? "");
+  return BG_VALUES.has(bg) ? bg : defaults.bg;
 }
 
 let state = {
@@ -52,9 +64,10 @@ let state = {
   glitchIntensity: getNumberParam("glitchIntensity", defaults.glitchIntensity),
   glitchFrequency: getNumberParam("glitchFrequency", defaults.glitchFrequency),
   glitchFringe: getNumberParam("glitchFringe", defaults.glitchFringe),
+  bg: normalizeBg(getParam("bg", defaults.bg)),
   checkerboardEnabled: getBooleanParam("checkerboard", defaults.checkerboardEnabled),
   settingsMode: getParam("menu", defaults.settingsMode) === "DISABLE" ? "DISABLE" : "ON",
-  side: getParam("side", defaults.side)
+  side: getParam("side", defaults.side) === "left" ? "left" : "right"
 };
 
 state.lifetime = Math.min(state.lifetime, state.duration);
@@ -69,6 +82,7 @@ const pixelCanvas = document.createElement("canvas");
 const pixelCtx = pixelCanvas.getContext("2d");
 
 const settingsMenu = document.getElementById("settings-menu");
+const demoBackdrop = document.getElementById("demo-backdrop");
 const helpButton = document.getElementById("help-button");
 const checkerboardButton = document.getElementById("checkerboard-button");
 const flipSideButton = document.getElementById("flip-side-button");
@@ -102,6 +116,7 @@ const glitchFrequencySlider = document.getElementById("glitch-frequency-slider")
 const glitchFrequencyValue = document.getElementById("glitch-frequency-value");
 const glitchFringeSlider = document.getElementById("glitch-fringe-slider");
 const glitchFringeValue = document.getElementById("glitch-fringe-value");
+const bgRadios = document.querySelectorAll('input[name="bg"]');
 const testButton = document.getElementById("test-button");
 const resetButton = document.getElementById("reset-button");
 const copyUrlButton = document.getElementById("copy-url-button");
@@ -526,6 +541,70 @@ requestAnimationFrame(loop);
 
 // --- SETTINGS MODE -----------------------------------------------------
 
+let bgAnimFrame = 0;
+let bgAnimRunning = false;
+
+function stopBgAnimation() {
+  bgAnimRunning = false;
+  if (bgAnimFrame) {
+    cancelAnimationFrame(bgAnimFrame);
+    bgAnimFrame = 0;
+  }
+}
+
+function paintLinearGradient(t) {
+  const phase = (t * 0.00012) % 1;
+  const shift = phase * 100;
+  demoBackdrop.style.backgroundImage =
+    `linear-gradient(180deg, #0ff ${-50 + shift}%, #f0f ${50 + shift}%, #0ff ${150 + shift}%)`;
+  demoBackdrop.style.backgroundSize = "100% 200%";
+  demoBackdrop.style.backgroundPosition = `center ${phase * 100}%`;
+}
+
+function paintRadialGradient(t) {
+  const phase = (t * 0.00015) % 1;
+  const pulse = 40 + Math.sin(phase * Math.PI * 2) * 25;
+  const angle = phase * 360;
+  demoBackdrop.style.backgroundImage =
+    `radial-gradient(circle at ${50 + Math.cos(angle * Math.PI / 180) * 12}% ${50 + Math.sin(angle * Math.PI / 180) * 12}%, #0ff 0%, #f0f ${pulse}%, #0ff 100%)`;
+  demoBackdrop.style.backgroundSize = "";
+  demoBackdrop.style.backgroundPosition = "";
+}
+
+function bgTick(t) {
+  if (!bgAnimRunning) return;
+  if (state.bg === BG_LINEAR) paintLinearGradient(t);
+  else if (state.bg === BG_RADIAL) paintRadialGradient(t);
+  else {
+    stopBgAnimation();
+    return;
+  }
+  bgAnimFrame = requestAnimationFrame(bgTick);
+}
+
+function startBgAnimation() {
+  if (bgAnimRunning) return;
+  bgAnimRunning = true;
+  bgAnimFrame = requestAnimationFrame(bgTick);
+}
+
+function applyBackground() {
+  demoBackdrop.dataset.bg = state.bg;
+
+  for (const radio of bgRadios) {
+    radio.checked = radio.value === state.bg;
+  }
+
+  if (state.bg === BG_LINEAR || state.bg === BG_RADIAL) {
+    startBgAnimation();
+  } else {
+    stopBgAnimation();
+    demoBackdrop.style.backgroundImage = "";
+    demoBackdrop.style.backgroundSize = "";
+    demoBackdrop.style.backgroundPosition = "";
+  }
+}
+
 function updateURL() {
   params.set("spotX", state.spotX.toFixed(2));
   params.set("spotY", state.spotY.toFixed(2));
@@ -542,6 +621,7 @@ function updateURL() {
   params.set("glitchIntensity", state.glitchIntensity);
   params.set("glitchFrequency", state.glitchFrequency);
   params.set("glitchFringe", state.glitchFringe);
+  params.set("bg", state.bg);
   params.set("checkerboard", state.checkerboardEnabled);
   params.set("menu", state.settingsMode);
   params.set("side", state.side);
@@ -595,6 +675,9 @@ function syncInputs() {
   glitchFrequencyValue.textContent = `${state.glitchFrequency}Hz`;
   glitchFringeSlider.value = state.glitchFringe;
   glitchFringeValue.textContent = `${state.glitchFringe}px`;
+  for (const radio of bgRadios) {
+    radio.checked = radio.value === state.bg;
+  }
   syncEffectsEnabled();
 }
 
@@ -722,9 +805,19 @@ resetButton.addEventListener("click", () => {
   syncInputs();
   applySettingsMode();
   applySide();
+  applyBackground();
   applyCheckerboard();
   updateURL();
 });
+
+for (const radio of bgRadios) {
+  radio.addEventListener("change", e => {
+    if (!e.target.checked) return;
+    state.bg = normalizeBg(e.target.value);
+    applyBackground();
+    updateURL();
+  });
+}
 
 copyUrlButton.addEventListener("click", () => {
   navigator.clipboard.writeText(location.href);
@@ -741,6 +834,7 @@ copyUrlObsButton.addEventListener("click", () => {
 syncInputs();
 applySettingsMode();
 applySide();
+applyBackground();
 applyCheckerboard();
 
 setTimeout(() => {

@@ -16,6 +16,12 @@ const REGULAR_FONTS = [
   "Segoe UI"
 ];
 
+const BG_NONE = "0";
+const BG_SESSION = "1";
+const BG_LINEAR = "2";
+const BG_RADIAL = "3";
+const BG_VALUES = new Set([BG_NONE, BG_SESSION, BG_LINEAR, BG_RADIAL]);
+
 const defaults = {
   title: "TITLE",
   message: "Message",
@@ -30,9 +36,10 @@ const defaults = {
   bannerX: 50,
   bannerY: 85,
   playlist: "",
+  bg: BG_NONE,
   checkerboardEnabled: false,
   settingsMode: "ON",
-  side: "left"
+  side: "right"
 };
 
 const params = new URLSearchParams(location.search);
@@ -53,6 +60,11 @@ function getNumberParam(key, fallback) {
 function normalizeLayout(value) {
   const layout = String(value || "");
   return layout === "1" || layout === "2" || layout === "3" ? layout : defaults.layout;
+}
+
+function normalizeBg(value) {
+  const bg = String(value ?? "");
+  return BG_VALUES.has(bg) ? bg : defaults.bg;
 }
 
 function getThemeCatalog() {
@@ -134,9 +146,10 @@ let state = {
   bannerX: getNumberParam("bannerX", defaults.bannerX),
   bannerY: getNumberParam("bannerY", defaults.bannerY),
   playlist: getParam("playlist", defaults.playlist),
+  bg: normalizeBg(getParam("bg", defaults.bg)),
   checkerboardEnabled: getBooleanParam("checkerboard", defaults.checkerboardEnabled),
   settingsMode: getParam("menu", defaults.settingsMode) === "DISABLE" ? "DISABLE" : "ON",
-  side: getParam("side", defaults.side) === "right" ? "right" : "left"
+  side: getParam("side", defaults.side) === "left" ? "left" : "right"
 };
 
 // --- DOM --------------------------------------------------------------
@@ -150,6 +163,7 @@ const playlistTitle = banner.querySelector(".playlist-title");
 const playlistMeta = banner.querySelector(".playlist-meta");
 const playlistThumb = banner.querySelector(".playlist-thumb");
 
+const demoBackdrop = document.getElementById("demo-backdrop");
 const settingsMenu = document.getElementById("settings-menu");
 const checkerboardButton = document.getElementById("checkerboard-button");
 const flipSideButton = document.getElementById("flip-side-button");
@@ -171,6 +185,7 @@ const widthValue = document.getElementById("width-value");
 const heightSlider = document.getElementById("height-slider");
 const heightValue = document.getElementById("height-value");
 const layoutRadios = document.querySelectorAll('input[name="layout"]');
+const bgRadios = document.querySelectorAll('input[name="bg"]');
 const themeSelect = document.getElementById("theme-select");
 const themeDescription = document.getElementById("theme-description");
 
@@ -390,6 +405,70 @@ settingsMenu.addEventListener("scroll", () => {
 
 // --- APPLY ------------------------------------------------------------
 
+let bgAnimFrame = 0;
+let bgAnimRunning = false;
+
+function stopBgAnimation() {
+  bgAnimRunning = false;
+  if (bgAnimFrame) {
+    cancelAnimationFrame(bgAnimFrame);
+    bgAnimFrame = 0;
+  }
+}
+
+function paintLinearGradient(t) {
+  const phase = (t * 0.00012) % 1;
+  const shift = phase * 100;
+  demoBackdrop.style.backgroundImage =
+    `linear-gradient(180deg, #0ff ${-50 + shift}%, #f0f ${50 + shift}%, #0ff ${150 + shift}%)`;
+  demoBackdrop.style.backgroundSize = "100% 200%";
+  demoBackdrop.style.backgroundPosition = `center ${phase * 100}%`;
+}
+
+function paintRadialGradient(t) {
+  const phase = (t * 0.00015) % 1;
+  const pulse = 40 + Math.sin(phase * Math.PI * 2) * 25;
+  const angle = phase * 360;
+  demoBackdrop.style.backgroundImage =
+    `radial-gradient(circle at ${50 + Math.cos(angle * Math.PI / 180) * 12}% ${50 + Math.sin(angle * Math.PI / 180) * 12}%, #0ff 0%, #f0f ${pulse}%, #0ff 100%)`;
+  demoBackdrop.style.backgroundSize = "";
+  demoBackdrop.style.backgroundPosition = "";
+}
+
+function bgTick(t) {
+  if (!bgAnimRunning) return;
+  if (state.bg === BG_LINEAR) paintLinearGradient(t);
+  else if (state.bg === BG_RADIAL) paintRadialGradient(t);
+  else {
+    stopBgAnimation();
+    return;
+  }
+  bgAnimFrame = requestAnimationFrame(bgTick);
+}
+
+function startBgAnimation() {
+  if (bgAnimRunning) return;
+  bgAnimRunning = true;
+  bgAnimFrame = requestAnimationFrame(bgTick);
+}
+
+function applyBackground() {
+  demoBackdrop.dataset.bg = state.bg;
+
+  for (const radio of bgRadios) {
+    radio.checked = radio.value === state.bg;
+  }
+
+  if (state.bg === BG_LINEAR || state.bg === BG_RADIAL) {
+    startBgAnimation();
+  } else {
+    stopBgAnimation();
+    demoBackdrop.style.backgroundImage = "";
+    demoBackdrop.style.backgroundSize = "";
+    demoBackdrop.style.backgroundPosition = "";
+  }
+}
+
 function updateURL() {
   // Drop first so re-set at the end — URLSearchParams keeps insertion order.
   params.delete("title");
@@ -409,6 +488,7 @@ function updateURL() {
   params.set("bannerX", state.bannerX.toFixed(2));
   params.set("bannerY", state.bannerY.toFixed(2));
   params.set("playlist", state.playlist);
+  params.set("bg", state.bg);
   params.set("checkerboard", String(state.checkerboardEnabled));
   params.set("menu", state.settingsMode);
   params.set("side", state.side);
@@ -557,6 +637,7 @@ function applyAll() {
   applyTheme();
   applyFonts();
   applyLayout();
+  applyBackground();
   applyBannerPosition();
   applySettingsMode();
   applySide();
@@ -579,6 +660,9 @@ function syncInputs() {
   heightValue.textContent = `${state.height}%`;
   for (const radio of layoutRadios) {
     radio.checked = radio.value === state.layout;
+  }
+  for (const radio of bgRadios) {
+    radio.checked = radio.value === state.bg;
   }
   themeSelect.value = state.theme;
   const themeMeta = findTheme(state.theme);
@@ -771,6 +855,15 @@ for (const radio of layoutRadios) {
     if (!e.target.checked) return;
     state.layout = normalizeLayout(e.target.value);
     applyLayout();
+    updateURL();
+  });
+}
+
+for (const radio of bgRadios) {
+  radio.addEventListener("change", e => {
+    if (!e.target.checked) return;
+    state.bg = normalizeBg(e.target.value);
+    applyBackground();
     updateURL();
   });
 }

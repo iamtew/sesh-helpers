@@ -40,6 +40,7 @@
   --banner-message-font: 'Better VCR', monospace;
   --banner-max-width: min(90vw, 56rem);
 
+  --demo-opacity: 0.75;
   --settings-pattern: repeating-conic-gradient(
     rgba(0, 255, 255, 0.05) 0% 25%,
     rgba(255, 0, 255, 0.05) 0% 50%
@@ -64,10 +65,37 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-#preview-backdrop {
+/* Persistent demo background — independent of settings-mode checkerboard */
+#demo-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: transparent;
+  transition: opacity 400ms ease;
+}
+
+#demo-backdrop[data-bg="1"],
+#demo-backdrop[data-bg="2"],
+#demo-backdrop[data-bg="3"] {
+  opacity: var(--demo-opacity);
+}
+
+#demo-backdrop[data-bg="1"] {
+  background:
+    url("../img/apartment_panorama.png") center / auto 100% no-repeat;
+}
+
+#demo-backdrop[data-bg="2"],
+#demo-backdrop[data-bg="3"] {
+  background-color: #0ff;
+}
+
+#preview-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
   opacity: 0;
   pointer-events: none;
   transition: opacity 500ms ease;
@@ -602,6 +630,20 @@ body.settings-mode #banner.dragging {
 }
 
 .layout-option input {
+  margin-top: 0.15rem;
+  accent-color: var(--accent);
+}
+
+.bg-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin-bottom: 0.45rem;
+  cursor: pointer;
+  line-height: 1.3;
+}
+
+.bg-option input {
   margin-top: 0.15rem;
   accent-color: var(--accent);
 }

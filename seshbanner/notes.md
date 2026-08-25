@@ -4,7 +4,10 @@ OBS Browser Source overlay: title/message banner with layouts, fonts, and drag p
 
 ## Transparent background (OBS)
 
-Page background is **transparent** so the banner composites over your scene. Do not set an opaque `html`/`body` fill. Checkerboard is settings-mode preview only.
+Page background is **transparent** so the banner composites over your scene. Do not set an opaque `html`/`body` fill.
+
+- Header ▚ checkerboard = settings-mode preview only (`checkerboard`).
+- **Background** section (`bg`) = persistent demo backdrop (visible even with `menu=DISABLE`). Use `bg=0` for clean OBS output.
 
 ## Installation
 
@@ -36,12 +39,24 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `bannerX` / `bannerY` | Position (% of viewport) | `50` / `85` |
 | `playlist` | YouTube playlist URL (layout 2) | empty |
 | `menu` | `ON` or `DISABLE` | `ON` |
-| `side` | Settings panel `left` \| `right` | `left` |
+| `side` | Settings panel `left` \| `right` | `right` |
+| `bg` | Demo background `0`–`3` | `0` (None) |
 | `checkerboard` | Settings preview backdrop | `false` |
 
 Example:
 
-`seshbanner/?title=LIVE&message=Starting%20soon&layout=1&menu=DISABLE`
+`seshbanner/?title=LIVE&message=Starting%20soon&layout=1&menu=DISABLE&bg=0`
+
+## Background (`bg`)
+
+Persistent demo layer at 0.75 opacity. Independent of the header ▚ toggle.
+
+| Value | Mode |
+|-------|------|
+| `0` | None (default) |
+| `1` | Session — `img/apartment_panorama.png`, height-matched, centered |
+| `2` | Linear gradient `#0FF` → `#F0F` (animated slide) |
+| `3` | Radial gradient `#0FF` / `#F0F` (animated) |
 
 ## Theme
 
