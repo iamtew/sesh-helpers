@@ -21,7 +21,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 - Drag the banner (settings open only) to set position — saved as `bannerX` / `bannerY`.
 - Banner cannot move when `menu=DISABLE`.
 - Layout is fixed (title + user on the left, message on the right). No Layout section.
-- **Theme** picks the overlay look. LCD Glass is the current theme.
+- **Theme** picks the overlay look. LCD Glass is the default; Sesh Glass is also available.
 - Banner grows to fit title, user, and message (no marquee / clipping).
 
 ## URL params
@@ -31,7 +31,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `title` | Banner title | `Trick Request by:` |
 | `user` | Requester name | `Modney Rullen` |
 | `message` | Request text | `Do a kickflip!` |
-| `theme` | Overlay theme id (`lcd-glass`) | `lcd-glass` |
+| `theme` | Overlay theme id (`lcd-glass` · `sesh-glass`) | `lcd-glass` |
 | `titleFont` / `userFont` / `messageFont` | Font **index** in combined list (0–9) | `5` = Better VCR |
 | `titleSize` | Title font size (px, 12–96) | `20` |
 | `userSize` | User font size (px, 12–96) | `26` |
@@ -61,7 +61,10 @@ Persistent demo layer at 0.75 opacity. Independent of the header ▚ toggle.
 
 ## Theme
 
-See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from fonts and background. **LCD Glass** — frosted navy-cyan glass with pulsing magenta/cyan LCD fringing.
+See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from fonts and background.
+
+- **LCD Glass** — frosted navy-cyan glass with pulsing magenta/cyan LCD fringing.
+- **Sesh Glass** — frosted red-to-lime glass with a retro halftone screen and pulsing orange/red/lime fringing.
 
 ## Size
 

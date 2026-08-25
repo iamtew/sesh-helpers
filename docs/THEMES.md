@@ -10,10 +10,14 @@ Control UI chrome stays as specified in [`Control_UI.md`](Control_UI.md). Themes
 
 ```text
 themes/
-└── lcd-glass/
-    ├── theme.json    # id, name, description of the look
-    ├── theme.css     # tokens + .theme-panel surface
-    └── theme.js      # optional effects (e.g. chromatic pulse) + catalog entry
+├── lcd-glass/
+│   ├── theme.json    # id, name, description of the look
+│   ├── theme.css     # tokens + .theme-panel surface
+│   └── theme.js      # optional effects (e.g. chromatic pulse) + catalog entry
+└── sesh-glass/
+    ├── theme.json
+    ├── theme.css
+    └── theme.js
 ```
 
 Each theme folder has a `theme.json` next to its CSS/JS:
@@ -32,7 +36,7 @@ Each theme folder has a `theme.json` next to its CSS/JS:
 2. Set `document.documentElement.dataset.theme` to the theme `id`.
 3. Put `class="theme-panel"` on the glass surface (the banner box, not the page).
 4. Settings dropdowns read `window.SeshThemes.catalog` (each theme.js registers itself).
-5. Effects: `window.SeshThemes.effects[id].start(el)` / `.stop(el)` — pass the panel or an ancestor. LCD Glass writes `--theme-text-shadow` so child text pulses.
+5. Effects: `window.SeshThemes.effects[id].start(el)` / `.stop(el)` — pass the panel or an ancestor. Glass themes write `--theme-text-shadow` so child text pulses.
 
 Persist the choice as URL param `theme` (see [`Control_UI.md`](Control_UI.md) live-update contract).
 
@@ -43,6 +47,10 @@ Page background stays **transparent**.
 ## LCD Glass
 
 Frosted navy-cyan glass, ice-blue text, magenta/cyan chromatic pulse. Extracted from `tmp/trglass.html`.
+
+## Sesh Glass
+
+Frosted red-to-lime glass (`#F20D0D` → `#E5F20D`), warm readout text, orange/red/lime chromatic pulse, and a halftone dot screen over the panel. Same glass + pulse behavior as LCD Glass with a warmer palette. Extracted from `tmp/seshglass.html`.
 
 ---
 
@@ -61,3 +69,4 @@ Frosted navy-cyan glass, ice-blue text, magenta/cyan chromatic pulse. Extracted 
 - [`seshbanner/`](../seshbanner/) — first consumer
 - [`trbanner/`](../trbanner/) — Trick Request Banner consumer
 - [`tmp/trglass.html`](../tmp/trglass.html) — LCD Glass source
+- [`tmp/seshglass.html`](../tmp/seshglass.html) — Sesh Glass source

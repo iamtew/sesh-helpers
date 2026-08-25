@@ -1,0 +1,104 @@
+/* Sesh Glass — reusable overlay theme
+   Host: set data-theme="sesh-glass" on <html> and class="theme-panel" on the glass surface.
+   Pulse: themes/sesh-glass/theme.js writes --theme-text-shadow on the panel (or an ancestor). */
+
+[data-theme="sesh-glass"] {
+  --sesh-text-primary: #fff6e8;
+  --sesh-text-base: #eee;
+
+  --sesh-glass-grad-a: rgba(242, 13, 13, 0.72);
+  --sesh-glass-grad-b: rgba(229, 242, 13, 0.5);
+  --sesh-glass-border: rgba(255, 230, 90, 0.32);
+  --sesh-glass-inset-highlight: rgba(255, 255, 255, 0.18);
+  --sesh-glass-shadow: rgba(0, 0, 0, 0.25);
+
+  --sesh-blur-amount: 12px;
+  --sesh-saturate-amount: 120%;
+  --sesh-radius-panel: 16px;
+
+  --sesh-aberration-primary: rgba(255, 80, 0, 0.6);
+  --sesh-aberration-red: rgba(255, 13, 40, 0.35);
+  --sesh-aberration-lime: rgba(200, 255, 13, 0.3);
+
+  /* Opposite of glass gradient (#E5F20D → #F20D0D), masked into Ben-Day dots */
+  --sesh-halftone-grad-a: #e5f20d;
+  --sesh-halftone-grad-b: #f20d0d;
+  --sesh-halftone-size-x: 22px;
+  --sesh-halftone-size-y: 19px;
+  --sesh-halftone-radius: 5.5px;
+  --sesh-halftone-mask: radial-gradient(
+    circle var(--sesh-halftone-radius),
+    #fff 100%,
+    transparent calc(100% + 0.5px)
+  );
+
+  --theme-text-shadow:
+    0 0 6px var(--sesh-aberration-primary),
+    2px 0 4px var(--sesh-aberration-red),
+    -2px 0 4px var(--sesh-aberration-lime);
+
+  /* Host apps that already use --banner-* tokens pick these up without extra CSS */
+  --banner-bg: linear-gradient(135deg, var(--sesh-glass-grad-a), var(--sesh-glass-grad-b));
+  --banner-border: var(--sesh-glass-border);
+  --banner-text: var(--sesh-text-primary);
+  --banner-shadow:
+    inset 0 1px 0 var(--sesh-glass-inset-highlight),
+    0 10px 30px var(--sesh-glass-shadow);
+  --banner-blur: var(--sesh-blur-amount);
+  --banner-saturate: var(--sesh-saturate-amount);
+  --banner-radius-base: var(--sesh-radius-panel);
+  --banner-accent: var(--sesh-aberration-lime);
+}
+
+[data-theme="sesh-glass"] .theme-panel {
+  position: relative;
+  isolation: isolate;
+  color: var(--sesh-text-primary);
+  background: linear-gradient(135deg, var(--sesh-glass-grad-a), var(--sesh-glass-grad-b));
+  border: 1px solid var(--sesh-glass-border);
+  border-radius: var(--banner-radius, var(--sesh-radius-panel));
+  box-shadow:
+    inset 0 1px 0 var(--sesh-glass-inset-highlight),
+    0 10px 30px var(--sesh-glass-shadow);
+  backdrop-filter: blur(var(--sesh-blur-amount)) saturate(var(--sesh-saturate-amount));
+  -webkit-backdrop-filter: blur(var(--sesh-blur-amount)) saturate(var(--sesh-saturate-amount));
+  text-shadow: var(--theme-text-shadow);
+}
+
+/* Opposite gradient punched into staggered dots, lightened over the glass */
+[data-theme="sesh-glass"] .theme-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    135deg,
+    var(--sesh-halftone-grad-a),
+    var(--sesh-halftone-grad-b)
+  );
+  -webkit-mask-image: var(--sesh-halftone-mask), var(--sesh-halftone-mask);
+  mask-image: var(--sesh-halftone-mask), var(--sesh-halftone-mask);
+  -webkit-mask-size: var(--sesh-halftone-size-x) var(--sesh-halftone-size-y);
+  mask-size: var(--sesh-halftone-size-x) var(--sesh-halftone-size-y);
+  -webkit-mask-position:
+    0 0,
+    calc(var(--sesh-halftone-size-x) / 2) calc(var(--sesh-halftone-size-y) / 2);
+  mask-position:
+    0 0,
+    calc(var(--sesh-halftone-size-x) / 2) calc(var(--sesh-halftone-size-y) / 2);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  mix-blend-mode: lighten;
+  opacity: 0.33;
+}
+
+[data-theme="sesh-glass"] .theme-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="sesh-glass"] .theme-panel * {
+  text-shadow: var(--theme-text-shadow);
+}

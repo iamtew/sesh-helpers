@@ -44,7 +44,8 @@ sesh-helpers/
 ├── seshbanner/               # Sesh Banner helper app (OBS Browser Source)
 ├── trbanner/                 # Trick Request Banner (OBS Browser Source)
 ├── themes/                   # Shared overlay themes (see THEMES.md)
-│   └── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
+│   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
+│   └── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
 ├── docs/
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point
@@ -106,7 +107,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 |-------|--------|
 | Tech stack | Static HTML/JS/CSS per helper app (for now) |
 | Control UI | Framework in [`Control_UI.md`](Control_UI.md); reference in `spotsmoke/` |
-| Overlay themes | [`THEMES.md`](THEMES.md); first theme LCD Glass |
+| Overlay themes | [`THEMES.md`](THEMES.md); LCD Glass, Sesh Glass |
 | Deployment / hosting | GitHub Pages (repo root) |
 | Shared Control UI module | TBD — extract from Spot Smoke if useful |
 | Authentication / operator roles | TBD |

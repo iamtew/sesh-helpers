@@ -71,7 +71,10 @@ function getThemeCatalog() {
     ? window.SeshThemes.catalog
     : [];
   if (catalog.length) return catalog;
-  return [{ id: "lcd-glass", name: "LCD Glass", description: "" }];
+  return [
+    { id: "lcd-glass", name: "LCD Glass", description: "" },
+    { id: "sesh-glass", name: "Sesh Glass", description: "" }
+  ];
 }
 
 const THEMES = getThemeCatalog();

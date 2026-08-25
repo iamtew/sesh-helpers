@@ -170,7 +170,7 @@ body.settings-mode #banner.dragging {
   margin: 0.1rem 0;
   border-radius: 2px;
   background: currentColor;
-  /* Pulse with LCD Glass chromatic shadow (theme.js writes --theme-text-shadow) */
+  /* Pulse with theme chromatic shadow (theme.js writes --theme-text-shadow) */
   box-shadow: var(--theme-text-shadow,
     0 0 6px rgba(209, 76, 255, 0.6),
     2px 0 4px rgba(255, 0, 255, 0.35),

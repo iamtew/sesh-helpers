@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css?v=4" />
   <link rel="stylesheet" href="../themes/lcd-glass/theme.css" />
+  <link rel="stylesheet" href="../themes/sesh-glass/theme.css" />
 </head>
 <body>
   <div id="demo-backdrop" data-bg="0" aria-hidden="true"></div>
@@ -67,31 +68,6 @@
           <label for="theme-select"><span>Theme</span></label>
           <select id="theme-select"></select>
           <p class="field-hint" id="theme-description"></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="settings-section" data-section="background">
-      <button id="background-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="background-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Background</button>
-      <div id="background-controls" class="section-panel" hidden>
-        <div class="setting-group">
-          <label class="bg-option">
-            <input type="radio" name="bg" value="0" />
-            <span>None</span>
-          </label>
-          <label class="bg-option">
-            <input type="radio" name="bg" value="1" />
-            <span>Session</span>
-          </label>
-          <label class="bg-option">
-            <input type="radio" name="bg" value="2" />
-            <span>Linear Gradient</span>
-          </label>
-          <label class="bg-option">
-            <input type="radio" name="bg" value="3" />
-            <span>Radial Gradient</span>
-          </label>
-          <p class="field-hint">Persistent demo backdrop (opacity 0.75). Independent of the header ▚ preview.</p>
         </div>
       </div>
     </div>
@@ -204,6 +180,31 @@
       </div>
     </div>
 
+    <div class="settings-section" data-section="background">
+      <button id="background-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="background-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Background</button>
+      <div id="background-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <label class="bg-option">
+            <input type="radio" name="bg" value="0" />
+            <span>None</span>
+          </label>
+          <label class="bg-option">
+            <input type="radio" name="bg" value="1" />
+            <span>Session</span>
+          </label>
+          <label class="bg-option">
+            <input type="radio" name="bg" value="2" />
+            <span>Linear Gradient</span>
+          </label>
+          <label class="bg-option">
+            <input type="radio" name="bg" value="3" />
+            <span>Radial Gradient</span>
+          </label>
+          <p class="field-hint">Persistent demo backdrop (opacity 0.75). Independent of the header ▚ preview.</p>
+        </div>
+      </div>
+    </div>
+
     <button id="reset-button" class="menu-action">Reset all</button>
 
     <div class="setting-group copy-row">
@@ -213,6 +214,7 @@
   </div>
 
   <script src="../themes/lcd-glass/theme.js"></script>
+  <script src="../themes/sesh-glass/theme.js"></script>
   <script src="app.js?v=4"></script>
 </body>
 </html>
