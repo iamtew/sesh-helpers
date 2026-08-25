@@ -11,6 +11,9 @@
   --sesh-glass-border: rgba(255, 230, 90, 0.32);
   --sesh-glass-inset-highlight: rgba(255, 255, 255, 0.18);
   --sesh-glass-shadow: rgba(0, 0, 0, 0.25);
+  --sesh-outline-inner: #000;
+  --sesh-outline-outer: #fff;
+  --sesh-outline-width: 0.25rem;
 
   --sesh-blur-amount: 12px;
   --sesh-saturate-amount: 120%;
@@ -43,7 +46,9 @@
   --banner-text: var(--sesh-text-primary);
   --banner-shadow:
     inset 0 1px 0 var(--sesh-glass-inset-highlight),
-    0 10px 30px var(--sesh-glass-shadow);
+    0 10px 30px var(--sesh-glass-shadow),
+    0 0 0 var(--sesh-outline-width) var(--sesh-outline-inner),
+    0 0 0 calc(var(--sesh-outline-width) * 2) var(--sesh-outline-outer);
   --banner-blur: var(--sesh-blur-amount);
   --banner-saturate: var(--sesh-saturate-amount);
   --banner-radius-base: var(--sesh-radius-panel);
@@ -59,7 +64,9 @@
   border-radius: var(--banner-radius, var(--sesh-radius-panel));
   box-shadow:
     inset 0 1px 0 var(--sesh-glass-inset-highlight),
-    0 10px 30px var(--sesh-glass-shadow);
+    0 10px 30px var(--sesh-glass-shadow),
+    0 0 0 var(--sesh-outline-width) var(--sesh-outline-inner),
+    0 0 0 calc(var(--sesh-outline-width) * 2) var(--sesh-outline-outer);
   backdrop-filter: blur(var(--sesh-blur-amount)) saturate(var(--sesh-saturate-amount));
   -webkit-backdrop-filter: blur(var(--sesh-blur-amount)) saturate(var(--sesh-saturate-amount));
   text-shadow: var(--theme-text-shadow);
