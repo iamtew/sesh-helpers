@@ -1,0 +1,55 @@
+---
+description: Control UI contracts for helper apps — transparent canvas, live page + live URL
+globs: spotsmoke/**/*.{js,css,html},seshbanner/**/*.{js,css,html},trbanner/**/*.{js,css,html}
+alwaysApply: false
+---
+
+# Control UI contracts
+
+Full framework: [`docs/Control_UI.md`](../../docs/Control_UI.md).
+
+## OBS canvas
+
+`html, body { background: transparent }` — never paint an opaque page fill. Operator
+chrome (guides, checkerboard, crosshairs) renders only under `body.settings-mode`.
+
+## Live update — imperative
+
+Every setting change does **both**, in the **same** handler. No Save, no reload.
+
+```js
+slider.addEventListener('input', (e) => {   // 'input', not 'change'/blur
+  state.radius = Number(e.target.value);
+  applyToPage(state);                       // running render path updates now
+  updateURL();                              // rewrite the FULL param set
+});
+
+function updateURL() {
+  const url = new URL(location.href);
+  url.search = new URLSearchParams(allPersistedParams(state)).toString();
+  history.replaceState(null, '', url);      // location.href == what they see
+}
+```
+
+## URL is the entire config
+
+No `localStorage`, no account, no config server. Every persisted setting has a short,
+stable query param. On load: parse params, hydrate state, sync UI, apply to page;
+missing params fall back to defaults. Booleans are `"true"` / `"false"`. Runtime-only
+controls (Test / Preview) get no param but still update the page live.
+
+Copy buttons **only** read the address bar — they never assemble params:
+Copy URL is `navigator.clipboard.writeText(location.href)`; Copy for OBS clones the URL,
+sets `menu=DISABLE`, then copies.
+
+## Visibility
+
+Minimum params are `menu` (`DISABLE` hides the panel and overlays) and `side`
+(`left` | `right`, apps default to right). Double-click on the background only *shows*
+the menu; only `✕` or `menu=DISABLE` hides it. Clicks inside `#settings-menu` never
+reach the background handler.
+
+## Before claiming done
+
+Drag a slider → effect changes → URL changes → copy → open in a new tab → matches.
+Document app-specific params in that app's `notes.md`, not in `Control_UI.md`.

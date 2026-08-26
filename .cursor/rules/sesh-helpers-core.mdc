@@ -1,0 +1,45 @@
+---
+description: Sesh Helpers entry point, project shape, and working principles
+alwaysApply: true
+---
+
+# Sesh Helpers — start here
+
+Read [`docs/001_CLANKER_INIT.md`](../../docs/001_CLANKER_INIT.md) first, then the docs
+index [`docs/README.md`](../../docs/README.md), then the task-specific doc. Docs record
+intended contracts; running code is evidence too. Verify docs against the code before
+changing behavior instead of trusting stale text.
+
+## What this project is
+
+Helper overlays for the Sesh Sofa show. Static HTML/JS/CSS per app, dependency-light,
+**no build step and no CI** — the repo root is the webroot, deployed to GitHub Pages at
+`https://helpers.seshsofa.nl/`. License AGPL-3.0.
+
+| Path | What lives there |
+|------|------------------|
+| `spotsmoke/`, `seshbanner/`, `trbanner/` | Helper apps (OBS Browser Sources) |
+| `themes/` | Shared overlay themes — [`docs/THEMES.md`](../../docs/THEMES.md) |
+| `*/notes.md` | Operator setup + the complete URL parameter contract per app |
+| `index.html` | Landing page listing every app |
+
+## Working principles
+
+- **Minimal scope** — smallest correct change. No drive-by refactors.
+- **No over-engineering** — no abstractions for one-liners, no speculative error
+  handling for impossible edges.
+- **Match existing conventions** — read surrounding code and docs before inventing a
+  new pattern.
+- **Document what you build** — if you add a mechanism, write down how it works.
+- **Tests only when meaningful** — cover real behavior, not obvious trivia.
+- **Honesty over completeness** — write "TBD" rather than fabricated detail.
+
+## Hard rules
+
+- **Never commit unless explicitly asked.** Mortal meat bags control git history.
+- New helper app: own directory, linked from `index.html`, repo map in
+  `docs/001_CLANKER_INIT.md` updated.
+- New doc: add it to [`docs/README.md`](../../docs/README.md), and to
+  `001_CLANKER_INIT.md` if it is essential onboarding.
+- Ask when requirements are ambiguous; check "Known gaps / TBD" in
+  `001_CLANKER_INIT.md` before inventing architecture.

@@ -1,0 +1,54 @@
+---
+description: Shared overlay theme contract — folder shape, catalog sync, effect lifecycle
+globs: themes/**/*
+alwaysApply: false
+---
+
+# Overlay themes
+
+Full contract: [`docs/THEMES.md`](../../docs/THEMES.md). A theme is the **look** of the
+overlay surface (glass, glow, pulse) plus preferred fonts. It is not layout and not the
+settings chrome.
+
+## Folder shape
+
+`themes/<id>/` holds `theme.json`, `theme.css`, and `theme.js` (only if it has motion).
+
+- Scope every selector to `[data-theme="<id>"]`. **Never style `#settings-menu`** — the
+  panel stays as specified in [`docs/Control_UI.md`](../../docs/Control_UI.md).
+- Style the glass surface via `.theme-panel` (the banner box, not the page). Page
+  background stays `transparent`.
+
+## Keep the catalog in sync
+
+`theme.json` and the `SeshThemes.catalog` entry registered in `theme.js` must carry the
+same `id`, `name`, `description`, `preferredDisplay`, and `preferredRegular`. Apps read
+the catalog; the JSON is metadata for meat bags and tooling. Preferred faces must exist
+in the typography catalog ([`docs/TYPOGRAPHY.md`](../../docs/TYPOGRAPHY.md)).
+
+## Effect lifecycle
+
+`SeshThemes.effects[id].start(el)` / `.stop(el)`. One panel gets one animation runner —
+switching themes repeatedly must not multiply clanker heartbeats.
+
+```js
+function start(panelEl) {
+  if (!panelEl) return;
+  stop(panelEl);                     // cancel any existing runner for this element
+  /* ... requestAnimationFrame loop, tracked in a WeakMap ... */
+}
+
+function stop(panelEl) {
+  /* cancelAnimationFrame + drop the runner, then: */
+  panelEl.style.removeProperty('--theme-text-shadow');  // strip inline theme props
+  panelEl.style.removeProperty('text-shadow');          // so the next theme starts clean
+}
+```
+
+Glass themes write `--theme-text-shadow` so child text pulses.
+
+## Adding or changing a theme
+
+Link the CSS/JS from each consuming app, persist the choice as URL param `theme` (live
+update contract applies), and test switching themes back and forth — including that
+preferred fonts apply when font params are absent and when the theme select changes.
