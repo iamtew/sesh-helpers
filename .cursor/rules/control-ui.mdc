@@ -1,6 +1,6 @@
 ---
 description: Control UI contracts for helper apps — transparent canvas, live page + live URL
-globs: spotsmoke/**/*.{js,css,html},seshbanner/**/*.{js,css,html},trbanner/**/*.{js,css,html}
+globs: spotsmoke/**/*.{js,css,html},seshbanner/**/*.{js,css,html},trbanner/**/*.{js,css,html},abs/**/*.{js,css,html}
 alwaysApply: false
 ---
 
@@ -12,6 +12,7 @@ Full framework: [`docs/Control_UI.md`](../../docs/Control_UI.md).
 
 `html, body { background: transparent }` — never paint an opaque page fill. Operator
 chrome (guides, checkerboard, crosshairs) renders only under `body.settings-mode`.
+ABS apps omit the checkerboard util — the canvas is the backdrop.
 
 ## Live update — imperative
 
@@ -30,6 +31,11 @@ function updateURL() {
   history.replaceState(null, '', url);      // location.href == what they see
 }
 ```
+
+## Sliders
+
+Range controls should include a per-param **↺** reset (`.reset-param` + `data-reset`),
+as in Sesh Banner and Diamond — next to the value readout.
 
 ## URL is the entire config
 

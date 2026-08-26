@@ -19,6 +19,7 @@ Helper overlays for the Sesh Sofa show. Static HTML/JS/CSS per app, dependency-l
 | Path | What lives there |
 |------|------------------|
 | `spotsmoke/`, `seshbanner/`, `trbanner/` | Helper apps (OBS Browser Sources) |
+| `abs/` | ABS — Animated Background System (OBS backdrops; no shared themes) |
 | `themes/` | Shared overlay themes — [`docs/THEMES.md`](../../docs/THEMES.md) |
 | `*/notes.md` | Operator setup + the complete URL parameter contract per app |
 | `index.html` | Landing page listing every app |

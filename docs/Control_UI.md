@@ -67,12 +67,15 @@ Fixed panel, one edge, ~300px, scrollable, dark glass + blur.
 | Slot | Required | Notes |
 |------|----------|-------|
 | Title | yes | App name |
-| Utils | optional | Help, checkerboard, flip side… |
+| Utils | optional | Help, checkerboard, flip side… (**ABS:** no checkerboard — canvas is the backdrop) |
 | ✕ Close | yes | Sets `menu=DISABLE` |
 | Accordion | yes | One section open; `aria-expanded` + `hidden` |
 | Flip side | optional | `side=left\|right` in URL; apps default to **right** |
 
-**Controls:** range (label + slider + value, on `input`), toggle (+ disable dependents), color (picker + hex sync), buttons (primary / destructive / small).
+**Controls:** range (label + slider + per-param **↺** reset + value, on `input`),
+toggle (+ disable dependents), color (picker + hex sync), buttons (primary /
+destructive / small). **Sliders should include a reset button** (Sesh Banner /
+Diamond pattern: `.reset-param` with `data-reset`).
 
 ### Footer
 

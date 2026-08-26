@@ -2,8 +2,8 @@
 
 Sesh Helpers documentation — for mortal meat bags and the clankers who serve them.
 
-The three current overlays are live static web apps. These docs describe the contracts
-the code already implements; app-specific operator notes live beside each app.
+The overlays and ABS backdrop apps are live static web apps. These docs describe the
+contracts the code already implements; app-specific operator notes live beside each app.
 
 ---
 
@@ -27,6 +27,7 @@ the code already implements; app-specific operator notes live beside each app.
 | [../spotsmoke/notes.md](../spotsmoke/notes.md) | OBS operators | Spot Smoke setup and URL parameters |
 | [../seshbanner/notes.md](../seshbanner/notes.md) | OBS operators | Sesh Banner setup and URL parameters |
 | [../trbanner/notes.md](../trbanner/notes.md) | OBS operators | Trick Request Banner setup and URL parameters |
+| [../abs/diamond/notes.md](../abs/diamond/notes.md) | OBS operators | Diamond (ABS) setup and URL parameters |
 
 ---
 
@@ -51,6 +52,8 @@ bags have to divine the repository layout.
 | Spot Smoke | [spotsmoke/](../spotsmoke/) |
 | Sesh Banner | [seshbanner/](../seshbanner/) |
 | Trick Request Banner | [trbanner/](../trbanner/) |
+| ABS | [abs/](../abs/) |
+| Diamond (ABS) | [abs/diamond/](../abs/diamond/) |
 | Logo | [img/seshhelpers.png](../img/seshhelpers.png) |
 | Sesh Sofa artwork | [img/seshsofa.png](../img/seshsofa.png) |
 | Demo panorama | [img/apartment_panorama.png](../img/apartment_panorama.png) |

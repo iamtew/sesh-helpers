@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Diamond — ABS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="diamond-canvas" width="96" height="54" aria-hidden="true"></canvas>
+  <div id="vignette" aria-hidden="true"></div>
+
+  <div id="settings-menu">
+    <div class="menu-header">
+      <h2>Diamond</h2>
+      <div class="menu-header-buttons">
+        <button id="flip-side-button" aria-label="Move menu to other side">⇄</button>
+        <button id="close-menu-button" aria-label="Close settings">✕</button>
+      </div>
+    </div>
+
+    <p class="hint">Settings hidden: double-click to reopen. ABS backdrop — use Copy URL for OBS for clean output.</p>
+
+    <div class="settings-section" data-section="animation">
+      <button id="animation-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="animation-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Animation</button>
+      <div id="animation-controls" class="section-panel">
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="speed-slider"><span>Speed</span></label>
+              </div>
+              <div class="range-row">
+                <input id="speed-slider" type="range" min="0.25" max="3" step="0.05" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="speed" aria-label="Reset speed" title="Reset speed">↺</button>
+              <span class="value-label" id="speed-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="cell-size-slider"><span>Cell size</span></label>
+              </div>
+              <div class="range-row">
+                <input id="cell-size-slider" type="range" min="2" max="16" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="cellSize" aria-label="Reset cell size" title="Reset cell size">↺</button>
+              <span class="value-label" id="cell-size-value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="display">
+      <button id="display-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="display-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Display</button>
+      <div id="display-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <label for="palette-select"><span>Palette</span></label>
+          <select id="palette-select">
+            <option value="lcd">LCD</option>
+            <option value="violet">Violet</option>
+            <option value="ember">Ember</option>
+            <option value="jade">Jade</option>
+            <option value="rose">Rose</option>
+            <option value="acid">Acid</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label class="switch-row">
+            <input id="vignette-toggle" type="checkbox" />
+            <span>Vignette</span>
+          </label>
+        </div>
+        <div class="setting-group effect-control" id="vignette-strength-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="vignette-strength-slider"><span>Vignette strength</span></label>
+              </div>
+              <div class="range-row">
+                <input id="vignette-strength-slider" type="range" min="0" max="100" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="vignetteStrength" aria-label="Reset vignette strength" title="Reset vignette strength">↺</button>
+              <span class="value-label" id="vignette-strength-value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="reset-button" class="menu-action">Reset all</button>
+
+    <div class="setting-group copy-row">
+      <button id="copy-url-button" class="small-button menu-action">Copy URL</button>
+      <button id="copy-url-obs-button" class="small-button menu-action">Copy URL for OBS</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
