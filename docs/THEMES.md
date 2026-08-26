@@ -14,7 +14,11 @@ themes/
 │   ├── theme.json    # id, name, description of the look
 │   ├── theme.css     # tokens + .theme-panel surface
 │   └── theme.js      # optional effects (e.g. chromatic pulse) + catalog entry
-└── sesh-glass/
+├── sesh-glass/
+│   ├── theme.json
+│   ├── theme.css
+│   └── theme.js
+└── 3026-d3c0/
     ├── theme.json
     ├── theme.css
     └── theme.js
@@ -54,6 +58,11 @@ Frosted navy-cyan glass, ice-blue text, and a magenta/cyan chromatic pulse.
 
 Frosted red-to-lime glass (`#F20D0D` → `#E5F20D`), warm readout text, a red
 (`#F20D0D`) glow pulse, and a halftone dot screen over the panel.
+
+## 3026 D3C0
+
+Futuristic art deco skeleton — onyx glass, brass border/glow, champagne text,
+tight radius. Surface ornament (`::before`) and token polish still TBD.
 
 ---
 

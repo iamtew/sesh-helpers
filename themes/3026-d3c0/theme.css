@@ -1,0 +1,82 @@
+/* 3026 D3C0 — reusable overlay theme (skeleton)
+   Host: set data-theme="3026-d3c0" on <html> and class="theme-panel" on the glass surface.
+   Pulse: themes/3026-d3c0/theme.js writes --theme-text-shadow on the panel (or an ancestor).
+   Direction: futuristic art deco — onyx + brass, sharp geometry, champagne text. */
+
+[data-theme="3026-d3c0"] {
+  --d3c0-text-primary: #f3e6c8;
+  --d3c0-text-base: #d9c9a8;
+
+  --d3c0-glass-grad-a: rgba(18, 14, 10, 0.78);
+  --d3c0-glass-grad-b: rgba(42, 32, 18, 0.62);
+  --d3c0-glass-border: rgba(201, 162, 74, 0.45);
+  --d3c0-glass-inset-highlight: rgba(243, 230, 200, 0.14);
+  --d3c0-glass-shadow: rgba(0, 0, 0, 0.4);
+  --d3c0-outline-opacity: 0.55;
+  --d3c0-outline-inner: rgba(201, 162, 74, var(--d3c0-outline-opacity));
+  --d3c0-outline-outer: rgba(12, 10, 8, var(--d3c0-outline-opacity));
+  --d3c0-outline-width: 0.2rem;
+
+  --d3c0-blur-amount: 10px;
+  --d3c0-saturate-amount: 115%;
+  /* Art deco lean: tighter radius than soft glass themes */
+  --d3c0-radius-panel: 4px;
+
+  --d3c0-glow-primary: rgba(201, 162, 74, 0.65);
+  --d3c0-glow-soft: rgba(201, 162, 74, 0.3);
+
+  --theme-text-shadow:
+    0 0 6px var(--d3c0-glow-primary),
+    0 0 14px var(--d3c0-glow-soft);
+
+  /* Host apps that already use --banner-* tokens pick these up without extra CSS */
+  --banner-bg: linear-gradient(160deg, var(--d3c0-glass-grad-a), var(--d3c0-glass-grad-b));
+  --banner-border: var(--d3c0-glass-border);
+  --banner-text: var(--d3c0-text-primary);
+  --banner-shadow:
+    inset 0 1px 0 var(--d3c0-glass-inset-highlight),
+    0 12px 28px var(--d3c0-glass-shadow),
+    0 0 0 var(--d3c0-outline-width) var(--d3c0-outline-inner),
+    0 0 0 calc(var(--d3c0-outline-width) * 2) var(--d3c0-outline-outer);
+  --banner-blur: var(--d3c0-blur-amount);
+  --banner-saturate: var(--d3c0-saturate-amount);
+  --banner-radius-base: var(--d3c0-radius-panel);
+  --banner-accent: var(--d3c0-text-primary);
+}
+
+[data-theme="3026-d3c0"] .theme-panel {
+  position: relative;
+  isolation: isolate;
+  color: var(--d3c0-text-primary);
+  background: linear-gradient(160deg, var(--d3c0-glass-grad-a), var(--d3c0-glass-grad-b));
+  border: 1px solid var(--d3c0-glass-border);
+  border-radius: var(--banner-radius, var(--d3c0-radius-panel));
+  box-shadow:
+    inset 0 1px 0 var(--d3c0-glass-inset-highlight),
+    0 12px 28px var(--d3c0-glass-shadow),
+    0 0 0 var(--d3c0-outline-width) var(--d3c0-outline-inner),
+    0 0 0 calc(var(--d3c0-outline-width) * 2) var(--d3c0-outline-outer);
+  backdrop-filter: blur(var(--d3c0-blur-amount)) saturate(var(--d3c0-saturate-amount));
+  -webkit-backdrop-filter: blur(var(--d3c0-blur-amount)) saturate(var(--d3c0-saturate-amount));
+  text-shadow: var(--theme-text-shadow);
+}
+
+/* Placeholder for future art-deco geometry (fans, steps, sunburst) */
+[data-theme="3026-d3c0"] .theme-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+}
+
+[data-theme="3026-d3c0"] .theme-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="3026-d3c0"] .theme-panel * {
+  text-shadow: var(--theme-text-shadow);
+}

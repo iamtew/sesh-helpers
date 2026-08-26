@@ -52,7 +52,8 @@ sesh-helpers/
 ├── trbanner/                 # Trick Request Banner (OBS Browser Source)
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
-│   └── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
+│   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
+│   └── 3026-d3c0/            # 3026 D3C0 — futuristic art deco (skeleton)
 ├── docs/
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point

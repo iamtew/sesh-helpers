@@ -38,7 +38,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `prefixFont` | Prefix font index (0–9, layout 3) | `0` |
 | `prefixSize` | Prefix font size (px, 16–96, layout 3) | `38` |
 | `layout` | `1` inline · `2` stacked accent · `3` YouTube playlist | `1` |
-| `theme` | Overlay theme id (`lcd-glass` · `sesh-glass`) | `lcd-glass` |
+| `theme` | Overlay theme id (`lcd-glass` · `sesh-glass` · `3026-d3c0`) | `lcd-glass` |
 | `titleFont` / `messageFont` | Font **index** in combined list (0–9) | title `0` Monster Chiller · message `5` Better VCR |
 | `titleSize` | Title font size (px, 16–96) | `38` |
 | `messageSize` | Message font size (px, 12–64) | `18` |

@@ -36,7 +36,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `title` | Banner title | `Trick Request by:` |
 | `user` | Requester name | `Modney Rullen` |
 | `message` | Request text | `Do a kickflip!` |
-| `theme` | Overlay theme id (`lcd-glass` · `sesh-glass`) | `lcd-glass` |
+| `theme` | Overlay theme id (`lcd-glass` · `sesh-glass` · `3026-d3c0`) | `lcd-glass` |
 | `titleFont` / `userFont` / `messageFont` | Font **index** in combined list (0–9) | `5` = Better VCR |
 | `titleSize` | Title font size (px, 12–96) | `20` |
 | `userSize` | User font size (px, 12–96) | `26` |

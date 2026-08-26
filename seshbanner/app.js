@@ -151,7 +151,8 @@ function getThemeCatalog() {
   if (catalog.length) return catalog;
   return [
     { id: "lcd-glass", name: "LCD Glass", description: "" },
-    { id: "sesh-glass", name: "Sesh Glass", description: "" }
+    { id: "sesh-glass", name: "Sesh Glass", description: "" },
+    { id: "3026-d3c0", name: "3026 D3C0", description: "" }
   ];
 }
 
