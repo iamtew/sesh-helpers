@@ -35,11 +35,11 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `prefixEnabled` | Show prefix before playlist content | `false` |
 | `prefixAlign` | Prefix text alignment `left` · `center` · `right` | `left` |
 | `nameAlign` | Playlist-name alignment `left` · `center` · `right` | `left` |
-| `prefixFont` | Prefix font index (0–9, layout 3) | `0` |
+| `prefixFont` | Prefix font index (0–11, layout 3) | theme Display preferred |
 | `prefixSize` | Prefix font size (px, 16–96, layout 3) | `38` |
 | `layout` | `1` inline · `2` stacked accent · `3` YouTube playlist | `1` |
 | `theme` | Overlay theme id (`lcd-glass` · `sesh-glass` · `3026-d3c0`) | `lcd-glass` |
-| `titleFont` / `messageFont` | Font **index** in combined list (0–9) | title `0` Monster Chiller · message `5` Better VCR |
+| `titleFont` / `messageFont` | Font **index** in combined list (0–11) | theme preferred Display / Regular when unset |
 | `titleSize` | Title font size (px, 16–96) | `38` |
 | `messageSize` | Message font size (px, 12–64) | `18` |
 | `width` | Banner width size (%, 25–1000) | `100` |
@@ -72,7 +72,7 @@ Persistent demo layer at 0.75 opacity. Independent of the header ▚ toggle.
 
 ## Theme
 
-See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from layout and fonts.
+See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from layout; themes also declare preferred Display / Regular fonts (see Fonts).
 
 - **LCD Glass** — frosted navy-cyan glass with pulsing magenta/cyan LCD fringing.
 - **Sesh Glass** — frosted red-to-lime glass with a retro halftone screen and pulsing red glow.
@@ -93,13 +93,15 @@ See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from layout 
 
 Legacy `scale` / `scaleX` / `scaleY` still load, then rewrite to `width` / `height`.
 
-Per-control **↺** resets that setting to its default (sliders, fonts, position). **Reset all** still clears everything.
+Per-control **↺** resets that setting to its default (sliders, fonts, position). Font ↺ uses the **active theme’s** preferred Display/Regular. **Reset all** clears everything and re-applies the default theme’s preferred fonts.
 
 ## Fonts
 
 See [`docs/TYPOGRAPHY.md`](../docs/TYPOGRAPHY.md). Title and message pickers share one combined list (Display + Regular). In playlist layout, labels become **Playlist name** / **Ticker**; **Prefix font** appears in Fonts when prefix is enabled. Size sliders sit under each font picker and persist as `titleSize` / `messageSize`.
 
-**Combined index (`titleFont` / `messageFont`):** `0` Monster Chiller · `1` YouMurderer BB · `2` Streetmark · `3` Germania One · `4` Konstruktor · `5` Better VCR · `6` Flapdoodle · `7` Londrina Solid · `8` Pill Gothic 600mg · `9` Segoe UI
+Changing **Theme** applies that theme’s preferred fonts (title/prefix → Display, message → Regular). Fonts can still be overridden in this section afterward.
+
+**Combined index (`titleFont` / `messageFont` / `prefixFont`):** `0` Monster Chiller · `1` YouMurderer BB · `2` Streetmark · `3` Germania One · `4` Konstruktor · `5` Better VCR · `6` Flapdoodle · `7` Londrina Solid · `8` Pill Gothic 600mg · `9` Segoe UI · `10` Lemondrop · `11` Brighton Sans NBP
 
 Legacy URLs that still use font names are accepted on load, then rewritten to indices.
 

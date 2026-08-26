@@ -22,8 +22,8 @@ the code already implements; app-specific operator notes live beside each app.
 |----------|----------|-------------|
 | [001_CLANKER_INIT.md](001_CLANKER_INIT.md) | AI agents (mortals welcome) | Project entry point — read first |
 | [Control_UI.md](Control_UI.md) | Implementers + clankers | Settings menu framework pattern |
-| [THEMES.md](THEMES.md) | Implementers + clankers | Shared overlay themes (LCD Glass, Sesh Glass, …) |
-| [TYPOGRAPHY.md](TYPOGRAPHY.md) | Implementers + clankers | Shared regular + display fonts |
+| [THEMES.md](THEMES.md) | Implementers + clankers | Shared overlay themes + preferred fonts |
+| [TYPOGRAPHY.md](TYPOGRAPHY.md) | Implementers + clankers | Font catalog indices + theme preferred faces |
 | [../spotsmoke/notes.md](../spotsmoke/notes.md) | OBS operators | Spot Smoke setup and URL parameters |
 | [../seshbanner/notes.md](../seshbanner/notes.md) | OBS operators | Sesh Banner setup and URL parameters |
 | [../trbanner/notes.md](../trbanner/notes.md) | OBS operators | Trick Request Banner setup and URL parameters |

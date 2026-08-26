@@ -65,7 +65,9 @@
       id: THEME_ID,
       name: "LCD Glass",
       description:
-        "Frosted navy-cyan glass with an ice-blue LCD readout. A translucent gradient panel sits behind smoked glass (blur + saturate), and magenta/cyan chromatic fringing pulses on the text like a backlit CRT."
+        "Frosted navy-cyan glass with an ice-blue LCD readout. A translucent gradient panel sits behind smoked glass (blur + saturate), and magenta/cyan chromatic fringing pulses on the text like a backlit CRT.",
+      preferredDisplay: "Better VCR",
+      preferredRegular: "Better VCR"
     });
   }
 

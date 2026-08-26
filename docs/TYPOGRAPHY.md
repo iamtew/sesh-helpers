@@ -5,7 +5,8 @@ regular faces; that order is the persisted numeric index used by `titleFont`,
 `messageFont`, `userFont`, and `prefixFont`.
 
 Do not reorder this list unless you also provide URL migration logic. Old meat-bag
-bookmarks would otherwise wake up wearing the wrong typeface.
+bookmarks would otherwise wake up wearing the wrong typeface. New faces are
+**appended** so indices `0`–`9` stay stable.
 
 | Index | Font family | Group | Import |
 |-------|-------------|-------|--------|
@@ -14,15 +15,22 @@ bookmarks would otherwise wake up wearing the wrong typeface.
 | `2` | `Streetmark` | Display | `https://fonts.cdnfonts.com/css/streetmark` |
 | `3` | `Germania One` | Display | `https://fonts.cdnfonts.com/css/germania-one` |
 | `4` | `Konstruktor` | Display | `https://fonts.cdnfonts.com/css/konstruktor` |
-| `5` | `Better VCR` | Regular | `https://fonts.cdnfonts.com/css/better-vcr` |
+| `5` | `Better VCR` | Display & Regular | `https://fonts.cdnfonts.com/css/better-vcr` |
 | `6` | `Flapdoodle` | Regular | `https://fonts.cdnfonts.com/css/flapdoodle` |
 | `7` | `Londrina Solid` | Regular | `https://fonts.cdnfonts.com/css/londrina-solid` |
 | `8` | `Pill Gothic 600mg` | Regular | `https://fonts.cdnfonts.com/css/pill-gothic-600mg` |
 | `9` | `Segoe UI` | Regular | `https://fonts.cdnfonts.com/css/segoe-ui-4` |
+| `10` | `Lemondrop` | Display | `https://fonts.cdnfonts.com/css/lemondrop` |
+| `11` | `Brighton Sans NBP` | Regular | `https://fonts.cdnfonts.com/css/brighton-sans-nbp` |
+
+**Better VCR** sits in both roles: it is a valid Display face and a valid Regular face.
+Overlay pickers always offer the full combined list.
+
+---
 
 ## Implementation contract
 
-- Import all ten faces in banner stylesheets before displaying the font picker.
+- Import all twelve faces in banner stylesheets before displaying the font picker.
 - Quote family names and provide a generic fallback, for example
   `font-family: 'Better VCR', monospace`.
 - Persist the catalog index, not the family name. Current code still accepts legacy
@@ -30,3 +38,35 @@ bookmarks would otherwise wake up wearing the wrong typeface.
 - The settings menu uses **Better VCR**; overlay fields may use any catalog entry.
 - These are third-party CDN fonts. If the CDN is unavailable, browser fallbacks render
   the overlay—the clanker should not block startup waiting for a font.
+
+---
+
+## Theme preferred fonts
+
+Each overlay theme declares a preferred **Display** and **Regular** face (see
+[`THEMES.md`](THEMES.md)). Apps use those when a font URL param is absent, when a
+font control is reset, when the theme changes, and on **Reset all** (for the active
+default theme). Meat bags can still pick any catalog face in the Fonts section.
+
+| Field role | Preferred group |
+|------------|-----------------|
+| Title, prefix, user | Display |
+| Message | Regular |
+
+| Theme | Display | Regular |
+|-------|---------|---------|
+| LCD Glass | `Better VCR` | `Better VCR` |
+| Sesh Glass | `Monster Chiller` | `Londrina Solid` |
+| 3026 D3C0 | `Lemondrop` | `Brighton Sans NBP` |
+
+Themes register `preferredDisplay` / `preferredRegular` on their
+`SeshThemes.catalog` entry (and mirror them in `theme.json`). Host apps resolve
+missing/reset fonts from the active theme before falling back to Better VCR.
+
+---
+
+## Related
+
+- [THEMES.md](THEMES.md) — preferred-font fields on theme catalog entries
+- [Control_UI.md](Control_UI.md) — settings chrome stays Better VCR
+- [`seshbanner/`](../seshbanner/) · [`trbanner/`](../trbanner/) — font pickers + URL indices

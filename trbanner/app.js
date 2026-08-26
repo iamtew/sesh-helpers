@@ -7,7 +7,8 @@ const DISPLAY_FONTS = [
   "YouMurderer BB",
   "Streetmark",
   "Germania One",
-  "Konstruktor"
+  "Konstruktor",
+  "Lemondrop"
 ];
 
 const REGULAR_FONTS = [
@@ -15,11 +16,34 @@ const REGULAR_FONTS = [
   "Flapdoodle",
   "Londrina Solid",
   "Pill Gothic 600mg",
-  "Segoe UI"
+  "Segoe UI",
+  "Brighton Sans NBP"
 ];
 
-/** Display + Regular — every content field can use either. */
-const ALL_FONTS = [...DISPLAY_FONTS, ...REGULAR_FONTS];
+/**
+ * Combined catalog order = persisted URL index (docs/TYPOGRAPHY.md).
+ * Better VCR is Display & Regular; Lemondrop / Brighton Sans NBP are appended
+ * so indices 0–9 stay stable for old bookmarks.
+ */
+const ALL_FONTS = [
+  "Monster Chiller",
+  "YouMurderer BB",
+  "Streetmark",
+  "Germania One",
+  "Konstruktor",
+  "Better VCR",
+  "Flapdoodle",
+  "Londrina Solid",
+  "Pill Gothic 600mg",
+  "Segoe UI",
+  "Lemondrop",
+  "Brighton Sans NBP"
+];
+
+const THEME_FONT_FALLBACK = {
+  preferredDisplay: "Better VCR",
+  preferredRegular: "Better VCR"
+};
 
 const BG_NONE = "0";
 const BG_SESSION = "1";
@@ -37,9 +61,9 @@ const defaults = {
   user: "Modney Rullen",
   message: "Do a kickflip!",
   theme: "lcd-glass",
-  titleFont: "Better VCR",
-  userFont: "Better VCR",
-  messageFont: "Better VCR",
+  titleFont: THEME_FONT_FALLBACK.preferredDisplay,
+  userFont: THEME_FONT_FALLBACK.preferredDisplay,
+  messageFont: THEME_FONT_FALLBACK.preferredRegular,
   titleSize: 20,
   userSize: 26,
   messageSize: 28,
@@ -74,9 +98,27 @@ function getThemeCatalog() {
     : [];
   if (catalog.length) return catalog;
   return [
-    { id: "lcd-glass", name: "LCD Glass", description: "" },
-    { id: "sesh-glass", name: "Sesh Glass", description: "" },
-    { id: "3026-d3c0", name: "3026 D3C0", description: "" }
+    {
+      id: "lcd-glass",
+      name: "LCD Glass",
+      description: "",
+      preferredDisplay: "Better VCR",
+      preferredRegular: "Better VCR"
+    },
+    {
+      id: "sesh-glass",
+      name: "Sesh Glass",
+      description: "",
+      preferredDisplay: "Monster Chiller",
+      preferredRegular: "Londrina Solid"
+    },
+    {
+      id: "3026-d3c0",
+      name: "3026 D3C0",
+      description: "",
+      preferredDisplay: "Lemondrop",
+      preferredRegular: "Brighton Sans NBP"
+    }
   ];
 }
 
@@ -94,6 +136,40 @@ function findTheme(id) {
 function normalizeBg(value) {
   const bg = String(value ?? "");
   return BG_VALUES.has(bg) ? bg : defaults.bg;
+}
+
+/** Preferred Display / Regular for a theme (docs/TYPOGRAPHY.md). */
+function getThemePreferredFonts(themeId) {
+  const theme = findTheme(themeId);
+  return {
+    display: pickFont(
+      theme && theme.preferredDisplay,
+      ALL_FONTS,
+      THEME_FONT_FALLBACK.preferredDisplay
+    ),
+    regular: pickFont(
+      theme && theme.preferredRegular,
+      ALL_FONTS,
+      THEME_FONT_FALLBACK.preferredRegular
+    )
+  };
+}
+
+function applyThemePreferredFonts(themeId) {
+  const fonts = getThemePreferredFonts(themeId == null ? state.theme : themeId);
+  state.titleFont = fonts.display;
+  state.userFont = fonts.display;
+  state.messageFont = fonts.regular;
+}
+
+function formatThemeDescription(theme) {
+  if (!theme) return "";
+  const parts = [];
+  if (theme.description) parts.push(theme.description);
+  const display = theme.preferredDisplay || THEME_FONT_FALLBACK.preferredDisplay;
+  const regular = theme.preferredRegular || THEME_FONT_FALLBACK.preferredRegular;
+  parts.push(`Preferred fonts — Display: ${display}; Regular: ${regular}.`);
+  return parts.join(" ");
 }
 
 function pickFont(value, allowed, fallback) {
@@ -142,16 +218,29 @@ function getAxisSize(key) {
   return defaults[key];
 }
 
-const defaultFontIndex = String(fontIndex(defaults.titleFont, ALL_FONTS));
+const initialTheme = normalizeTheme(getParam("theme", defaults.theme));
+const themeFonts = getThemePreferredFonts(initialTheme);
 
 let state = {
   title: getParam("title", defaults.title),
   user: getParam("user", defaults.user),
   message: getParam("message", defaults.message),
-  theme: normalizeTheme(getParam("theme", defaults.theme)),
-  titleFont: resolveFontParam(getParam("titleFont", defaultFontIndex), ALL_FONTS, defaults.titleFont),
-  userFont: resolveFontParam(getParam("userFont", defaultFontIndex), ALL_FONTS, defaults.userFont),
-  messageFont: resolveFontParam(getParam("messageFont", defaultFontIndex), ALL_FONTS, defaults.messageFont),
+  theme: initialTheme,
+  titleFont: resolveFontParam(
+    params.has("titleFont") ? params.get("titleFont") : null,
+    ALL_FONTS,
+    themeFonts.display
+  ),
+  userFont: resolveFontParam(
+    params.has("userFont") ? params.get("userFont") : null,
+    ALL_FONTS,
+    themeFonts.display
+  ),
+  messageFont: resolveFontParam(
+    params.has("messageFont") ? params.get("messageFont") : null,
+    ALL_FONTS,
+    themeFonts.regular
+  ),
   titleSize: getSizeParam("titleSize", defaults.titleSize, 12, 96),
   userSize: getSizeParam("userSize", defaults.userSize, 12, 96),
   messageSize: getSizeParam("messageSize", defaults.messageSize, 12, 96),
@@ -384,7 +473,7 @@ const titleFontPicker = createFontPicker(
   "title-font-label",
   () => state.titleFont,
   font => {
-    state.titleFont = pickFont(font, ALL_FONTS, defaults.titleFont);
+    state.titleFont = pickFont(font, ALL_FONTS, getThemePreferredFonts(state.theme).display);
     applyFonts();
     titleFontPicker.sync();
     updateURL();
@@ -397,7 +486,7 @@ const userFontPicker = createFontPicker(
   "user-font-label",
   () => state.userFont,
   font => {
-    state.userFont = pickFont(font, ALL_FONTS, defaults.userFont);
+    state.userFont = pickFont(font, ALL_FONTS, getThemePreferredFonts(state.theme).display);
     applyFonts();
     userFontPicker.sync();
     updateURL();
@@ -410,7 +499,7 @@ const messageFontPicker = createFontPicker(
   "message-font-label",
   () => state.messageFont,
   font => {
-    state.messageFont = pickFont(font, ALL_FONTS, defaults.messageFont);
+    state.messageFont = pickFont(font, ALL_FONTS, getThemePreferredFonts(state.theme).regular);
     applyFonts();
     messageFontPicker.sync();
     updateURL();
@@ -675,7 +764,7 @@ function syncInputs() {
   }
   themeSelect.value = state.theme;
   const themeMeta = findTheme(state.theme);
-  themeDescription.textContent = themeMeta && themeMeta.description ? themeMeta.description : "";
+  themeDescription.textContent = formatThemeDescription(themeMeta);
   positionValue.textContent = `${state.bannerX.toFixed(0)}% / ${state.bannerY.toFixed(0)}%`;
 }
 
@@ -849,13 +938,13 @@ function resetParam(key) {
       state.messageSize = defaults.messageSize;
       break;
     case "titleFont":
-      state.titleFont = defaults.titleFont;
+      state.titleFont = getThemePreferredFonts(state.theme).display;
       break;
     case "userFont":
-      state.userFont = defaults.userFont;
+      state.userFont = getThemePreferredFonts(state.theme).display;
       break;
     case "messageFont":
-      state.messageFont = defaults.messageFont;
+      state.messageFont = getThemePreferredFonts(state.theme).regular;
       break;
     default:
       return;
@@ -890,7 +979,9 @@ for (const radio of bgRadios) {
 
 themeSelect.addEventListener("change", () => {
   state.theme = normalizeTheme(themeSelect.value);
+  applyThemePreferredFonts();
   applyTheme();
+  applyFonts();
   syncInputs();
   updateURL();
 });
@@ -898,6 +989,7 @@ themeSelect.addEventListener("change", () => {
 resetButton.addEventListener("click", () => {
   flashMenuAction(resetButton);
   state = { ...defaults };
+  applyThemePreferredFonts(defaults.theme);
   closeAllFontPickers();
   syncInputs();
   applyAll();

@@ -4,6 +4,7 @@
 @import url('https://fonts.cdnfonts.com/css/londrina-solid');
 @import url('https://fonts.cdnfonts.com/css/pill-gothic-600mg');
 @import url('https://fonts.cdnfonts.com/css/segoe-ui-4');
+@import url('https://fonts.cdnfonts.com/css/brighton-sans-nbp');
 
 /* Display fonts — docs/TYPOGRAPHY.md */
 @import url('https://fonts.cdnfonts.com/css/monster-chiller');
@@ -11,6 +12,7 @@
 @import url('https://fonts.cdnfonts.com/css/streetmark');
 @import url('https://fonts.cdnfonts.com/css/germania-one');
 @import url('https://fonts.cdnfonts.com/css/konstruktor');
+@import url('https://fonts.cdnfonts.com/css/lemondrop');
 
 :root {
   --settings-bg: rgba(10, 10, 20, 0.95);
@@ -36,7 +38,7 @@
   --banner-accent-w: 4px;
   --banner-title-size: 38px;
   --banner-message-size: 18px;
-  --banner-title-font: 'Monster Chiller', sans-serif;
+  --banner-title-font: 'Better VCR', monospace;
   --banner-message-font: 'Better VCR', monospace;
   --banner-max-width: min(90vw, 56rem);
 

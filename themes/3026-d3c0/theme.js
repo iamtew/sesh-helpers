@@ -63,7 +63,9 @@
       id: THEME_ID,
       name: "3026 D3C0",
       description:
-        "Futuristic art deco overlay — deep onyx glass, brass geometry, champagne readout text, and a soft gold pulse. Skeleton; refine tokens and surface detail later."
+        "Futuristic art deco overlay — deep onyx glass, brass geometry, champagne readout text, and a soft gold pulse. Skeleton; refine tokens and surface detail later.",
+      preferredDisplay: "Lemondrop",
+      preferredRegular: "Brighton Sans NBP"
     });
   }
 

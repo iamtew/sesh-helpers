@@ -37,7 +37,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `user` | Requester name | `Modney Rullen` |
 | `message` | Request text | `Do a kickflip!` |
 | `theme` | Overlay theme id (`lcd-glass` · `sesh-glass` · `3026-d3c0`) | `lcd-glass` |
-| `titleFont` / `userFont` / `messageFont` | Font **index** in combined list (0–9) | `5` = Better VCR |
+| `titleFont` / `userFont` / `messageFont` | Font **index** in combined list (0–11) | theme preferred Display / Regular when unset |
 | `titleSize` | Title font size (px, 12–96) | `20` |
 | `userSize` | User font size (px, 12–96) | `26` |
 | `messageSize` | Message font size (px, 12–96) | `28` |
@@ -66,7 +66,7 @@ Persistent demo layer at 0.75 opacity. Independent of the header ▚ toggle.
 
 ## Theme
 
-See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from fonts and background.
+See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from layout; themes also declare preferred Display / Regular fonts (see Fonts).
 
 - **LCD Glass** — frosted navy-cyan glass with pulsing magenta/cyan LCD fringing.
 - **Sesh Glass** — frosted red-to-lime glass with a retro halftone screen and pulsing red glow.
@@ -75,11 +75,13 @@ See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from fonts a
 
 **Width / height** (`width` / `height`, 25–1000%) size the banner box. Type scales with **`min(width, height)`** so glyphs stay proportional. Fonts section sets base title/user/message px; Size multiplies them.
 
-Per-control **↺** resets that setting. **Reset all** clears everything.
+Per-control **↺** resets that setting. Font ↺ uses the **active theme’s** preferred Display/Regular. **Reset all** clears everything and re-applies the default theme’s preferred fonts.
 
 ## Fonts
 
 See [`docs/TYPOGRAPHY.md`](../docs/TYPOGRAPHY.md). All three fields share one combined list (Display + Regular). Size sliders sit under each font picker.
+
+Changing **Theme** applies that theme’s preferred fonts (title/user → Display, message → Regular). Fonts can still be overridden in this section afterward.
 
 **Combined index (`titleFont` / `userFont` / `messageFont`):**
 
@@ -90,10 +92,12 @@ See [`docs/TYPOGRAPHY.md`](../docs/TYPOGRAPHY.md). All three fields share one co
 | `2` | Streetmark | Display |
 | `3` | Germania One | Display |
 | `4` | Konstruktor | Display |
-| `5` | Better VCR | Regular |
+| `5` | Better VCR | Display & Regular |
 | `6` | Flapdoodle | Regular |
 | `7` | Londrina Solid | Regular |
 | `8` | Pill Gothic 600mg | Regular |
 | `9` | Segoe UI | Regular |
+| `10` | Lemondrop | Display |
+| `11` | Brighton Sans NBP | Regular |
 
 Legacy URLs that still use font names are accepted on load, then rewritten to indices.

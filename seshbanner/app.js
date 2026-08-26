@@ -7,7 +7,8 @@ const DISPLAY_FONTS = [
   "YouMurderer BB",
   "Streetmark",
   "Germania One",
-  "Konstruktor"
+  "Konstruktor",
+  "Lemondrop"
 ];
 
 const REGULAR_FONTS = [
@@ -15,11 +16,34 @@ const REGULAR_FONTS = [
   "Flapdoodle",
   "Londrina Solid",
   "Pill Gothic 600mg",
-  "Segoe UI"
+  "Segoe UI",
+  "Brighton Sans NBP"
 ];
 
-/** Display + Regular — every content field can use either. */
-const ALL_FONTS = [...DISPLAY_FONTS, ...REGULAR_FONTS];
+/**
+ * Combined catalog order = persisted URL index (docs/TYPOGRAPHY.md).
+ * Better VCR is Display & Regular; Lemondrop / Brighton Sans NBP are appended
+ * so indices 0–9 stay stable for old bookmarks.
+ */
+const ALL_FONTS = [
+  "Monster Chiller",
+  "YouMurderer BB",
+  "Streetmark",
+  "Germania One",
+  "Konstruktor",
+  "Better VCR",
+  "Flapdoodle",
+  "Londrina Solid",
+  "Pill Gothic 600mg",
+  "Segoe UI",
+  "Lemondrop",
+  "Brighton Sans NBP"
+];
+
+const THEME_FONT_FALLBACK = {
+  preferredDisplay: "Better VCR",
+  preferredRegular: "Better VCR"
+};
 
 const BG_NONE = "0";
 const BG_SESSION = "1";
@@ -36,9 +60,9 @@ const defaults = {
   nameAlign: "left",
   layout: "1",
   theme: "lcd-glass",
-  titleFont: "Monster Chiller",
-  messageFont: "Better VCR",
-  prefixFont: "Monster Chiller",
+  titleFont: THEME_FONT_FALLBACK.preferredDisplay,
+  messageFont: THEME_FONT_FALLBACK.preferredRegular,
+  prefixFont: THEME_FONT_FALLBACK.preferredDisplay,
   prefixSize: 38,
   titleSize: 38,
   messageSize: 18,
@@ -150,9 +174,27 @@ function getThemeCatalog() {
     : [];
   if (catalog.length) return catalog;
   return [
-    { id: "lcd-glass", name: "LCD Glass", description: "" },
-    { id: "sesh-glass", name: "Sesh Glass", description: "" },
-    { id: "3026-d3c0", name: "3026 D3C0", description: "" }
+    {
+      id: "lcd-glass",
+      name: "LCD Glass",
+      description: "",
+      preferredDisplay: "Better VCR",
+      preferredRegular: "Better VCR"
+    },
+    {
+      id: "sesh-glass",
+      name: "Sesh Glass",
+      description: "",
+      preferredDisplay: "Monster Chiller",
+      preferredRegular: "Londrina Solid"
+    },
+    {
+      id: "3026-d3c0",
+      name: "3026 D3C0",
+      description: "",
+      preferredDisplay: "Lemondrop",
+      preferredRegular: "Brighton Sans NBP"
+    }
   ];
 }
 
@@ -165,6 +207,40 @@ function normalizeTheme(value) {
 
 function findTheme(id) {
   return THEMES.find(theme => theme.id === id) || THEMES[0];
+}
+
+/** Preferred Display / Regular for a theme (docs/TYPOGRAPHY.md). */
+function getThemePreferredFonts(themeId) {
+  const theme = findTheme(themeId);
+  return {
+    display: pickFont(
+      theme && theme.preferredDisplay,
+      ALL_FONTS,
+      THEME_FONT_FALLBACK.preferredDisplay
+    ),
+    regular: pickFont(
+      theme && theme.preferredRegular,
+      ALL_FONTS,
+      THEME_FONT_FALLBACK.preferredRegular
+    )
+  };
+}
+
+function applyThemePreferredFonts(themeId) {
+  const fonts = getThemePreferredFonts(themeId == null ? state.theme : themeId);
+  state.titleFont = fonts.display;
+  state.messageFont = fonts.regular;
+  state.prefixFont = fonts.display;
+}
+
+function formatThemeDescription(theme) {
+  if (!theme) return "";
+  const parts = [];
+  if (theme.description) parts.push(theme.description);
+  const display = theme.preferredDisplay || THEME_FONT_FALLBACK.preferredDisplay;
+  const regular = theme.preferredRegular || THEME_FONT_FALLBACK.preferredRegular;
+  parts.push(`Preferred fonts — Display: ${display}; Regular: ${regular}.`);
+  return parts.join(" ");
 }
 
 function pickFont(value, allowed, fallback) {
@@ -213,6 +289,9 @@ function getAxisSize(key) {
   return defaults[key];
 }
 
+const initialTheme = normalizeTheme(getParam("theme", defaults.theme));
+const themeFonts = getThemePreferredFonts(initialTheme);
+
 let state = {
   title: getParam("title", defaults.title),
   message: getParam("message", defaults.message),
@@ -221,14 +300,22 @@ let state = {
   prefixAlign: normalizePrefixAlign(getParam("prefixAlign", defaults.prefixAlign)),
   nameAlign: normalizeNameAlign(getParam("nameAlign", defaults.nameAlign)),
   layout: normalizeLayout(getParam("layout", defaults.layout)),
-  theme: normalizeTheme(getParam("theme", defaults.theme)),
-  titleFont: resolveFontParam(getParam("titleFont", "0"), ALL_FONTS, defaults.titleFont),
-  messageFont: resolveFontParam(
-    getParam("messageFont", String(fontIndex(defaults.messageFont, ALL_FONTS))),
+  theme: initialTheme,
+  titleFont: resolveFontParam(
+    params.has("titleFont") ? params.get("titleFont") : null,
     ALL_FONTS,
-    defaults.messageFont
+    themeFonts.display
   ),
-  prefixFont: resolveFontParam(getParam("prefixFont", "0"), ALL_FONTS, defaults.prefixFont),
+  messageFont: resolveFontParam(
+    params.has("messageFont") ? params.get("messageFont") : null,
+    ALL_FONTS,
+    themeFonts.regular
+  ),
+  prefixFont: resolveFontParam(
+    params.has("prefixFont") ? params.get("prefixFont") : null,
+    ALL_FONTS,
+    themeFonts.display
+  ),
   prefixSize: getSizeParam("prefixSize", defaults.prefixSize, 16, 96),
   titleSize: getSizeParam("titleSize", defaults.titleSize, 16, 96),
   messageSize: getSizeParam("messageSize", defaults.messageSize, 12, 64),
@@ -502,7 +589,7 @@ const titleFontPicker = createFontPicker(
   "title-font-label",
   () => state.titleFont,
   font => {
-    state.titleFont = pickFont(font, ALL_FONTS, defaults.titleFont);
+    state.titleFont = pickFont(font, ALL_FONTS, getThemePreferredFonts(state.theme).display);
     applyFonts();
     titleFontPicker.sync();
     updateURL();
@@ -515,7 +602,7 @@ const messageFontPicker = createFontPicker(
   "message-font-label",
   () => state.messageFont,
   font => {
-    state.messageFont = pickFont(font, ALL_FONTS, defaults.messageFont);
+    state.messageFont = pickFont(font, ALL_FONTS, getThemePreferredFonts(state.theme).regular);
     applyFonts();
     messageFontPicker.sync();
     updateURL();
@@ -528,7 +615,7 @@ const prefixFontPicker = createFontPicker(
   "prefix-font-label",
   () => state.prefixFont,
   font => {
-    state.prefixFont = pickFont(font, ALL_FONTS, defaults.prefixFont);
+    state.prefixFont = pickFont(font, ALL_FONTS, getThemePreferredFonts(state.theme).display);
     applyFonts();
     prefixFontPicker.sync();
     updateURL();
@@ -1092,7 +1179,7 @@ function syncInputs() {
   }
   themeSelect.value = state.theme;
   const themeMeta = findTheme(state.theme);
-  themeDescription.textContent = themeMeta && themeMeta.description ? themeMeta.description : "";
+  themeDescription.textContent = formatThemeDescription(themeMeta);
   playlistInput.disabled = !isPlaylistLayout(state.layout);
   youtubePlaylistSection.hidden = !isPlaylistLayout(state.layout);
   if (playlistDelimiterSelect) {
@@ -1309,13 +1396,13 @@ function resetParam(key) {
       state.messageSize = defaults.messageSize;
       break;
     case "titleFont":
-      state.titleFont = defaults.titleFont;
+      state.titleFont = getThemePreferredFonts(state.theme).display;
       break;
     case "messageFont":
-      state.messageFont = defaults.messageFont;
+      state.messageFont = getThemePreferredFonts(state.theme).regular;
       break;
     case "prefixFont":
-      state.prefixFont = defaults.prefixFont;
+      state.prefixFont = getThemePreferredFonts(state.theme).display;
       break;
     case "prefixSize":
       state.prefixSize = defaults.prefixSize;
@@ -1403,7 +1490,9 @@ for (const radio of bgRadios) {
 
 themeSelect.addEventListener("change", () => {
   state.theme = normalizeTheme(themeSelect.value);
+  applyThemePreferredFonts();
   applyTheme();
+  applyFonts();
   syncInputs();
   updateURL();
 });
@@ -1411,6 +1500,7 @@ themeSelect.addEventListener("change", () => {
 resetButton.addEventListener("click", () => {
   flashMenuAction(resetButton);
   state = { ...defaults };
+  applyThemePreferredFonts(defaults.theme);
   resetPlaylistCache();
   closeAllFontPickers();
   syncInputs();
