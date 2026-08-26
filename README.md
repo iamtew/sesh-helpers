@@ -17,6 +17,7 @@ the hosted site or serve the repository root with any static web server.
 | [ABS](abs/) | Animated Background System (full-screen OBS backdrops) | See each app under `abs/` |
 | [Diamond](abs/diamond/) | LCD geometric diamond lattice (ABS) | [Setup and URL parameters](abs/diamond/notes.md) |
 | [Ripple](abs/ripple/) | Pulsing pixel wave backdrop (ABS) | [Setup and URL parameters](abs/ripple/notes.md) |
+| [Voroni](abs/voroni/) | Voronoi pulse field with edge ripples (ABS) | [Setup and URL parameters](abs/voroni/notes.md) |
 
 ## Using an overlay in OBS
 

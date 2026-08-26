@@ -53,7 +53,8 @@ sesh-helpers/
 ├── trbanner/                 # Trick Request Banner (OBS Browser Source)
 ├── abs/                      # ABS — Animated Background System (OBS backdrops)
 │   ├── diamond/              # Diamond — LCD geometric diamond lattice
-│   └── ripple/               # Ripple — pulsing pixel wave backdrop
+│   ├── ripple/               # Ripple — pulsing pixel wave backdrop
+│   └── voroni/               # Voroni — Voronoi pulse field backdrop
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
 │   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
@@ -77,6 +78,7 @@ sesh-helpers/
 | `abs/` | **Exists** | ABS category landing; full-screen OBS backdrop apps |
 | `abs/diamond/` | **Exists** | Diamond lattice backdrop; per-app palettes in `notes.md` |
 | `abs/ripple/` | **Exists** | Ripple pixel wave backdrop; per-app palettes in `notes.md` |
+| `abs/voroni/` | **Exists** | Voroni Voronoi pulse field; per-app palettes in `notes.md` |
 | `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
 | `*/notes.md` | **Exists** | Operator setup and complete URL parameter contracts |
 | `seshbanner/playlist.js` | **Exists** | Public YouTube playlist extraction and ticker formatting |
@@ -148,6 +150,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 | ABS | [`abs/`](../abs/) |
 | Diamond (ABS) | [`abs/diamond/`](../abs/diamond/) |
 | Ripple (ABS) | [`abs/ripple/`](../abs/ripple/) |
+| Voroni (ABS) | [`abs/voroni/`](../abs/voroni/) |
 | Logo asset | [`img/seshhelpers.png`](../img/seshhelpers.png) |
 | Root README | [`README.md`](../README.md) |
 
