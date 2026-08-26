@@ -1,29 +1,42 @@
-/* 3026 D3C0 — reusable overlay theme (skeleton)
+/* 3026 D3C0 — reusable overlay theme
    Host: set data-theme="3026-d3c0" on <html> and class="theme-panel" on the glass surface.
    Pulse: themes/3026-d3c0/theme.js writes --theme-text-shadow on the panel (or an ancestor).
-   Direction: futuristic art deco — onyx + brass, sharp geometry, champagne text. */
+   Palette: HackTheBox Lite — deep navy glass, #9fef00 lime metal, cool readout text.
+   Direction: futuristic art deco geometry on HTB cyber colors. */
 
 [data-theme="3026-d3c0"] {
-  --d3c0-text-primary: #f3e6c8;
-  --d3c0-text-base: #d9c9a8;
+  /* HTB Lite — primary brand + surfaces */
+  --d3c0-htb-green: #9fef00;
+  --d3c0-htb-lime: #c5f467;
+  --d3c0-htb-amber: #ffaf00;
+  --d3c0-htb-fg: #a4b1cd;
+  --d3c0-htb-fg-bright: #c5d1eb;
+  --d3c0-htb-navy: #1a2332;
+  --d3c0-htb-void: #111927;
+  --d3c0-htb-panel: #141d2b;
+  --d3c0-htb-slate: #313f55;
 
-  --d3c0-glass-grad-a: rgba(18, 14, 10, 0.78);
-  --d3c0-glass-grad-b: rgba(42, 32, 18, 0.62);
-  --d3c0-glass-border: rgba(201, 162, 74, 0.45);
-  --d3c0-glass-inset-highlight: rgba(243, 230, 200, 0.14);
-  --d3c0-glass-shadow: rgba(0, 0, 0, 0.4);
+  --d3c0-text-primary: var(--d3c0-htb-lime);
+  --d3c0-text-base: var(--d3c0-htb-fg);
+
+  --d3c0-glass-grad-a: rgba(17, 25, 39, 0.84);
+  --d3c0-glass-grad-b: rgba(26, 35, 50, 0.62);
+  --d3c0-glass-border: rgba(159, 239, 0, 0.42);
+  --d3c0-glass-inset-highlight: rgba(197, 244, 103, 0.14);
+  --d3c0-glass-shadow: rgba(17, 25, 39, 0.55);
   --d3c0-outline-opacity: 0.55;
-  --d3c0-outline-inner: rgba(201, 162, 74, var(--d3c0-outline-opacity));
-  --d3c0-outline-outer: rgba(12, 10, 8, var(--d3c0-outline-opacity));
+  --d3c0-outline-inner: rgba(159, 239, 0, var(--d3c0-outline-opacity));
+  --d3c0-outline-outer: rgba(17, 25, 39, var(--d3c0-outline-opacity));
   --d3c0-outline-width: 0.2rem;
 
   --d3c0-blur-amount: 10px;
-  --d3c0-saturate-amount: 115%;
+  --d3c0-saturate-amount: 125%;
   /* Art deco lean: tighter radius than soft glass themes */
   --d3c0-radius-panel: 4px;
 
-  --d3c0-glow-primary: rgba(201, 162, 74, 0.65);
-  --d3c0-glow-soft: rgba(201, 162, 74, 0.3);
+  --d3c0-glow-primary: rgba(159, 239, 0, 0.7);
+  --d3c0-glow-soft: rgba(197, 244, 103, 0.32);
+  --d3c0-glow-amber: rgba(255, 175, 0, 0.22);
 
   --theme-text-shadow:
     0 0 6px var(--d3c0-glow-primary),
@@ -41,7 +54,7 @@
   --banner-blur: var(--d3c0-blur-amount);
   --banner-saturate: var(--d3c0-saturate-amount);
   --banner-radius-base: var(--d3c0-radius-panel);
-  --banner-accent: var(--d3c0-text-primary);
+  --banner-accent: var(--d3c0-htb-green);
 }
 
 [data-theme="3026-d3c0"] .theme-panel {
@@ -61,7 +74,7 @@
   text-shadow: var(--theme-text-shadow);
 }
 
-/* Placeholder for future art-deco geometry (fans, steps, sunburst) */
+/* Art-deco sunburst wash — HTB green + amber, low opacity over navy glass */
 [data-theme="3026-d3c0"] .theme-panel::before {
   content: "";
   position: absolute;
@@ -69,7 +82,20 @@
   border-radius: inherit;
   pointer-events: none;
   z-index: 0;
-  opacity: 0;
+  background:
+    repeating-conic-gradient(
+      from 0deg at 50% 100%,
+      rgba(159, 239, 0, 0.09) 0deg 6deg,
+      transparent 6deg 12deg
+    ),
+    linear-gradient(
+      180deg,
+      rgba(197, 244, 103, 0.06) 0%,
+      transparent 45%,
+      rgba(255, 175, 0, 0.05) 100%
+    );
+  opacity: 0.85;
+  mix-blend-mode: screen;
 }
 
 [data-theme="3026-d3c0"] .theme-panel > * {

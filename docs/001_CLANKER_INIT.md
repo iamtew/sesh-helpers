@@ -53,7 +53,7 @@ sesh-helpers/
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
 │   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
-│   └── 3026-d3c0/            # 3026 D3C0 — futuristic art deco (skeleton)
+│   └── 3026-d3c0/            # 3026 D3C0 — HTB Lite art deco (navy + #9fef00)
 ├── docs/
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point

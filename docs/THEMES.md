@@ -73,8 +73,10 @@ Preferred fonts — Display: `Monster Chiller`; Regular: `Londrina Solid`.
 
 ## 3026 D3C0
 
-Futuristic art deco skeleton — onyx glass, brass border/glow, champagne text,
-tight radius. Surface ornament (`::before`) and token polish still TBD.
+Futuristic art deco on **HackTheBox Lite** colors — navy glass
+(`#111927` → `#1a2332`), signature lime metal (`#9fef00`), bright readout
+(`#c5f467`), amber accent (`#ffaf00`), tight radius, sunburst wash, and a
+green/amber text pulse.
 
 Preferred fonts — Display: `Lemondrop`; Regular: `Brighton Sans NBP`.
 
