@@ -768,8 +768,9 @@ function applyCheckerboard() {
 }
 
 function applyBannerPosition() {
-  banner.style.left = `${state.bannerX}%`;
-  banner.style.top = `${state.bannerY}%`;
+  // Keep left/top at 0 (CSS) so layout width uses the full viewport; place via transform.
+  banner.style.setProperty("--banner-x", String(state.bannerX));
+  banner.style.setProperty("--banner-y", String(state.bannerY));
   positionValue.textContent = `${state.bannerX.toFixed(0)}% / ${state.bannerY.toFixed(0)}%`;
 }
 

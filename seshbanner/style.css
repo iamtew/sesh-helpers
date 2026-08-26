@@ -116,12 +116,20 @@ body.settings-mode {
 /* --- Banner --------------------------------------------------------------- */
 
 #banner {
+  /* left/top stay at 0 so shrink-to-fit uses the full viewport; visual
+     placement is transform-only (avoids right-edge width collapse). */
   position: fixed;
-  left: 50%;
-  top: 85%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  top: 0;
+  --banner-x: 50;
+  --banner-y: 85;
+  transform: translate(
+    calc(var(--banner-x) * 1vw - 50%),
+    calc(var(--banner-y) * 1vh - 50%)
+  );
   z-index: 5;
   max-width: var(--banner-max-width);
+  width: max-content;
   pointer-events: none;
   user-select: none;
 }
