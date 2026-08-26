@@ -45,11 +45,7 @@ const defaults = {
   rippleSpeed: 1,
   rippleWarp: 0,
   density: 220,
-  glitch: 0,
-  glitchShift: 0.55,
-  glitchChroma: 0.45,
-  glitchBulge: 0.3,
-  glitchRate: 2.5,
+  ...AbsGlitchPost.defaults,
   vignette: false,
   vignetteStrength: 100,
   settingsMode: "ON",
@@ -120,18 +116,6 @@ function getRippleIntervalFromParams() {
   return defaults.rippleInterval;
 }
 
-function clampGlitchAmount(value) {
-  return Math.min(1, Math.max(0, value));
-}
-
-function clampGlitchUnit(value) {
-  return Math.min(1, Math.max(0, value));
-}
-
-function clampGlitchRate(value) {
-  return Math.min(8, Math.max(0.5, value));
-}
-
 function clampDensity(value) {
   return Math.min(800, Math.max(20, Math.round(value)));
 }
@@ -147,11 +131,11 @@ let state = {
   rippleSpeed: clampRippleSpeed(getNumberParam("rippleSpeed", defaults.rippleSpeed)),
   rippleWarp: clampRippleWarp(getNumberParam("rippleWarp", defaults.rippleWarp)),
   density: clampDensity(getNumberParam("density", defaults.density)),
-  glitch: clampGlitchAmount(getNumberParam("glitch", defaults.glitch)),
-  glitchShift: clampGlitchUnit(getNumberParam("glitchShift", defaults.glitchShift)),
-  glitchChroma: clampGlitchUnit(getNumberParam("glitchChroma", defaults.glitchChroma)),
-  glitchBulge: clampGlitchUnit(getNumberParam("glitchBulge", defaults.glitchBulge)),
-  glitchRate: clampGlitchRate(getNumberParam("glitchRate", defaults.glitchRate)),
+  glitch: AbsGlitchPost.clampAmount(getNumberParam("glitch", defaults.glitch)),
+  glitchShift: AbsGlitchPost.clampUnit(getNumberParam("glitchShift", defaults.glitchShift)),
+  glitchChroma: AbsGlitchPost.clampUnit(getNumberParam("glitchChroma", defaults.glitchChroma)),
+  glitchBulge: AbsGlitchPost.clampUnit(getNumberParam("glitchBulge", defaults.glitchBulge)),
+  glitchRate: AbsGlitchPost.clampRate(getNumberParam("glitchRate", defaults.glitchRate)),
   vignette: getBooleanParam("vignette", defaults.vignette),
   vignetteStrength: clampVignetteStrength(getNumberParam("vignetteStrength", defaults.vignetteStrength)),
   settingsMode: getParam("menu", defaults.settingsMode) === "DISABLE" ? "DISABLE" : "ON",
@@ -414,103 +398,6 @@ function computeEdgeRipple(x, y, bestDist, secondDist, rippleRadius, envelope) {
   return edgeSharp * ripple * envelope;
 }
 
-function hash1(n) {
-  const x = Math.sin(n * 12.9898) * 43758.5453;
-  return x - Math.floor(x);
-}
-
-function sampleNearest(src, w, h, sx, sy) {
-  const ix = Math.max(0, Math.min(w - 1, Math.round(sx)));
-  const iy = Math.max(0, Math.min(h - 1, Math.round(sy)));
-  const i = (iy * w + ix) * 4;
-  return { r: src[i], g: src[i + 1], b: src[i + 2] };
-}
-
-function glitchMix(now) {
-  const t = now * 0.001 * state.glitchRate;
-  const pulse = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 2.4));
-  const spike = Math.max(0, Math.sin(t * 5.1) * Math.sin(t * 3.3));
-  const flash = spike > 0.82 ? 1.35 : 1;
-  return state.glitch * pulse * flash;
-}
-
-function applyGlitchPostProcess(now) {
-  if (!sourceData || !data || state.glitch <= 0) {
-    if (sourceData && data) data.set(sourceData);
-    return;
-  }
-
-  const mix = glitchMix(now);
-  if (mix <= 0.001) {
-    data.set(sourceData);
-    return;
-  }
-
-  const cx = cols * 0.5;
-  const cy = rows * 0.5;
-  const bandStep = Math.max(2, Math.floor(3 + state.glitchShift * 14));
-  const shiftTick = Math.floor(now * 0.001 * state.glitchRate * 6);
-  const chromaAmt = state.glitchChroma * mix * 4.5;
-  const chromaAngle = now * 0.0022 * state.glitchRate;
-  const chromaX = Math.cos(chromaAngle) * chromaAmt;
-  const chromaY = Math.sin(chromaAngle) * chromaAmt * 0.35;
-  const bulgeAmt = state.glitchBulge * mix * 0.42;
-  const fuzzGate = mix * 0.12 * state.glitchRate;
-  const frameSeed = Math.floor(now / FRAME_MS);
-
-  for (let gy = 0; gy < rows; gy++) {
-    const band = Math.floor(gy / bandStep);
-    const bandHash = hash1(band * 17.31 + shiftTick * 0.91);
-    const bandShift = (bandHash - 0.5) * state.glitchShift * mix * 10;
-    const burstShift = bandHash > 0.92 ? (hash1(shiftTick + band) - 0.5) * mix * 18 : 0;
-
-    for (let gx = 0; gx < cols; gx++) {
-      let sx = gx + bandShift + burstShift;
-      let sy = gy;
-
-      const nx = (gx - cx) / Math.max(1, cx);
-      const ny = (gy - cy) / Math.max(1, cy);
-      const r2 = nx * nx + ny * ny;
-      const scale = 1 + bulgeAmt * r2;
-      sx = cx + (sx - cx) / scale;
-      sy = cy + (sy - cy) / scale;
-
-      const base = sampleNearest(sourceData, cols, rows, sx, sy);
-      let r = base.r;
-      let g = base.g;
-      let b = base.b;
-
-      if (chromaAmt > 0.05) {
-        const rs = sampleNearest(sourceData, cols, rows, sx + chromaX, sy + chromaY);
-        const bs = sampleNearest(sourceData, cols, rows, sx - chromaX, sy - chromaY);
-        r = rs.r;
-        b = bs.b;
-      }
-
-      if (hash1(gx * 0.71 + gy * 1.37 + frameSeed) < fuzzGate) {
-        const n = hash1(gx + gy * 13 + frameSeed * 0.17);
-        const fuzz = (n - 0.5) * mix * 90;
-        r = Math.max(0, Math.min(255, r + fuzz));
-        g = Math.max(0, Math.min(255, g + fuzz * 0.6));
-        b = Math.max(0, Math.min(255, b - fuzz * 0.4));
-      }
-
-      if (mix > 0.55 && hash1(gx * 0.19 + gy * 0.23 + shiftTick) > 0.985) {
-        const flash = mix * 110;
-        r = Math.min(255, r + flash);
-        g = Math.min(255, g + flash * 0.35);
-        b = Math.min(255, b + flash * 0.85);
-      }
-
-      const idx = (gy * cols + gx) * 4;
-      data[idx] = r;
-      data[idx + 1] = g;
-      data[idx + 2] = b;
-      data[idx + 3] = 255;
-    }
-  }
-}
-
 function paint(now) {
   if (!data || pointCount === 0) return;
 
@@ -613,7 +500,7 @@ function paint(now) {
     }
   }
 
-  applyGlitchPostProcess(now);
+  AbsGlitchPost.applyPostProcess(now, sourceData, data, cols, rows, state, FRAME_MS);
   ctx.putImageData(image, 0, 0);
 }
 
@@ -721,10 +608,6 @@ function formatRippleInterval(seconds) {
   return seconds <= 0 ? "Off" : `${seconds.toFixed(1)}s`;
 }
 
-function formatGlitchPercent(value) {
-  return `${Math.round(value * 100)}%`;
-}
-
 function syncInputs() {
   densitySlider.value = state.density;
   densityValue.textContent = String(state.density);
@@ -735,15 +618,15 @@ function syncInputs() {
   rippleSpeedSlider.value = state.rippleSpeed;
   rippleSpeedValue.textContent = `${state.rippleSpeed.toFixed(2)}x`;
   rippleWarpSlider.value = state.rippleWarp;
-  rippleWarpValue.textContent = formatGlitchPercent(state.rippleWarp);
+  rippleWarpValue.textContent = AbsGlitchPost.formatPercent(state.rippleWarp);
   glitchAmountSlider.value = state.glitch;
-  glitchAmountValue.textContent = formatGlitchPercent(state.glitch);
+  glitchAmountValue.textContent = AbsGlitchPost.formatPercent(state.glitch);
   glitchShiftSlider.value = state.glitchShift;
-  glitchShiftValue.textContent = formatGlitchPercent(state.glitchShift);
+  glitchShiftValue.textContent = AbsGlitchPost.formatPercent(state.glitchShift);
   glitchChromaSlider.value = state.glitchChroma;
-  glitchChromaValue.textContent = formatGlitchPercent(state.glitchChroma);
+  glitchChromaValue.textContent = AbsGlitchPost.formatPercent(state.glitchChroma);
   glitchBulgeSlider.value = state.glitchBulge;
-  glitchBulgeValue.textContent = formatGlitchPercent(state.glitchBulge);
+  glitchBulgeValue.textContent = AbsGlitchPost.formatPercent(state.glitchBulge);
   glitchRateSlider.value = state.glitchRate;
   glitchRateValue.textContent = `${state.glitchRate.toFixed(1)}Hz`;
   paletteSelect.value = state.palette;
@@ -890,35 +773,35 @@ densitySlider.addEventListener("input", (e) => {
 });
 
 glitchAmountSlider.addEventListener("input", (e) => {
-  state.glitch = clampGlitchAmount(Number.parseFloat(e.target.value));
+  state.glitch = AbsGlitchPost.clampAmount(Number.parseFloat(e.target.value));
   syncInputs();
   repaintNow();
   updateURL();
 });
 
 glitchShiftSlider.addEventListener("input", (e) => {
-  state.glitchShift = clampGlitchUnit(Number.parseFloat(e.target.value));
+  state.glitchShift = AbsGlitchPost.clampUnit(Number.parseFloat(e.target.value));
   syncInputs();
   repaintNow();
   updateURL();
 });
 
 glitchChromaSlider.addEventListener("input", (e) => {
-  state.glitchChroma = clampGlitchUnit(Number.parseFloat(e.target.value));
+  state.glitchChroma = AbsGlitchPost.clampUnit(Number.parseFloat(e.target.value));
   syncInputs();
   repaintNow();
   updateURL();
 });
 
 glitchBulgeSlider.addEventListener("input", (e) => {
-  state.glitchBulge = clampGlitchUnit(Number.parseFloat(e.target.value));
+  state.glitchBulge = AbsGlitchPost.clampUnit(Number.parseFloat(e.target.value));
   syncInputs();
   repaintNow();
   updateURL();
 });
 
 glitchRateSlider.addEventListener("input", (e) => {
-  state.glitchRate = clampGlitchRate(Number.parseFloat(e.target.value));
+  state.glitchRate = AbsGlitchPost.clampRate(Number.parseFloat(e.target.value));
   syncInputs();
   repaintNow();
   updateURL();

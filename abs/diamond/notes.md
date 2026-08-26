@@ -36,6 +36,11 @@ the address bar immediately; there is no save button or local storage.
 | `palette` | `lcd` | Color ramp: `lcd`, `violet`, `ember`, `jade`, `rose`, or `acid` (unknown → `lcd`) |
 | `speed` | `1` | Animation time multiplier (`0.25`–`3`) |
 | `cellSize` | `5` | Lattice cell size in low-res pixels (`2`–`16`) |
+| `glitch` | `0` | Glitch master amount (`0`–`1`; `0` = off) |
+| `glitchShift` | `0.55` | Horizontal band shift strength (`0`–`1`) |
+| `glitchChroma` | `0.45` | Chromatic aberration fringe (`0`–`1`) |
+| `glitchBulge` | `0.3` | Fisheye bulge warp (`0`–`1`) |
+| `glitchRate` | `2.5` | Glitch pulse rate in Hz (`0.5`–`8`) |
 | `vignette` | `true` | Radial darkening overlay on/off |
 | `vignetteStrength` | `100` | Vignette opacity percent (`0`–`100`; ignored when vignette is off) |
 | `menu` | `ON` | `DISABLE` hides controls for clean OBS output |
@@ -43,7 +48,7 @@ the address bar immediately; there is no save button or local storage.
 
 Example clean-output URL:
 
-`https://helpers.seshsofa.nl/abs/diamond/?palette=lcd&speed=1&cellSize=5&vignette=true&vignetteStrength=100&menu=DISABLE`
+`https://helpers.seshsofa.nl/abs/diamond/?palette=lcd&speed=1&cellSize=5&glitch=0&glitchShift=0.55&glitchChroma=0.45&glitchBulge=0.3&glitchRate=2.5&vignette=true&vignetteStrength=100&menu=DISABLE`
 
 ## Runtime notes
 

@@ -52,6 +52,7 @@ sesh-helpers/
 ├── seshbanner/               # Sesh Banner helper app (OBS Browser Source)
 ├── trbanner/                 # Trick Request Banner (OBS Browser Source)
 ├── abs/                      # ABS — Animated Background System (OBS backdrops)
+│   ├── glitch-post.js        # Shared glitch post-process (band shift, chroma, bulge)
 │   ├── diamond/              # Diamond — LCD geometric diamond lattice
 │   ├── ripple/               # Ripple — pulsing pixel wave backdrop
 │   └── voroni/               # Voroni — Voronoi pulse field backdrop

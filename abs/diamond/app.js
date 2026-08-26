@@ -90,6 +90,7 @@ const defaults = {
   palette: "lcd",
   speed: 1,
   cellSize: 5,
+  ...AbsGlitchPost.defaults,
   vignette: true,
   vignetteStrength: 100,
   settingsMode: "ON",
@@ -132,6 +133,11 @@ let state = {
   palette: normalizePalette(getParam("palette", defaults.palette)),
   speed: clampSpeed(getNumberParam("speed", defaults.speed)),
   cellSize: clampCellSize(getNumberParam("cellSize", defaults.cellSize)),
+  glitch: AbsGlitchPost.clampAmount(getNumberParam("glitch", defaults.glitch)),
+  glitchShift: AbsGlitchPost.clampUnit(getNumberParam("glitchShift", defaults.glitchShift)),
+  glitchChroma: AbsGlitchPost.clampUnit(getNumberParam("glitchChroma", defaults.glitchChroma)),
+  glitchBulge: AbsGlitchPost.clampUnit(getNumberParam("glitchBulge", defaults.glitchBulge)),
+  glitchRate: AbsGlitchPost.clampRate(getNumberParam("glitchRate", defaults.glitchRate)),
   vignette: getBooleanParam("vignette", defaults.vignette),
   vignetteStrength: clampVignetteStrength(getNumberParam("vignetteStrength", defaults.vignetteStrength)),
   settingsMode: getParam("menu", defaults.settingsMode) === "DISABLE" ? "DISABLE" : "ON",
@@ -144,6 +150,7 @@ const W = canvas.width;
 const H = canvas.height;
 const image = ctx.createImageData(W, H);
 const data = image.data;
+const sourceData = new Uint8ClampedArray(data.length);
 
 const vignetteEl = document.getElementById("vignette");
 const settingsMenu = document.getElementById("settings-menu");
@@ -153,6 +160,16 @@ const speedSlider = document.getElementById("speed-slider");
 const speedValue = document.getElementById("speed-value");
 const cellSizeSlider = document.getElementById("cell-size-slider");
 const cellSizeValue = document.getElementById("cell-size-value");
+const glitchAmountSlider = document.getElementById("glitch-amount-slider");
+const glitchAmountValue = document.getElementById("glitch-amount-value");
+const glitchShiftSlider = document.getElementById("glitch-shift-slider");
+const glitchShiftValue = document.getElementById("glitch-shift-value");
+const glitchChromaSlider = document.getElementById("glitch-chroma-slider");
+const glitchChromaValue = document.getElementById("glitch-chroma-value");
+const glitchBulgeSlider = document.getElementById("glitch-bulge-slider");
+const glitchBulgeValue = document.getElementById("glitch-bulge-value");
+const glitchRateSlider = document.getElementById("glitch-rate-slider");
+const glitchRateValue = document.getElementById("glitch-rate-value");
 const paletteSelect = document.getElementById("palette-select");
 const vignetteToggle = document.getElementById("vignette-toggle");
 const vignetteStrengthSlider = document.getElementById("vignette-strength-slider");
@@ -174,7 +191,7 @@ function flashMenuAction(button, tempLabel) {
   }, 550);
 }
 
-function paint(timeSec) {
+function paint(timeSec, nowMs) {
   const palette = PALETTES[state.palette] || PALETTES.lcd;
   const colors = palette.colors;
   const fleckIndex = palette.fleckIndex;
@@ -217,12 +234,14 @@ function paint(timeSec) {
       }
 
       const i = (y * W + x) * 4;
-      data[i] = rgb[0];
-      data[i + 1] = rgb[1];
-      data[i + 2] = rgb[2];
-      data[i + 3] = 255;
+      sourceData[i] = rgb[0];
+      sourceData[i + 1] = rgb[1];
+      sourceData[i + 2] = rgb[2];
+      sourceData[i + 3] = 255;
     }
   }
+
+  AbsGlitchPost.applyPostProcess(nowMs, sourceData, data, W, H, state, FRAME_MS);
   ctx.putImageData(image, 0, 0);
 }
 
@@ -235,7 +254,7 @@ function tick(now) {
   if (document.hidden) return;
   if (now - last < FRAME_MS) return;
   last = now;
-  paint(now * 0.001 * state.speed);
+  paint(now * 0.001 * state.speed, now);
 }
 
 function startAnimation() {
@@ -254,8 +273,8 @@ function stopAnimation() {
 }
 
 function repaintNow() {
-  const t = REDUCE_MOTION ? 0 : (performance.now() * 0.001 * state.speed);
-  paint(t);
+  const nowMs = REDUCE_MOTION ? 0 : performance.now();
+  paint(nowMs * 0.001 * state.speed, nowMs);
 }
 
 document.addEventListener("visibilitychange", () => {
@@ -271,6 +290,11 @@ function updateURL() {
   params.set("palette", state.palette);
   params.set("speed", String(state.speed));
   params.set("cellSize", String(state.cellSize));
+  params.set("glitch", String(state.glitch));
+  params.set("glitchShift", String(state.glitchShift));
+  params.set("glitchChroma", String(state.glitchChroma));
+  params.set("glitchBulge", String(state.glitchBulge));
+  params.set("glitchRate", String(state.glitchRate));
   params.set("vignette", String(state.vignette));
   params.set("vignetteStrength", String(state.vignetteStrength));
   params.set("menu", state.settingsMode);
@@ -309,6 +333,16 @@ function syncInputs() {
   speedValue.textContent = `${state.speed.toFixed(2)}x`;
   cellSizeSlider.value = state.cellSize;
   cellSizeValue.textContent = String(state.cellSize);
+  glitchAmountSlider.value = state.glitch;
+  glitchAmountValue.textContent = AbsGlitchPost.formatPercent(state.glitch);
+  glitchShiftSlider.value = state.glitchShift;
+  glitchShiftValue.textContent = AbsGlitchPost.formatPercent(state.glitchShift);
+  glitchChromaSlider.value = state.glitchChroma;
+  glitchChromaValue.textContent = AbsGlitchPost.formatPercent(state.glitchChroma);
+  glitchBulgeSlider.value = state.glitchBulge;
+  glitchBulgeValue.textContent = AbsGlitchPost.formatPercent(state.glitchBulge);
+  glitchRateSlider.value = state.glitchRate;
+  glitchRateValue.textContent = `${state.glitchRate.toFixed(1)}Hz`;
   paletteSelect.value = state.palette;
   vignetteStrengthSlider.value = state.vignetteStrength;
   vignetteStrengthValue.textContent = `${state.vignetteStrength}%`;
@@ -330,6 +364,21 @@ function resetParam(key) {
     case "cellSize":
       state.cellSize = defaults.cellSize;
       break;
+    case "glitch":
+      state.glitch = defaults.glitch;
+      break;
+    case "glitchShift":
+      state.glitchShift = defaults.glitchShift;
+      break;
+    case "glitchChroma":
+      state.glitchChroma = defaults.glitchChroma;
+      break;
+    case "glitchBulge":
+      state.glitchBulge = defaults.glitchBulge;
+      break;
+    case "glitchRate":
+      state.glitchRate = defaults.glitchRate;
+      break;
     case "vignetteStrength":
       state.vignetteStrength = defaults.vignetteStrength;
       break;
@@ -337,7 +386,7 @@ function resetParam(key) {
       return;
   }
   syncInputs();
-  if (key === "speed" || key === "cellSize") repaintNow();
+  if (key === "speed" || key === "cellSize" || key.startsWith("glitch")) repaintNow();
   updateURL();
 }
 
@@ -402,6 +451,41 @@ cellSizeSlider.addEventListener("input", (e) => {
   updateURL();
 });
 
+glitchAmountSlider.addEventListener("input", (e) => {
+  state.glitch = AbsGlitchPost.clampAmount(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+glitchShiftSlider.addEventListener("input", (e) => {
+  state.glitchShift = AbsGlitchPost.clampUnit(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+glitchChromaSlider.addEventListener("input", (e) => {
+  state.glitchChroma = AbsGlitchPost.clampUnit(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+glitchBulgeSlider.addEventListener("input", (e) => {
+  state.glitchBulge = AbsGlitchPost.clampUnit(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+glitchRateSlider.addEventListener("input", (e) => {
+  state.glitchRate = AbsGlitchPost.clampRate(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
 paletteSelect.addEventListener("change", (e) => {
   state.palette = normalizePalette(e.target.value);
   syncInputs();
@@ -431,6 +515,11 @@ resetButton.addEventListener("click", () => {
   state.palette = defaults.palette;
   state.speed = defaults.speed;
   state.cellSize = defaults.cellSize;
+  state.glitch = defaults.glitch;
+  state.glitchShift = defaults.glitchShift;
+  state.glitchChroma = defaults.glitchChroma;
+  state.glitchBulge = defaults.glitchBulge;
+  state.glitchRate = defaults.glitchRate;
   state.vignette = defaults.vignette;
   state.vignetteStrength = defaults.vignetteStrength;
   state.side = defaults.side;
@@ -461,5 +550,5 @@ copyUrlObsButton.addEventListener("click", async () => {
 
 applyAll();
 updateURL();
-paint(0);
+paint(0, 0);
 if (!REDUCE_MOTION) startAnimation();
