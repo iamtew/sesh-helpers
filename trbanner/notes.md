@@ -43,6 +43,8 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `messageSize` | Message font size (px, 12–96) | `28` |
 | `width` | Banner width size (%, 25–1000) | `100` |
 | `height` | Banner height size (%, 25–1000) | `100` |
+| `alignX` | Content horizontal align `left` · `center` · `right` | `center` |
+| `alignY` | Content vertical align `top` · `center` · `bottom` | `center` |
 | `bannerX` / `bannerY` | Position (% of viewport, top-left of banner) | `2` / `4` |
 | `bg` | Demo background `0`–`3` | `0` (None) |
 | `menu` | `ON` or `DISABLE` | `ON` |
@@ -73,7 +75,9 @@ See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from layout;
 
 ## Size
 
-**Width / height** (`width` / `height`, 25–1000%) size the banner box. Type scales with **`min(width, height)`** so glyphs stay proportional. Fonts section sets base title/user/message px; Size multiplies them.
+**Width / height** (`width` / `height`, 25–1000%) size the banner box independently (padding + gap). Fonts section sets title/user/message px directly — Size does not multiply them. Corner radius stays at the theme base.
+
+**Content align** (`alignX` / `alignY`, default `center` / `center`) puts extra size padding on the opposite side(s). Center keeps equal padding (previous behavior).
 
 Per-control **↺** resets that setting. Font ↺ uses the **active theme’s** preferred Display/Regular. **Reset all** clears everything and re-applies the default theme’s preferred fonts.
 

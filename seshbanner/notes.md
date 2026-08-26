@@ -44,6 +44,8 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `messageSize` | Message font size (px, 12–64) | `18` |
 | `width` | Banner width size (%, 25–1000) | `100` |
 | `height` | Banner height size (%, 25–1000) | `100` |
+| `alignX` | Content horizontal align `left` · `center` · `right` | `center` |
+| `alignY` | Content vertical align `top` · `center` · `bottom` | `center` |
 | `bannerX` / `bannerY` | Position (% of viewport) | `50` / `85` |
 | `playlist` | YouTube playlist URL or id (layout 3) | empty |
 | `playlistLayout` | Ticker layout `1`–`4` (layout 3) | `1` |
@@ -89,11 +91,13 @@ See [`docs/THEMES.md`](../docs/THEMES.md). Overlay look is separate from layout;
 
 ## Size
 
-**Width / height** (`width` / `height`, 25–1000%) size the banner box (padding + max-width). Type scales with **`min(width, height)`** so glyphs stay proportional — no CSS stretch. Crank both toward 1000 to nearly fill the canvas. Fonts section sets base title/message px; Size multiplies them.
+**Width / height** (`width` / `height`, 25–1000%) size the banner box independently (padding + max-width). Fonts section sets title/message/prefix px directly — Size does not multiply them. Corner radius stays at the theme base.
+
+**Content align** (`alignX` / `alignY`, default `center` / `center`) puts extra size padding on the opposite side(s). Center keeps equal padding (previous behavior).
 
 Legacy `scale` / `scaleX` / `scaleY` still load, then rewrite to `width` / `height`.
 
-Per-control **↺** resets that setting to its default (sliders, fonts, position). Font ↺ uses the **active theme’s** preferred Display/Regular. **Reset all** clears everything and re-applies the default theme’s preferred fonts.
+Per-control **↺** resets that setting to its default (sliders, fonts, position, content align). Font ↺ uses the **active theme’s** preferred Display/Regular. **Reset all** clears everything and re-applies the default theme’s preferred fonts.
 
 ## Fonts
 

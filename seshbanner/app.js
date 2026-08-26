@@ -68,6 +68,8 @@ const defaults = {
   messageSize: 18,
   width: 100,
   height: 100,
+  alignX: "center",
+  alignY: "center",
   bannerX: 50,
   bannerY: 85,
   playlist: "",
@@ -157,6 +159,24 @@ function normalizePrefixAlign(value) {
 
 function normalizeNameAlign(value) {
   return normalizeTextAlign(value, defaults.nameAlign);
+}
+
+function normalizeAlignX(value) {
+  return normalizeTextAlign(value, defaults.alignX);
+}
+
+function normalizeAlignY(value) {
+  const align = String(value || "");
+  return align === "top" || align === "center" || align === "bottom" ? align : defaults.alignY;
+}
+
+/** Split sized half-padding across start/end. Extra beyond base hugs the far side. */
+function padPair(halfRem, baseRem, align, startKey) {
+  if (align === "center") return [halfRem, halfRem];
+  const total = halfRem * 2;
+  const hug = Math.min(halfRem, baseRem);
+  if (align === startKey) return [hug, total - hug];
+  return [total - hug, hug];
 }
 
 function isNameAlignLayout() {
@@ -321,6 +341,8 @@ let state = {
   messageSize: getSizeParam("messageSize", defaults.messageSize, 12, 64),
   width: getAxisSize("width"),
   height: getAxisSize("height"),
+  alignX: normalizeAlignX(getParam("alignX", defaults.alignX)),
+  alignY: normalizeAlignY(getParam("alignY", defaults.alignY)),
   bannerX: getNumberParam("bannerX", defaults.bannerX),
   bannerY: getNumberParam("bannerY", defaults.bannerY),
   playlist: getParam("playlist", defaults.playlist),
@@ -366,6 +388,8 @@ const prefixAlignGroup = document.getElementById("prefix-align-group");
 const prefixAlignButtons = document.querySelectorAll("[data-prefix-align]");
 const nameAlignGroup = document.getElementById("name-align-group");
 const nameAlignButtons = document.querySelectorAll("[data-name-align]");
+const alignXButtons = document.querySelectorAll("[data-align-x]");
+const alignYButtons = document.querySelectorAll("[data-align-y]");
 const prefixFontGroup = document.getElementById("prefix-font-group");
 const positionValue = document.getElementById("position-value");
 const playlistInput = document.getElementById("playlist-input");
@@ -722,6 +746,8 @@ function updateURL() {
   params.set("messageSize", String(state.messageSize));
   params.set("width", String(state.width));
   params.set("height", String(state.height));
+  params.set("alignX", state.alignX);
+  params.set("alignY", state.alignY);
   params.delete("scale");
   params.delete("scaleX");
   params.delete("scaleY");
@@ -777,42 +803,47 @@ function applyBannerPosition() {
 function applySize() {
   const w = state.width / 100;
   const h = state.height / 100;
-  // Uniform type scale from the smaller axis — never stretch glyphs.
-  const fontScale = Math.min(w, h);
   const radiusBase = readCssPx("--banner-radius-base", 6);
+  const padXBase = 1.25;
+  const padYBase = 0.85;
+  const [padLeft, padRight] = padPair(padXBase * w, padXBase, state.alignX, "left");
+  const [padTop, padBottom] = padPair(padYBase * h, padYBase, state.alignY, "top");
 
   document.documentElement.style.setProperty(
     "--banner-max-width",
     `min(${(56 * w).toFixed(2)}rem, ${(90 * w).toFixed(2)}vw, 100vw)`
   );
   document.documentElement.style.setProperty(
-    "--banner-pad-x",
-    `${(1.25 * w).toFixed(3)}rem`
+    "--banner-pad-top",
+    `${padTop.toFixed(3)}rem`
   );
   document.documentElement.style.setProperty(
-    "--banner-pad-y",
-    `${(0.85 * h).toFixed(3)}rem`
+    "--banner-pad-right",
+    `${padRight.toFixed(3)}rem`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-pad-bottom",
+    `${padBottom.toFixed(3)}rem`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-pad-left",
+    `${padLeft.toFixed(3)}rem`
   );
   document.documentElement.style.setProperty(
     "--banner-accent-w",
-    `${Math.max(2, 4 * fontScale).toFixed(2)}px`
+    `${Math.max(2, 4 * w).toFixed(2)}px`
   );
   document.documentElement.style.setProperty(
     "--banner-radius",
-    `${Math.max(2, radiusBase * fontScale).toFixed(2)}px`
+    `${radiusBase}px`
   );
-  document.documentElement.style.setProperty(
-    "--banner-title-size",
-    `${(state.titleSize * fontScale).toFixed(2)}px`
-  );
-  document.documentElement.style.setProperty(
-    "--banner-message-size",
-    `${(state.messageSize * fontScale).toFixed(2)}px`
-  );
-  document.documentElement.style.setProperty(
-    "--banner-prefix-size",
-    `${(state.prefixSize * fontScale).toFixed(2)}px`
-  );
+
+  for (const button of alignXButtons) {
+    button.classList.toggle("is-active", button.dataset.alignX === state.alignX);
+  }
+  for (const button of alignYButtons) {
+    button.classList.toggle("is-active", button.dataset.alignY === state.alignY);
+  }
 
   syncMarqueeDuration();
 }
@@ -829,6 +860,18 @@ function applyFonts() {
   document.documentElement.style.setProperty(
     "--banner-prefix-font",
     `'${state.prefixFont}', sans-serif`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-title-size",
+    `${state.titleSize}px`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-message-size",
+    `${state.messageSize}px`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-prefix-size",
+    `${state.prefixSize}px`
   );
   applySize();
 }
@@ -1377,6 +1420,22 @@ heightSlider.addEventListener("input", e => {
   updateURL();
 });
 
+for (const button of alignXButtons) {
+  button.addEventListener("click", () => {
+    state.alignX = normalizeAlignX(button.dataset.alignX);
+    applySize();
+    updateURL();
+  });
+}
+
+for (const button of alignYButtons) {
+  button.addEventListener("click", () => {
+    state.alignY = normalizeAlignY(button.dataset.alignY);
+    applySize();
+    updateURL();
+  });
+}
+
 function resetParam(key) {
   switch (key) {
     case "position":
@@ -1389,6 +1448,10 @@ function resetParam(key) {
       break;
     case "height":
       state.height = defaults.height;
+      break;
+    case "align":
+      state.alignX = defaults.alignX;
+      state.alignY = defaults.alignY;
       break;
     case "titleSize":
       state.titleSize = defaults.titleSize;
@@ -1415,7 +1478,7 @@ function resetParam(key) {
       return;
   }
 
-  if (key === "width" || key === "height") applySize();
+  if (key === "width" || key === "height" || key === "align") applySize();
   if (key === "marqueeSpeed") syncMarqueeDuration();
   if (key === "titleSize" || key === "messageSize" || key === "prefixSize" || key === "titleFont" || key === "messageFont" || key === "prefixFont") {
     applyFonts();

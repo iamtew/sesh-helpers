@@ -32,8 +32,10 @@
   --banner-radius: 6px;
   --banner-radius-base: 6px;
   --banner-padding: 0.85rem 1.25rem;
-  --banner-pad-x: 1.25rem;
-  --banner-pad-y: 0.85rem;
+  --banner-pad-top: 0.85rem;
+  --banner-pad-right: 1.25rem;
+  --banner-pad-bottom: 0.85rem;
+  --banner-pad-left: 1.25rem;
   --banner-accent: var(--accent);
   --banner-accent-w: 4px;
   --banner-title-size: 38px;
@@ -149,7 +151,7 @@ body.settings-mode #banner.dragging {
   display: flex;
   align-items: stretch;
   gap: 0;
-  padding: var(--banner-pad-y) var(--banner-pad-x);
+  padding: var(--banner-pad-top) var(--banner-pad-right) var(--banner-pad-bottom) var(--banner-pad-left);
   border-radius: var(--banner-radius);
   border: 1px solid var(--banner-border);
   background: var(--banner-bg);
@@ -694,6 +696,12 @@ body.settings-mode #banner.dragging {
 
 #banner[data-name-align="right"] .playlist-name {
   text-align: right;
+}
+
+.align-button-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
 .align-button-row {

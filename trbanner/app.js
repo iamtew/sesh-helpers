@@ -69,6 +69,8 @@ const defaults = {
   messageSize: 28,
   width: 100,
   height: 100,
+  alignX: "center",
+  alignY: "center",
   bannerX: 2,
   bannerY: 4,
   bg: BG_NONE,
@@ -209,6 +211,25 @@ function getSizeParam(key, fallback, min, max) {
   return clamp(getNumberParam(key, fallback), min, max);
 }
 
+function normalizeAlignX(value) {
+  const align = String(value || "");
+  return align === "left" || align === "center" || align === "right" ? align : defaults.alignX;
+}
+
+function normalizeAlignY(value) {
+  const align = String(value || "");
+  return align === "top" || align === "center" || align === "bottom" ? align : defaults.alignY;
+}
+
+/** Split sized half-padding across start/end. Extra beyond base hugs the far side. */
+function padPair(halfRem, baseRem, align, startKey) {
+  if (align === "center") return [halfRem, halfRem];
+  const total = halfRem * 2;
+  const hug = Math.min(halfRem, baseRem);
+  if (align === startKey) return [hug, total - hug];
+  return [total - hug, hug];
+}
+
 /** Prefer width/height; accept legacy scaleX/scaleY or uniform scale URLs. */
 function getAxisSize(key) {
   if (params.has(key)) return getSizeParam(key, defaults[key], 25, 1000);
@@ -246,6 +267,8 @@ let state = {
   messageSize: getSizeParam("messageSize", defaults.messageSize, 12, 96),
   width: getAxisSize("width"),
   height: getAxisSize("height"),
+  alignX: normalizeAlignX(getParam("alignX", defaults.alignX)),
+  alignY: normalizeAlignY(getParam("alignY", defaults.alignY)),
   bannerX: getNumberParam("bannerX", defaults.bannerX),
   bannerY: getNumberParam("bannerY", defaults.bannerY),
   bg: normalizeBg(getParam("bg", defaults.bg)),
@@ -285,6 +308,8 @@ const widthSlider = document.getElementById("width-slider");
 const widthValue = document.getElementById("width-value");
 const heightSlider = document.getElementById("height-slider");
 const heightValue = document.getElementById("height-value");
+const alignXButtons = document.querySelectorAll("[data-align-x]");
+const alignYButtons = document.querySelectorAll("[data-align-y]");
 const bgRadios = document.querySelectorAll('input[name="bg"]');
 const themeSelect = document.getElementById("theme-select");
 const themeDescription = document.getElementById("theme-description");
@@ -593,6 +618,8 @@ function updateURL() {
   params.set("messageSize", String(state.messageSize));
   params.set("width", String(state.width));
   params.set("height", String(state.height));
+  params.set("alignX", state.alignX);
+  params.set("alignY", state.alignY);
   params.delete("scale");
   params.delete("scaleX");
   params.delete("scaleY");
@@ -637,42 +664,48 @@ function applyBannerPosition() {
 function applySize() {
   const w = state.width / 100;
   const h = state.height / 100;
-  const fontScale = Math.min(w, h);
   const radiusBase = readCssPx("--banner-radius-base", 16);
+  const padXBase = 1.75;
+  const padYBase = 1.25;
+  const [padLeft, padRight] = padPair(padXBase * w, padXBase, state.alignX, "left");
+  const [padTop, padBottom] = padPair(padYBase * h, padYBase, state.alignY, "top");
 
   document.documentElement.style.setProperty("--banner-max-width", "100vw");
   document.documentElement.style.setProperty(
-    "--banner-pad-x",
-    `${(1.75 * w).toFixed(3)}rem`
+    "--banner-pad-top",
+    `${padTop.toFixed(3)}rem`
   );
   document.documentElement.style.setProperty(
-    "--banner-pad-y",
-    `${(1.25 * h).toFixed(3)}rem`
+    "--banner-pad-right",
+    `${padRight.toFixed(3)}rem`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-pad-bottom",
+    `${padBottom.toFixed(3)}rem`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-pad-left",
+    `${padLeft.toFixed(3)}rem`
   );
   document.documentElement.style.setProperty(
     "--banner-gap",
-    `${(1.5 * fontScale).toFixed(3)}rem`
+    `${(1.5 * w).toFixed(3)}rem`
   );
   document.documentElement.style.setProperty(
     "--banner-accent-w",
-    `${Math.max(2, 4 * fontScale).toFixed(2)}px`
+    `${Math.max(2, 4 * w).toFixed(2)}px`
   );
   document.documentElement.style.setProperty(
     "--banner-radius",
-    `${Math.max(4, radiusBase * fontScale).toFixed(2)}px`
+    `${radiusBase}px`
   );
-  document.documentElement.style.setProperty(
-    "--banner-title-size",
-    `${(state.titleSize * fontScale).toFixed(2)}px`
-  );
-  document.documentElement.style.setProperty(
-    "--banner-user-size",
-    `${(state.userSize * fontScale).toFixed(2)}px`
-  );
-  document.documentElement.style.setProperty(
-    "--banner-message-size",
-    `${(state.messageSize * fontScale).toFixed(2)}px`
-  );
+
+  for (const button of alignXButtons) {
+    button.classList.toggle("is-active", button.dataset.alignX === state.alignX);
+  }
+  for (const button of alignYButtons) {
+    button.classList.toggle("is-active", button.dataset.alignY === state.alignY);
+  }
 }
 
 function applyFonts() {
@@ -687,6 +720,18 @@ function applyFonts() {
   document.documentElement.style.setProperty(
     "--banner-message-font",
     `'${state.messageFont}', sans-serif`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-title-size",
+    `${state.titleSize}px`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-user-size",
+    `${state.userSize}px`
+  );
+  document.documentElement.style.setProperty(
+    "--banner-message-size",
+    `${state.messageSize}px`
   );
   applySize();
 }
@@ -915,6 +960,22 @@ heightSlider.addEventListener("input", e => {
   updateURL();
 });
 
+for (const button of alignXButtons) {
+  button.addEventListener("click", () => {
+    state.alignX = normalizeAlignX(button.dataset.alignX);
+    applySize();
+    updateURL();
+  });
+}
+
+for (const button of alignYButtons) {
+  button.addEventListener("click", () => {
+    state.alignY = normalizeAlignY(button.dataset.alignY);
+    applySize();
+    updateURL();
+  });
+}
+
 function resetParam(key) {
   switch (key) {
     case "position":
@@ -927,6 +988,10 @@ function resetParam(key) {
       break;
     case "height":
       state.height = defaults.height;
+      break;
+    case "align":
+      state.alignX = defaults.alignX;
+      state.alignY = defaults.alignY;
       break;
     case "titleSize":
       state.titleSize = defaults.titleSize;
@@ -950,7 +1015,7 @@ function resetParam(key) {
       return;
   }
 
-  if (key === "width" || key === "height") applySize();
+  if (key === "width" || key === "height" || key === "align") applySize();
   if (
     key === "titleSize" || key === "userSize" || key === "messageSize" ||
     key === "titleFont" || key === "userFont" || key === "messageFont"

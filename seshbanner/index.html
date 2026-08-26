@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Sesh Banner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css?v=33" />
+  <link rel="stylesheet" href="style.css?v=34" />
   <link rel="stylesheet" href="../themes/lcd-glass/theme.css" />
   <link rel="stylesheet" href="../themes/sesh-glass/theme.css" />
   <link rel="stylesheet" href="../themes/3026-d3c0/theme.css" />
@@ -222,7 +222,26 @@
               <span class="value-label" id="height-value"></span>
             </div>
           </div>
-          <p class="field-hint">Sizes the banner box. Type scales with the smaller axis so fonts never stretch.</p>
+          <p class="field-hint">Width and height size the banner box independently. Text size is set under Fonts.</p>
+        </div>
+        <div class="setting-group">
+          <div class="setting-inline-reset">
+            <span class="field-label">Content align</span>
+            <button type="button" class="reset-param" data-reset="align" aria-label="Reset content align" title="Reset content align">↺</button>
+          </div>
+          <div class="align-button-stack">
+            <div class="align-button-row">
+              <button type="button" class="small-button align-button" data-align-x="left">Left</button>
+              <button type="button" class="small-button align-button" data-align-x="center">Center</button>
+              <button type="button" class="small-button align-button" data-align-x="right">Right</button>
+            </div>
+            <div class="align-button-row">
+              <button type="button" class="small-button align-button" data-align-y="top">Top</button>
+              <button type="button" class="small-button align-button" data-align-y="center">Center</button>
+              <button type="button" class="small-button align-button" data-align-y="bottom">Bottom</button>
+            </div>
+          </div>
+          <p class="field-hint">Puts extra size padding on the opposite side(s). Center keeps equal padding.</p>
         </div>
       </div>
     </div>
@@ -333,6 +352,6 @@
   <script src="../themes/lcd-glass/theme.js"></script>
   <script src="../themes/sesh-glass/theme.js"></script>
   <script src="../themes/3026-d3c0/theme.js"></script>
-  <script src="app.js?v=24"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>
