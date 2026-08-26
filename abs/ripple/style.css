@@ -1,0 +1,356 @@
+@import url('https://fonts.cdnfonts.com/css/better-vcr');
+
+:root {
+  --settings-bg: rgba(10, 10, 20, 0.95);
+  --settings-border: rgba(255, 255, 255, 0.15);
+  --settings-text: #f5f5f5;
+  --accent: #0ff;
+  --destructive: #f40;
+  --font-vcr: 'Better VCR', monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  color: #fff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#ripple-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+#vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 28%, rgba(14, 34, 62, 0.2), transparent 65%),
+    radial-gradient(ellipse at center, transparent 30%, rgba(2, 6, 14, 0.82) 100%);
+}
+
+#vignette[hidden] {
+  display: none;
+}
+
+#settings-menu {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  width: 300px;
+  max-height: calc(100vh - 2rem);
+  padding: 0.75rem 0.9rem 0.9rem;
+  border-radius: 4px;
+  border: 1px solid var(--settings-border);
+  background: var(--settings-bg);
+  color: var(--settings-text);
+  font-size: 0.85rem;
+  z-index: 19;
+  backdrop-filter: blur(14px);
+  display: none;
+  overflow-y: auto;
+}
+
+#settings-menu.side-right {
+  left: auto;
+  right: 1rem;
+}
+
+#settings-menu.open {
+  display: block;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+#settings-menu h2 {
+  font-family: var(--font-vcr);
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.menu-header-buttons {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.menu-header-buttons button {
+  width: 1.8rem;
+  height: 1.8rem;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.menu-header-buttons button:hover {
+  background: rgba(0, 255, 255, 0.14);
+}
+
+.hint {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-bottom: 0.6rem;
+  line-height: 1.3;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.6rem;
+}
+
+.settings-section {
+  margin-bottom: 0.6rem;
+}
+
+.section-panel {
+  padding-top: 0.5rem;
+}
+
+.section-panel[hidden] {
+  display: none;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.switch-row input {
+  accent-color: var(--accent);
+}
+
+.setting-group label span {
+  font-weight: 600;
+}
+
+.setting-toggle {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--settings-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--settings-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.setting-toggle:hover,
+.setting-toggle[aria-expanded="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.range-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.range-details {
+  min-width: 0;
+}
+
+.range-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.range-label-row label {
+  display: block;
+  margin-bottom: 0;
+}
+
+.range-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.range-row input[type="range"] {
+  width: 100%;
+  min-width: 0;
+  accent-color: var(--accent);
+}
+
+.range-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  min-width: 3.25rem;
+}
+
+.range-meta .value-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.reset-param {
+  width: 1.45rem;
+  height: 1.45rem;
+  padding: 0;
+  border: 1px solid var(--destructive);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--destructive);
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.reset-param:hover {
+  background: rgba(255, 68, 0, 0.14);
+}
+
+.effect-control input[type="range"]:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.effect-control:has(input[type="range"]:disabled) .value-label {
+  opacity: 0.4;
+}
+
+.effect-control:has(input[type="range"]:disabled) .reset-param {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+#pattern-select,
+#palette-select {
+  width: 100%;
+  height: 1.9rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: #0a1220;
+  color: #e0fefe;
+  color-scheme: dark;
+  font-family: var(--font-vcr);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+#pattern-select option,
+#palette-select option {
+  background: #0a1220;
+  color: #e0fefe;
+}
+
+#pattern-select:focus,
+#palette-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--accent), 0 0 0.75rem rgba(0, 255, 255, 0.22);
+}
+
+#reset-button,
+.small-button {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: var(--font-vcr);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.8rem;
+  margin-top: 0.4rem;
+  transition: background 80ms ease, color 80ms ease, box-shadow 80ms ease;
+}
+
+#reset-button {
+  border-color: var(--destructive);
+  color: var(--destructive);
+}
+
+.copy-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.small-button {
+  margin-top: 0;
+  flex: 1;
+}
+
+.menu-action:active,
+.menu-action.is-clicked {
+  background: var(--accent);
+  color: #0a0a14;
+  box-shadow: inset 0 0 0 1px var(--accent), 0 0 14px rgba(0, 255, 255, 0.55);
+}
+
+#reset-button.menu-action:active,
+#reset-button.menu-action.is-clicked {
+  background: var(--destructive);
+  color: #0a0a14;
+  box-shadow: inset 0 0 0 1px var(--destructive), 0 0 14px rgba(255, 68, 0, 0.55);
+}
+
+@media (max-width: 640px) {
+  #settings-menu {
+    width: 82vw;
+  }
+}

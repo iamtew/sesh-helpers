@@ -52,7 +52,8 @@ sesh-helpers/
 ├── seshbanner/               # Sesh Banner helper app (OBS Browser Source)
 ├── trbanner/                 # Trick Request Banner (OBS Browser Source)
 ├── abs/                      # ABS — Animated Background System (OBS backdrops)
-│   └── diamond/              # Diamond — LCD geometric diamond lattice
+│   ├── diamond/              # Diamond — LCD geometric diamond lattice
+│   └── ripple/               # Ripple — pulsing pixel wave backdrop
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
 │   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
@@ -75,6 +76,7 @@ sesh-helpers/
 | `trbanner/` | **Exists** | Trick Request Banner; fixed layout + demo backgrounds |
 | `abs/` | **Exists** | ABS category landing; full-screen OBS backdrop apps |
 | `abs/diamond/` | **Exists** | Diamond lattice backdrop; per-app palettes in `notes.md` |
+| `abs/ripple/` | **Exists** | Ripple pixel wave backdrop; per-app palettes in `notes.md` |
 | `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
 | `*/notes.md` | **Exists** | Operator setup and complete URL parameter contracts |
 | `seshbanner/playlist.js` | **Exists** | Public YouTube playlist extraction and ticker formatting |
@@ -145,6 +147,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 | Trick Request Banner | [`trbanner/`](../trbanner/) |
 | ABS | [`abs/`](../abs/) |
 | Diamond (ABS) | [`abs/diamond/`](../abs/diamond/) |
+| Ripple (ABS) | [`abs/ripple/`](../abs/ripple/) |
 | Logo asset | [`img/seshhelpers.png`](../img/seshhelpers.png) |
 | Root README | [`README.md`](../README.md) |
 
