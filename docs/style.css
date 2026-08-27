@@ -1,0 +1,827 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  color: #eee;
+  font-family: "Better VCR", monospace;
+  line-height: 1.6;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(14, 34, 62, 0.35), transparent 70%),
+    #060b14;
+}
+
+a {
+  color: inherit;
+}
+
+/* ---- Per-theme docs tokens ---- */
+
+[data-theme="lcd-glass"] {
+  --docs-text: var(--lcd-text-primary, #e0fefe);
+  --docs-text-muted: rgba(224, 254, 254, 0.62);
+  --docs-border: var(--lcd-glass-border, rgba(170, 220, 255, 0.22));
+  --docs-chrome-bg: rgba(10, 22, 40, 0.72);
+  --docs-chrome-hover: rgba(48, 92, 144, 0.35);
+  --docs-chrome-active: rgba(48, 92, 144, 0.55);
+  --docs-shell-border: rgba(170, 220, 255, 0.28);
+  --docs-grad-1: rgba(6, 11, 20, 0.92);
+  --docs-grad-2: rgba(14, 34, 62, 0.88);
+  --docs-grad-3: rgba(36, 78, 120, 0.75);
+  --docs-grad-4: rgba(0, 180, 220, 0.22);
+  --docs-link: #a8e8ff;
+  --docs-radius: 16px;
+  --docs-accent: rgba(0, 255, 255, 0.45);
+}
+
+[data-theme="sesh-glass"] {
+  --docs-text: var(--sesh-text-primary, #fff6e8);
+  --docs-text-muted: rgba(255, 246, 232, 0.62);
+  --docs-border: var(--sesh-glass-border, rgba(255, 230, 90, 0.32));
+  --docs-chrome-bg: rgba(40, 8, 8, 0.72);
+  --docs-chrome-hover: rgba(242, 13, 13, 0.35);
+  --docs-chrome-active: rgba(229, 242, 13, 0.22);
+  --docs-shell-border: rgba(255, 230, 90, 0.35);
+  --docs-grad-1: rgba(30, 4, 4, 0.94);
+  --docs-grad-2: rgba(120, 8, 8, 0.82);
+  --docs-grad-3: rgba(180, 30, 8, 0.7);
+  --docs-grad-4: rgba(229, 242, 13, 0.18);
+  --docs-link: #ffe8a8;
+  --docs-radius: 16px;
+  --docs-accent: rgba(242, 13, 13, 0.55);
+}
+
+[data-theme="3026-d3c0"] {
+  --docs-text: var(--d3c0-text-primary, #c5f467);
+  --docs-text-muted: rgba(164, 177, 205, 0.75);
+  --docs-border: var(--d3c0-glass-border, rgba(159, 239, 0, 0.42));
+  --docs-chrome-bg: rgba(17, 25, 39, 0.88);
+  --docs-chrome-hover: rgba(49, 63, 85, 0.65);
+  --docs-chrome-active: rgba(159, 239, 0, 0.14);
+  --docs-shell-border: rgba(159, 239, 0, 0.38);
+  --docs-grad-1: rgba(17, 25, 39, 0.96);
+  --docs-grad-2: rgba(26, 35, 50, 0.9);
+  --docs-grad-3: rgba(49, 63, 85, 0.75);
+  --docs-grad-4: rgba(159, 239, 0, 0.12);
+  --docs-link: var(--d3c0-htb-amber, #ffaf00);
+  --docs-radius: 4px;
+  --docs-accent: rgba(159, 239, 0, 0.45);
+}
+
+/* ---- Chrome panels (sidebar + top bar — no overlay halftone) ---- */
+
+.chrome-panel {
+  color: var(--docs-text);
+  background: var(--docs-chrome-bg);
+  border: 1px solid var(--docs-border);
+  border-radius: var(--docs-radius);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+/* ---- Top bar (theme-panel — full theme graphics) ---- */
+
+.top-bar.theme-panel {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1.25rem;
+  margin: 0 auto 1.25rem;
+  max-width: 88rem;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  overflow: hidden;
+}
+
+/* LCD Glass — subtle isometric lattice + chromatic wash in the header */
+[data-theme="lcd-glass"] .top-bar.theme-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0,
+      transparent 11px,
+      rgba(0, 255, 255, 0.045) 11px,
+      rgba(0, 255, 255, 0.045) 12px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 11px,
+      rgba(209, 76, 255, 0.035) 11px,
+      rgba(209, 76, 255, 0.035) 12px
+    ),
+    radial-gradient(ellipse 85% 140% at 50% -30%, rgba(48, 92, 144, 0.45), transparent 60%);
+  mix-blend-mode: screen;
+  opacity: 0.9;
+}
+
+[data-theme="lcd-glass"] .top-bar.theme-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Sesh Glass + 3026 D3C0 decorative layers come from themes/*/theme.css
+   (.theme-panel::before halftone / sunburst). Ensure header controls stay above. */
+[data-theme="sesh-glass"] .top-bar.theme-panel > *,
+[data-theme="3026-d3c0"] .top-bar.theme-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.home-link {
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  font-size: 0.82rem;
+  color: var(--docs-text-muted);
+  transition: color 0.15s ease;
+}
+
+.home-link:hover,
+.home-link:focus-visible {
+  color: var(--docs-text);
+  outline: none;
+}
+
+.page-title {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--docs-text);
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.75rem;
+  text-decoration: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  border-radius: calc(var(--docs-radius) - 4px);
+  border: 1px solid var(--docs-border);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--docs-text);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.github-link:hover,
+.github-link:focus-visible {
+  background: var(--docs-chrome-hover);
+  border-color: var(--docs-accent);
+  box-shadow: 0 0 16px var(--docs-accent);
+  outline: none;
+}
+
+.github-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.theme-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--docs-text-muted);
+}
+
+.theme-control select {
+  font-family: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 1.75rem 0.35rem 0.55rem;
+  border-radius: calc(var(--docs-radius) - 6px);
+  border: 1px solid var(--docs-border);
+  background-color: rgba(0, 0, 0, 0.45);
+  color: var(--docs-text);
+  cursor: pointer;
+  color-scheme: dark;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23aaa' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.55rem center;
+}
+
+.theme-control select option {
+  background-color: #0a1628;
+  color: #e0fefe;
+}
+
+[data-theme="sesh-glass"] .theme-control select option {
+  background-color: #1a0808;
+  color: #fff6e8;
+}
+
+[data-theme="3026-d3c0"] .theme-control select option {
+  background-color: #111927;
+  color: #c5f467;
+}
+
+.theme-control select:focus-visible {
+  outline: 2px solid var(--docs-accent);
+  outline-offset: 2px;
+}
+
+/* ---- Layout: sidebar + wide main ---- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(15rem, 20rem) minmax(0, 1fr);
+  gap: 1.25rem;
+  max-width: 88rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 2.5rem;
+  align-items: start;
+}
+
+.sidebar {
+  position: sticky;
+  top: 4.25rem;
+}
+
+.sidebar-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.sidebar-tabs {
+  display: flex;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--docs-border);
+}
+
+.sidebar-tab {
+  flex: 1;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--docs-text-muted);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.sidebar-tab:hover:not(:disabled),
+.sidebar-tab:focus-visible {
+  color: var(--docs-text);
+  background: var(--docs-chrome-hover);
+  outline: none;
+}
+
+.sidebar-tab[aria-selected="true"] {
+  color: var(--docs-text);
+  border-bottom-color: var(--docs-accent);
+  background: var(--docs-chrome-active);
+  text-shadow: var(--theme-text-shadow);
+}
+
+.sidebar-tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sidebar-tab-panel {
+  padding: 0.85rem 0.9rem;
+  max-height: calc(100vh - 8.5rem);
+  overflow: auto;
+}
+
+.sidebar-tab-panel[hidden] {
+  display: none;
+}
+
+.nav-heading {
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--docs-text-muted);
+  margin-bottom: 0.65rem;
+  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+}
+
+/* ---- File tree ---- */
+
+.file-tree {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.file-tree ul {
+  list-style: none;
+  margin: 0.15rem 0 0.2rem;
+  padding-left: 0.65rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tree-folder > details {
+  border-radius: calc(var(--docs-radius) - 6px);
+}
+
+.tree-folder > details > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.4rem;
+  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  color: var(--docs-text-muted);
+  border-radius: calc(var(--docs-radius) - 6px);
+  user-select: none;
+}
+
+.tree-folder > details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tree-folder > details > summary::before {
+  content: "▸";
+  flex-shrink: 0;
+  width: 0.65rem;
+  font-size: 0.62rem;
+  color: var(--docs-text-muted);
+  transition: transform 0.15s ease;
+}
+
+.tree-folder > details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.tree-folder > details > summary:hover,
+.tree-folder > details > summary:focus-visible {
+  background: var(--docs-chrome-hover);
+  outline: none;
+}
+
+.tree-folder-name {
+  min-width: 0;
+  word-break: break-all;
+}
+
+.tree-file {
+  margin: 0.05rem 0;
+}
+
+.file-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.5rem 0.55rem;
+  text-decoration: none;
+  border-radius: calc(var(--docs-radius) - 6px);
+  border: 1px solid transparent;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.file-item:hover,
+.file-item:focus-visible {
+  background: var(--docs-chrome-hover);
+  outline: none;
+}
+
+.file-item[aria-current="page"] {
+  background: var(--docs-chrome-active);
+  border-color: var(--docs-border);
+}
+
+.file-icon {
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.35rem;
+  margin-top: 0.1rem;
+  border-radius: 2px;
+  border: 1px solid var(--docs-border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 40%),
+    rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.file-icon::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--docs-chrome-bg);
+  border-left: 1px solid var(--docs-border);
+  border-bottom: 1px solid var(--docs-border);
+  border-bottom-left-radius: 2px;
+}
+
+.file-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.file-name {
+  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--docs-text);
+  word-break: break-all;
+}
+
+.file-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--docs-text-muted);
+}
+
+.file-item[aria-current="page"] .file-name {
+  text-shadow: var(--theme-text-shadow);
+}
+
+/* ---- TOC ---- */
+
+.toc-empty {
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  line-height: 1.45;
+  color: var(--docs-text-muted);
+}
+
+.toc ol {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.toc a {
+  display: block;
+  padding: 0.2rem 0;
+  text-decoration: none;
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+  color: var(--docs-text-muted);
+  transition: color 0.15s ease;
+}
+
+.toc a:hover,
+.toc a:focus-visible {
+  color: var(--docs-text);
+  outline: none;
+  text-shadow: var(--theme-text-shadow);
+}
+
+.toc-depth-3 a {
+  padding-left: 0.65rem;
+}
+
+.toc-depth-4 a {
+  padding-left: 1.25rem;
+}
+
+/* ---- Doc reading pane ---- */
+
+.doc-main {
+  min-width: 0;
+}
+
+.doc-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
+  contain: paint;
+  border: 1px solid var(--docs-shell-border);
+  border-radius: var(--docs-radius);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 16px 40px rgba(0, 0, 0, 0.35);
+  color: var(--docs-text);
+}
+
+.doc-shell-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    var(--docs-grad-1),
+    var(--docs-grad-2),
+    var(--docs-grad-3),
+    var(--docs-grad-4),
+    var(--docs-grad-2),
+    var(--docs-grad-1)
+  );
+  background-size: 400% 400%;
+  animation: docs-grad-drift 22s ease-in-out infinite;
+  opacity: 0.95;
+}
+
+.doc-shell-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 60%),
+    rgba(0, 0, 0, 0.18);
+}
+
+@keyframes docs-grad-drift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.doc-header,
+.doc-content {
+  position: relative;
+  z-index: 1;
+}
+
+.doc-header {
+  padding: 1.1rem 1.5rem 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.doc-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.doc-title {
+  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+  font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  word-break: break-all;
+}
+
+.github-file-link {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  padding: 0.3rem 0.55rem;
+  border-radius: calc(var(--docs-radius) - 6px);
+  border: 1px solid var(--docs-border);
+  color: var(--docs-link);
+  background: rgba(0, 0, 0, 0.2);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.github-file-link:hover,
+.github-file-link:focus-visible {
+  background: var(--docs-chrome-hover);
+  border-color: var(--docs-accent);
+  outline: none;
+}
+
+.doc-stats {
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: var(--docs-text-muted);
+}
+
+.doc-content {
+  padding: 1.35rem 1.65rem 2rem;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.loading,
+.doc-error {
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+}
+
+.doc-error {
+  color: #ffb4b4;
+}
+
+/* ---- Markdown prose ---- */
+
+.doc-content :is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  margin: 1.5rem 0 0.65rem;
+  color: var(--docs-text);
+  text-shadow: var(--theme-text-shadow);
+}
+
+.doc-content h1 {
+  font-size: 1.35rem;
+  margin-top: 0;
+}
+
+.doc-content h2 {
+  font-size: 1.12rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.doc-content h3 { font-size: 1rem; }
+.doc-content h4 { font-size: 0.92rem; }
+
+.doc-content :is(h2, h3, h4) {
+  scroll-margin-top: 5.5rem;
+}
+
+.doc-content p,
+.doc-content ul,
+.doc-content ol,
+.doc-content blockquote,
+.doc-content pre,
+.doc-content table {
+  margin: 0.75rem 0;
+  color: var(--docs-text);
+}
+
+.doc-content ul,
+.doc-content ol {
+  padding-left: 1.35rem;
+}
+
+.doc-content li + li {
+  margin-top: 0.25rem;
+}
+
+.doc-content a {
+  color: var(--docs-link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.doc-content a:hover,
+.doc-content a:focus-visible {
+  text-shadow: var(--theme-text-shadow);
+  outline: none;
+}
+
+.doc-content blockquote {
+  padding: 0.65rem 1rem;
+  border-left: 3px solid var(--docs-accent);
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 0.92rem;
+}
+
+.doc-content :not(pre) > code {
+  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+  font-size: 0.86em;
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.doc-content pre {
+  padding: 0.85rem 1rem;
+  border-radius: calc(var(--docs-radius) - 4px);
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.doc-content pre code {
+  background: none;
+  padding: 0;
+  border: none;
+}
+
+.doc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.doc-content th,
+.doc-content td {
+  padding: 0.45rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: left;
+  vertical-align: top;
+}
+
+.doc-content th {
+  background: rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.04em;
+}
+
+.doc-content hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  margin: 1.5rem 0;
+}
+
+.fallback-md {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.82rem;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .sidebar-panel {
+    flex: 1 1 100%;
+  }
+
+  .sidebar-tab-panel {
+    max-height: none;
+  }
+
+  .top-bar {
+    padding: 0.75rem 1rem;
+  }
+
+  .github-link span {
+    display: none;
+  }
+
+  .page-title {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .doc-header-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .github-file-link {
+    align-self: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-shell-bg {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}

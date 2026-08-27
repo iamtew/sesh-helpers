@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="lcd-glass">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation — Sesh Helpers</title>
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/better-vcr">
+  <link rel="stylesheet" href="../themes/lcd-glass/theme.css">
+  <link rel="stylesheet" href="../themes/sesh-glass/theme.css">
+  <link rel="stylesheet" href="../themes/3026-d3c0/theme.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-bar theme-panel">
+    <a class="home-link" href="../">← Sesh Helpers</a>
+    <h1 class="page-title">Documentation</h1>
+    <a
+      id="github-link"
+      class="github-link"
+      href="https://github.com/iamtew/sesh-helpers/tree/master/docs"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <svg class="github-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      <span>View on GitHub</span>
+    </a>
+    <div class="theme-control">
+      <label for="theme-select">Theme</label>
+      <select id="theme-select" aria-label="Theme"></select>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-panel chrome-panel">
+        <div class="sidebar-tabs" role="tablist" aria-label="Sidebar">
+          <button
+            type="button"
+            id="tab-files"
+            class="sidebar-tab"
+            role="tab"
+            aria-selected="true"
+            aria-controls="panel-files"
+          >Files</button>
+          <button
+            type="button"
+            id="tab-contents"
+            class="sidebar-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-contents"
+            tabindex="-1"
+          >Contents</button>
+        </div>
+        <div
+          id="panel-files"
+          class="sidebar-tab-panel"
+          role="tabpanel"
+          aria-labelledby="tab-files"
+        >
+          <ul id="file-list" class="file-tree"></ul>
+        </div>
+        <div
+          id="panel-contents"
+          class="sidebar-tab-panel toc"
+          role="tabpanel"
+          aria-labelledby="tab-contents"
+          hidden
+        >
+          <p id="toc-empty" class="toc-empty">No headings in this document.</p>
+          <ol id="toc-list"></ol>
+        </div>
+      </div>
+    </aside>
+
+    <main class="doc-main">
+      <div class="doc-shell">
+        <div class="doc-shell-bg" aria-hidden="true"></div>
+        <header class="doc-header">
+          <div class="doc-header-row">
+            <h2 id="doc-title" class="doc-title">…</h2>
+            <a
+              id="github-file-link"
+              class="github-file-link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+            >Open in GitHub ↗</a>
+          </div>
+          <p id="doc-stats" class="doc-stats" aria-live="polite"></p>
+        </header>
+        <article id="doc-content" class="doc-content">
+          <p class="loading">Loading…</p>
+        </article>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.6/marked.min.js"></script>
+  <script src="../themes/lcd-glass/theme.js"></script>
+  <script src="../themes/sesh-glass/theme.js"></script>
+  <script src="../themes/3026-d3c0/theme.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

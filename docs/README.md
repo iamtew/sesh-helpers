@@ -12,7 +12,7 @@ contracts the code already implements; app-specific operator notes live beside e
 | You are… | Read this first |
 |----------|-----------------|
 | **Clanker / AI agent** | [001_CLANKER_INIT.md](001_CLANKER_INIT.md) — mandatory entry point |
-| **Human** | [../README.md](../README.md) at repo root, then browse the table below |
+| **Human** | [index.html](index.html) (docs viewer), or [../README.md](../README.md) at repo root |
 
 ---
 
@@ -20,6 +20,7 @@ contracts the code already implements; app-specific operator notes live beside e
 
 | Document | Audience | Description |
 |----------|----------|-------------|
+| [index.html](index.html) | Humans | Docs viewer — browse spec markdown with TOC and themes |
 | [001_CLANKER_INIT.md](001_CLANKER_INIT.md) | AI agents (mortals welcome) | Project entry point — read first |
 | [Control_UI.md](Control_UI.md) | Implementers + clankers | Settings menu framework pattern |
 | [THEMES.md](THEMES.md) | Implementers + clankers | Shared overlay themes + preferred fonts |
@@ -47,6 +48,7 @@ bags have to divine the repository layout.
 
 | Resource | Path |
 |----------|------|
+| Docs viewer | [index.html](index.html) |
 | Landing page | [index.html](../index.html) |
 | Hosted site | [helpers.seshsofa.nl](https://helpers.seshsofa.nl/) |
 | Spot Smoke | [spotsmoke/](../spotsmoke/) |

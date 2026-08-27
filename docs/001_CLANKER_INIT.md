@@ -61,6 +61,7 @@ sesh-helpers/
 │   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
 │   └── 3026-d3c0/            # 3026 D3C0 — HTB Lite art deco (navy + #9fef00)
 ├── docs/
+│   ├── index.html            # Docs viewer — browse spec markdown in the browser
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point
 │   ├── Control_UI.md         # Settings menu framework pattern
@@ -71,6 +72,7 @@ sesh-helpers/
 | Path | Status | Notes |
 |------|--------|-------|
 | `docs/` | **Exists** | Living documentation; extend as project grows |
+| `docs/index.html` | **Exists** | Docs viewer — themed markdown browser for spec files |
 | `index.html` | **Exists** | Landing page with project list (add new apps here) |
 | `img/seshhelpers.png` | **Exists** | Brand reference for UI styling |
 | `spotsmoke/` | **Exists** | First helper app; Control UI reference impl |
@@ -140,6 +142,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 
 | Resource | Path |
 |----------|------|
+| Docs viewer | [`docs/index.html`](index.html) |
 | Documentation index | [`docs/README.md`](README.md) |
 | Control UI framework | [`Control_UI.md`](Control_UI.md) |
 | Typography | [`TYPOGRAPHY.md`](TYPOGRAPHY.md) |
