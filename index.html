@@ -86,6 +86,90 @@
       text-shadow: var(--theme-text-shadow);
     }
 
+    .obs-install {
+      max-width: 36rem;
+      margin: 0 auto 2.75rem;
+      text-align: left;
+    }
+
+    .obs-install > .theme-panel {
+      display: block;
+      padding: 1.35rem 1.5rem 1.5rem;
+      background: linear-gradient(
+        135deg,
+        rgba(14, 34, 62, 0.78),
+        rgba(48, 92, 144, 0.52)
+      );
+      backdrop-filter: blur(28px) saturate(140%);
+      -webkit-backdrop-filter: blur(28px) saturate(140%);
+    }
+
+    .obs-install h2 {
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(170, 220, 255, 0.55);
+      margin-bottom: 0.85rem;
+      text-align: center;
+    }
+
+    .obs-install .lede {
+      margin-bottom: 1.15rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      color: rgba(224, 254, 254, 0.7);
+      text-align: center;
+      text-shadow: none;
+    }
+
+    .obs-install h3 {
+      margin: 1rem 0 0.45rem;
+      font-size: 0.95rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: var(--lcd-text-primary, #e0fefe);
+      text-shadow: var(--theme-text-shadow);
+    }
+
+    .obs-install h3:first-of-type {
+      margin-top: 0;
+    }
+
+    .obs-install ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      color: rgba(224, 254, 254, 0.78);
+      text-shadow: none;
+    }
+
+    .obs-install li::marker {
+      color: rgba(170, 220, 255, 0.55);
+    }
+
+    .obs-install .guide-link {
+      display: block;
+      margin-top: 1.15rem;
+      text-align: center;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      color: rgba(170, 220, 255, 0.85);
+      text-decoration: none;
+      transition: color 0.15s ease, text-shadow 0.15s ease;
+    }
+
+    .obs-install .guide-link:hover,
+    .obs-install .guide-link:focus-visible {
+      color: var(--lcd-text-primary, #e0fefe);
+      text-shadow: var(--theme-text-shadow);
+      outline: none;
+    }
+
     .projects {
       max-width: 22rem;
       margin: 0 auto;
@@ -177,6 +261,7 @@
     /* Entrance motion */
     .hero .logo,
     .hero .tagline,
+    .obs-install,
     .projects,
     footer {
       opacity: 0;
@@ -186,8 +271,9 @@
 
     .hero .logo { animation-delay: 0.05s; }
     .hero .tagline { animation-delay: 0.18s; }
-    .projects { animation-delay: 0.32s; }
-    footer { animation-delay: 0.48s; }
+    .obs-install { animation-delay: 0.28s; }
+    .projects { animation-delay: 0.4s; }
+    footer { animation-delay: 0.54s; }
 
     @keyframes rise-in {
       to {
@@ -199,6 +285,7 @@
     @media (prefers-reduced-motion: reduce) {
       .hero .logo,
       .hero .tagline,
+      .obs-install,
       .projects,
       footer {
         opacity: 1;
@@ -232,6 +319,37 @@
       >
       <p class="tagline" id="pulse-root">Clanker-built helper apps for Sesh Sofa meat bags.</p>
     </header>
+
+    <section class="obs-install" aria-label="Install in OBS">
+      <h2>Install in OBS</h2>
+      <div class="theme-panel">
+        <p class="lede">Same Browser Source dance for every app. Use each project URL below.</p>
+
+        <h3>Installation</h3>
+        <ul>
+          <li>Add a <strong>Browser Source</strong> in OBS.</li>
+          <li>URL: <strong>https://helpers.seshsofa.nl/&lt;app&gt;/</strong></li>
+          <li><strong>Resolution:</strong> match your canvas (most common: <strong>1920×1080</strong>).</li>
+          <li>Enable <em>Shutdown source when not visible</em> and <em>Refresh browser when scene becomes active</em>.</li>
+        </ul>
+
+        <h3>Configuration</h3>
+        <ul>
+          <li><strong>Interact</strong> → opens the control window. Resize if you need more room.</li>
+          <li><strong>Double-click</strong> anywhere → <strong>Settings Menu</strong>.</li>
+          <li>Tweak the controls for that app. Changes apply live. Close the menu when you’re done.</li>
+        </ul>
+
+        <h3>Save Your Configuration — To Survive a Refresh!!!</h3>
+        <ul>
+          <li>Browser source <strong>visible</strong>. <strong>Interact</strong> again.</li>
+          <li><strong>Double-click</strong> anywhere → reopen settings.</li>
+          <li><strong>Copy URL for OBS</strong> → paste into the Browser Source <strong>URL</strong> field. Save and close.</li>
+        </ul>
+
+        <a class="guide-link" href="docs/?f=obs-install">Full guide in Documentation →</a>
+      </div>
+    </section>
 
     <section class="projects" aria-label="Projects">
       <h2>Projects</h2>

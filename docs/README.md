@@ -12,6 +12,7 @@ contracts the code already implements; app-specific operator notes live beside e
 | You are… | Read this first |
 |----------|-----------------|
 | **Clanker / AI agent** | [001_CLANKER_INIT.md](001_CLANKER_INIT.md) — mandatory entry point |
+| **Human / OBS operator** | [OBS_INSTALL.md](OBS_INSTALL.md) — install any app as a Browser Source |
 | **Human** | [index.html](index.html) (docs viewer), or [../README.md](../README.md) at repo root |
 
 ---
@@ -21,6 +22,7 @@ contracts the code already implements; app-specific operator notes live beside e
 | Document | Audience | Description |
 |----------|----------|-------------|
 | [index.html](index.html) | Humans | Docs viewer — browse spec markdown with TOC and themes |
+| [OBS_INSTALL.md](OBS_INSTALL.md) | OBS operators | Install any helper/ABS app as an OBS Browser Source |
 | [001_CLANKER_INIT.md](001_CLANKER_INIT.md) | AI agents (mortals welcome) | Project entry point — read first |
 | [Control_UI.md](Control_UI.md) | Implementers + clankers | Settings menu framework pattern |
 | [THEMES.md](THEMES.md) | Implementers + clankers | Shared overlay themes + preferred fonts |

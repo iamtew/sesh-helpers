@@ -20,17 +20,41 @@ the hosted site or serve the repository root with any static web server.
 | [Voroni](abs/voroni/) | Voronoi pulse field with edge ripples (ABS) | [Setup and URL parameters](abs/voroni/notes.md) |
 | [Code Rain](abs/coderain/) | Matrix code rain backdrop / overlay (ABS) | [Setup and URL parameters](abs/coderain/notes.md) |
 
-## Using an overlay in OBS
+## Install in OBS
 
-1. Add a **Browser Source** and use the hosted app URL.
-2. Match the source resolution to the OBS canvas (usually `1920×1080`).
-3. Enable **Shutdown source when not visible** and **Refresh browser when scene becomes active**.
-4. Choose **Interact**, configure the overlay, then use **Copy URL for OBS**.
-5. Paste the copied URL back into the Browser Source properties.
+Same Browser Source dance for every app — overlays and ABS backdrops alike.
+App URLs look like `https://helpers.seshsofa.nl/<app>/`. Full copy also lives in
+[docs/OBS_INSTALL.md](docs/OBS_INSTALL.md).
 
-Configuration lives in the URL query string—there is no account, server-side storage,
-or local storage for the meat bags to babysit. `menu=DISABLE` produces the clean OBS
-output; double-click the background to bring the controls back.
+### Installation
+
+- Add a **Browser Source** in OBS.
+- URL: **`https://helpers.seshsofa.nl/<app>/`**
+- **Resolution:** match your canvas (most common: **1920×1080**).
+- Enable both checkboxes:
+  - *Shutdown source when not visible*
+  - *Refresh browser when scene becomes active*
+
+### Configuration
+
+- **Interact** → opens the control window. Resize if you need more room.
+- **Double-click** anywhere → **Settings Menu**.
+- Tweak the controls for that app (see its `notes.md`). Changes apply live.
+- Close the menu when you’re done.
+- Hide/unhide the browser source — the page reloads when OBS refreshes it, so
+  effects that run on load start again automatically.
+
+### Save Your Configuration — To Survive a Refresh!!!
+
+- Browser source **visible**. **Interact** again.
+- **Double-click** anywhere → reopen settings.
+- **Copy URL for OBS** → your personalized config URL (`menu=DISABLE` for clean
+  output).
+- **Properties** → paste into the **URL field**. Save and close.
+
+Configuration lives in the URL query string — no account, server-side storage,
+or local storage for meat bags to babysit. Double-click the background later if
+you need the controls back.
 
 ## Local development
 
@@ -45,6 +69,7 @@ Then open <http://localhost:8000/>. No package install or clanker ritual is requ
 
 ## Documentation
 
+[Install in OBS](docs/OBS_INSTALL.md) is the shared Browser Source guide.
 [docs/README.md](docs/README.md) indexes the implementation contracts and clanker
 onboarding. App-specific operator instructions live beside each app in `notes.md`.
 

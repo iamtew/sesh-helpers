@@ -65,6 +65,7 @@ sesh-helpers/
 │   ├── index.html            # Docs viewer — browse spec markdown in the browser
 │   ├── README.md             # Documentation index
 │   ├── 001_CLANKER_INIT.md   # THIS FILE — agent entry point
+│   ├── OBS_INSTALL.md        # Shared OBS Browser Source install guide
 │   ├── Control_UI.md         # Settings menu framework pattern
 │   ├── THEMES.md             # Shared overlay theme contract
 │   └── TYPOGRAPHY.md         # Shared fonts
@@ -146,6 +147,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 |----------|------|
 | Docs viewer | [`docs/index.html`](index.html) |
 | Documentation index | [`docs/README.md`](README.md) |
+| Install in OBS | [`OBS_INSTALL.md`](OBS_INSTALL.md) |
 | Control UI framework | [`Control_UI.md`](Control_UI.md) |
 | Typography | [`TYPOGRAPHY.md`](TYPOGRAPHY.md) |
 | Overlay themes | [`THEMES.md`](THEMES.md) |

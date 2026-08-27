@@ -16,6 +16,7 @@
   const FILE_ENTRIES = [
     { slug: "readme", path: "docs/README.md", fetch: "README.md", label: "Index" },
     { slug: "init", path: "docs/001_CLANKER_INIT.md", fetch: "001_CLANKER_INIT.md", label: "CLANKER INIT" },
+    { slug: "obs-install", path: "docs/OBS_INSTALL.md", fetch: "OBS_INSTALL.md", label: "Install in OBS" },
     { slug: "control-ui", path: "docs/Control_UI.md", fetch: "Control_UI.md", label: "Control UI" },
     { slug: "themes", path: "docs/THEMES.md", fetch: "THEMES.md", label: "Themes" },
     { slug: "typography", path: "docs/TYPOGRAPHY.md", fetch: "TYPOGRAPHY.md", label: "Typography" },
