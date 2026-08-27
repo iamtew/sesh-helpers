@@ -6,6 +6,7 @@ const DIR_ORDER = ["top", "right", "bottom", "left"];
 const DIR_SET = new Set(DIR_ORDER);
 const FADE_ALPHA = 0.05;
 const MOTION_SCALE = 0.01;
+const SPIN_RAD_PER_SEC = 0.4;
 const GLITCH_W = 192;
 const GLITCH_H = 108;
 const FRAME_MS = 50;
@@ -18,6 +19,7 @@ const defaults = {
   size: 16,
   dir: ["top"],
   motion: 0,
+  spin: 0,
   ...AbsGlitchPost.defaults,
   settingsMode: "ON",
   side: "right"
@@ -82,6 +84,10 @@ function clampMotion(value) {
   return Math.min(2, Math.max(-2, Math.round(value * 100) / 100));
 }
 
+function clampSpin(value) {
+  return clampMotion(value);
+}
+
 function hexToRgb(hex) {
   const n = Number.parseInt(hex.slice(1), 16);
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
@@ -106,6 +112,7 @@ let state = {
   size: clampSize(getNumberParam("size", defaults.size)),
   dir: parseDir(getParam("dir", defaults.dir.join(","))),
   motion: clampMotion(getNumberParam("motion", defaults.motion)),
+  spin: clampSpin(getNumberParam("spin", defaults.spin)),
   glitch: AbsGlitchPost.clampAmount(getNumberParam("glitch", defaults.glitch)),
   glitchShift: AbsGlitchPost.clampUnit(getNumberParam("glitchShift", defaults.glitchShift)),
   glitchChroma: AbsGlitchPost.clampUnit(getNumberParam("glitchChroma", defaults.glitchChroma)),
@@ -119,6 +126,9 @@ let selectedColorIndex = 0;
 let lastBgHex = state.bg === "transparent" ? "#000000" : state.bg;
 let rainRgb = state.colors.map(hexToRgb);
 let syncingColor = false;
+let gradientAngle = 0;
+let spinSin = 0;
+let spinCos = 1;
 
 const canvas = document.getElementById("coderain-canvas");
 const ctx = canvas.getContext("2d", { alpha: true });
@@ -142,6 +152,9 @@ const sizeSlider = document.getElementById("size-slider");
 const sizeValue = document.getElementById("size-value");
 const motionSlider = document.getElementById("motion-slider");
 const motionValue = document.getElementById("motion-value");
+const spinGroup = document.getElementById("gradient-rotation-group");
+const spinSlider = document.getElementById("spin-slider");
+const spinValue = document.getElementById("spin-value");
 const dirInputs = {
   top: document.getElementById("dir-top"),
   right: document.getElementById("dir-right"),
@@ -192,6 +205,7 @@ if (window.iro && colorPickerEl) {
     rainRgb = state.colors.map(hexToRgb);
     colorInput.value = state.colors[selectedColorIndex];
     renderSwatches();
+    applySpinVisibility();
     updateURL();
   });
 } else if (colorPickerEl) {
@@ -217,6 +231,32 @@ function sampleGradient(t) {
   if (colors.length === 2) return lerpColor(colors[0], colors[1], u);
   if (u < 0.5) return lerpColor(colors[0], colors[1], u * 2);
   return lerpColor(colors[1], colors[2], (u - 0.5) * 2);
+}
+
+function updateSpinBasis() {
+  spinSin = Math.sin(gradientAngle);
+  spinCos = Math.cos(gradientAngle);
+}
+
+function advanceSpin(dtMs) {
+  if (state.spin === 0 || rainRgb.length < 2) return;
+  gradientAngle += state.spin * (dtMs / 1000) * SPIN_RAD_PER_SEC;
+  const tau = Math.PI * 2;
+  if (gradientAngle > tau || gradientAngle < -tau) gradientAngle %= tau;
+  updateSpinBasis();
+}
+
+function sampleGradientAt(x, y) {
+  if (rainRgb.length === 1) return rainRgb[0];
+  const w = canvas.width;
+  const h = canvas.height;
+  const nx = w ? x / w - 0.5 : 0;
+  const ny = h ? y / h - 0.5 : 0;
+  return sampleGradient(nx * -spinSin + ny * spinCos + 0.5);
+}
+
+function applySpinVisibility() {
+  spinGroup.hidden = state.colors.length < 2;
 }
 
 function randomChar() {
@@ -336,7 +376,7 @@ function drawStream(key, drops, step) {
         drops[i] = h / size;
       }
       const gy = drops[i] * size;
-      ctx.fillStyle = rgbCss(sampleGradient(h ? gy / h : 0));
+      ctx.fillStyle = rgbCss(sampleGradientAt(i * size, gy));
       ctx.fillText(randomChar(), i * size, gy);
     }
     return;
@@ -352,7 +392,7 @@ function drawStream(key, drops, step) {
       drops[i] = w / size;
     }
     const gx = drops[i] * size;
-    ctx.fillStyle = rgbCss(sampleGradient(w ? gx / w : 0));
+    ctx.fillStyle = rgbCss(sampleGradientAt(gx, i * size));
     ctx.fillText(randomChar(), gx, i * size);
   }
 }
@@ -417,6 +457,7 @@ function tick(now) {
   const dt = Math.min(50, now - last);
   last = now;
   const step = state.speed * (dt / 16.67);
+  advanceSpin(dt);
   paint(now, step);
 }
 
@@ -448,6 +489,7 @@ function updateURL() {
   params.set("size", String(state.size));
   params.set("dir", state.dir.join(","));
   params.set("motion", String(state.motion));
+  params.set("spin", String(state.spin));
   params.set("glitch", String(state.glitch));
   params.set("glitchShift", String(state.glitchShift));
   params.set("glitchChroma", String(state.glitchChroma));
@@ -518,6 +560,7 @@ function renderSwatches() {
     rainSwatches.appendChild(swatch);
   });
   addColorButton.disabled = state.colors.length >= 3;
+  applySpinVisibility();
 }
 
 function applyBgModeChange(previousBg) {
@@ -536,6 +579,9 @@ function syncInputs() {
   sizeValue.textContent = `${state.size}px`;
   motionSlider.value = state.motion;
   motionValue.textContent = state.motion === 0 ? "0.00" : state.motion.toFixed(2);
+  spinSlider.value = state.spin;
+  spinValue.textContent = state.spin === 0 ? "0.00" : state.spin.toFixed(2);
+  applySpinVisibility();
   for (const dir of DIR_ORDER) {
     dirInputs[dir].checked = state.dir.includes(dir);
   }
@@ -578,6 +624,11 @@ function resetParam(key) {
       break;
     case "motion":
       state.motion = defaults.motion;
+      break;
+    case "spin":
+      state.spin = defaults.spin;
+      gradientAngle = 0;
+      updateSpinBasis();
       break;
     case "glitch":
       state.glitch = defaults.glitch;
@@ -663,6 +714,12 @@ sizeSlider.addEventListener("input", (e) => {
 
 motionSlider.addEventListener("input", (e) => {
   state.motion = clampMotion(Number.parseFloat(e.target.value));
+  syncInputs();
+  updateURL();
+});
+
+spinSlider.addEventListener("input", (e) => {
+  state.spin = clampSpin(Number.parseFloat(e.target.value));
   syncInputs();
   updateURL();
 });
@@ -777,6 +834,9 @@ resetButton.addEventListener("click", () => {
   state.size = defaults.size;
   state.dir = defaults.dir.slice();
   state.motion = defaults.motion;
+  state.spin = defaults.spin;
+  gradientAngle = 0;
+  updateSpinBasis();
   state.glitch = defaults.glitch;
   state.glitchShift = defaults.glitchShift;
   state.glitchChroma = defaults.glitchChroma;
@@ -814,6 +874,7 @@ window.addEventListener("resize", resize);
 
 applyAll();
 updateURL();
+updateSpinBasis();
 if (REDUCE_MOTION) {
   paintStatic();
 } else {

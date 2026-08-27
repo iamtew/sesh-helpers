@@ -40,6 +40,7 @@ the address bar immediately; there is no save button or local storage.
 | `size` | `16` | Glyph size in px (`8`–`48`) |
 | `dir` | `top` | Rain origins: `top`, `right`, `bottom`, `left` (comma-separated; unknown/empty → `top`) |
 | `motion` | `0` | Fly-through zoom (`-2`–`2`). Positive zooms in; negative zooms out; `0` is flat rain |
+| `spin` | `0` | Gradient rotation speed (`-2`–`2`; ignored with one rain color). Positive is clockwise, negative counter-clockwise; `0` holds the current angle |
 | `glitch` | `0` | Glitch master amount (`0`–`1`; `0` = off) |
 | `glitchShift` | `0.55` | Horizontal band shift strength (`0`–`1`) |
 | `glitchChroma` | `0.45` | Chromatic aberration fringe (`0`–`1`) |
@@ -58,7 +59,7 @@ Overlay example (`bg=transparent`, two-color gradient, rain from top and left):
 
 ## Runtime notes
 
-- Full-viewport canvas with trail fade (opaque bg tints toward `bg`; transparent punches alpha so the scene shows through).
+- One rain color is solid; two or three lerp across a screen-space gradient (top→bottom at rest). The **Rotation** slider appears with 2+ colors and turns that wash clockwise or counter-clockwise.
 - The visual color picker loads `@jaames/iro` from jsDelivr. If that CDN is unavailable, the picker is hidden but the hex color field still works.
 - Glitch post-process runs on a ~192×108 buffer when `glitch > 0`, then is scaled up. Transparent mode keeps original alpha so overlay holes stay holes.
 - `prefers-reduced-motion: reduce` paints a static rain field (no RAF loop).

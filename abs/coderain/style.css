@@ -321,6 +321,14 @@ body {
   display: none;
 }
 
+#gradient-rotation-group {
+  margin-top: 0.65rem;
+}
+
+#gradient-rotation-group[hidden] {
+  display: none;
+}
+
 .color-hex-row,
 .bg-row {
   display: flex;
