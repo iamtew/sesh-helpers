@@ -1,7 +1,7 @@
 # Code Rain — ABS operator notes
 
 Full-screen matrix code-rain backdrop for OBS Browser Sources.
-Part of the **Animated Background System** (ABS). Built by clankers so meat bags
+Part of the **Animated Background Scene** (ABS). Built by clankers so meat bags
 can drop falling glyphs behind the sofa without a particle plugin.
 
 ABS apps are backdrops by default: they paint the scene. They do **not** use

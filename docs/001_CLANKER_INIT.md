@@ -51,7 +51,7 @@ sesh-helpers/
 ├── spotsmoke/                # Spot Smoke helper app (OBS Browser Source)
 ├── seshbanner/               # Sesh Banner helper app (OBS Browser Source)
 ├── trbanner/                 # Trick Request Banner (OBS Browser Source)
-├── abs/                      # ABS — Animated Background System (OBS backdrops)
+├── abs/                      # ABS — Animated Background Scene (OBS backdrops)
 │   ├── glitch-post.js        # Shared glitch post-process (band shift, chroma, bulge)
 │   ├── diamond/              # Diamond — LCD geometric diamond lattice
 │   ├── ripple/               # Ripple — pulsing pixel wave backdrop
@@ -93,7 +93,7 @@ sesh-helpers/
 
 **OBS / transparency:** Helper apps are almost always OBS Browser Sources. Keep `html, body` background `transparent`. See [`Control_UI.md`](Control_UI.md).
 
-**ABS (Animated Background System):** Full-screen backdrop apps under `abs/<name>/`. They do **not** use shared overlay themes (`themes/` / [`THEMES.md`](THEMES.md)). Palette switching is **per app** — each ABS app owns its named palettes and documents them in its `notes.md`. ABS Control UI omits the checkerboard util (the canvas *is* the background). Link new ABS apps from `abs/index.html` and the root landing.
+**ABS (Animated Background Scene):** Full-screen backdrop apps under `abs/<name>/`. They do **not** use shared overlay themes (`themes/` / [`THEMES.md`](THEMES.md)). Palette switching is **per app** — each ABS app owns its named palettes and documents them in its `notes.md`. ABS Control UI omits the checkerboard util (the canvas *is* the background). Link new ABS apps from `abs/index.html` and the root landing.
 
 When you add a helper app: put it in its own directory, link it from `index.html`, and update this map.
 

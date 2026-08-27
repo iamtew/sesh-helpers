@@ -1,7 +1,7 @@
 # Voroni — ABS operator notes
 
 Full-screen Voronoi pulse field backdrop for OBS Browser Sources.
-Part of the **Animated Background System** (ABS). Built by clankers so meat bags
+Part of the **Animated Background Scene** (ABS). Built by clankers so meat bags
 can drop a living cell field behind the sofa without a particle plugin.
 
 ABS apps are backdrops, not overlays: they paint the scene. They do **not** use
