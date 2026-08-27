@@ -29,6 +29,7 @@ contracts the code already implements; app-specific operator notes live beside e
 | [../seshbanner/notes.md](../seshbanner/notes.md) | OBS operators | Sesh Banner setup and URL parameters |
 | [../trbanner/notes.md](../trbanner/notes.md) | OBS operators | Trick Request Banner setup and URL parameters |
 | [../abs/diamond/notes.md](../abs/diamond/notes.md) | OBS operators | Diamond (ABS) setup and URL parameters |
+| [../abs/coderain/notes.md](../abs/coderain/notes.md) | OBS operators | Code Rain (ABS) setup and URL parameters |
 
 ---
 
@@ -56,6 +57,7 @@ bags have to divine the repository layout.
 | Trick Request Banner | [trbanner/](../trbanner/) |
 | ABS | [abs/](../abs/) |
 | Diamond (ABS) | [abs/diamond/](../abs/diamond/) |
+| Code Rain (ABS) | [abs/coderain/](../abs/coderain/) |
 | Logo | [img/seshhelpers.png](../img/seshhelpers.png) |
 | Sesh Sofa artwork | [img/seshsofa.png](../img/seshsofa.png) |
 | Demo panorama | [img/apartment_panorama.png](../img/apartment_panorama.png) |

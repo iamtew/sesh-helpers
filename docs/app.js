@@ -26,7 +26,8 @@
     { slug: "trbanner/notes", path: "trbanner/notes.md", fetch: "../trbanner/notes.md", label: "Trick Request Banner" },
     { slug: "abs/diamond/notes", path: "abs/diamond/notes.md", fetch: "../abs/diamond/notes.md", label: "Diamond" },
     { slug: "abs/voroni/notes", path: "abs/voroni/notes.md", fetch: "../abs/voroni/notes.md", label: "Voroni" },
-    { slug: "abs/ripple/notes", path: "abs/ripple/notes.md", fetch: "../abs/ripple/notes.md", label: "Ripple" }
+    { slug: "abs/ripple/notes", path: "abs/ripple/notes.md", fetch: "../abs/ripple/notes.md", label: "Ripple" },
+    { slug: "abs/coderain/notes", path: "abs/coderain/notes.md", fetch: "../abs/coderain/notes.md", label: "Code Rain" }
   ];
 
   const ROOT_FOLDER_ORDER = ["docs", "abs", "seshbanner", "spotsmoke", "trbanner"];

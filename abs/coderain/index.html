@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Code Rain — ABS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="coderain-canvas" aria-hidden="true"></canvas>
+
+  <div id="settings-menu">
+    <div class="menu-header">
+      <h2>Code Rain</h2>
+      <div class="menu-header-buttons">
+        <button id="flip-side-button" aria-label="Move menu to other side">⇄</button>
+        <button id="close-menu-button" aria-label="Close settings">✕</button>
+      </div>
+    </div>
+
+    <p class="hint">Settings hidden: double-click to reopen. ABS backdrop — use Copy URL for OBS for clean output. Transparent background turns this into an overlay.</p>
+
+    <div class="settings-section" data-section="animation">
+      <button id="animation-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="animation-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Animation</button>
+      <div id="animation-controls" class="section-panel">
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="speed-slider"><span>Speed</span></label>
+              </div>
+              <div class="range-row">
+                <input id="speed-slider" type="range" min="0.25" max="4" step="0.05" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="speed" aria-label="Reset speed" title="Reset speed">↺</button>
+              <span class="value-label" id="speed-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="size-slider"><span>Size</span></label>
+              </div>
+              <div class="range-row">
+                <input id="size-slider" type="range" min="8" max="48" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="size" aria-label="Reset size" title="Reset size">↺</button>
+              <span class="value-label" id="size-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <span class="group-label">Direction</span>
+          <div class="dir-grid">
+            <label class="switch-row">
+              <input id="dir-top" type="checkbox" data-dir="top" />
+              <span>Top</span>
+            </label>
+            <label class="switch-row">
+              <input id="dir-right" type="checkbox" data-dir="right" />
+              <span>Right</span>
+            </label>
+            <label class="switch-row">
+              <input id="dir-bottom" type="checkbox" data-dir="bottom" />
+              <span>Bottom</span>
+            </label>
+            <label class="switch-row">
+              <input id="dir-left" type="checkbox" data-dir="left" />
+              <span>Left</span>
+            </label>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="motion-slider"><span>Motion</span></label>
+              </div>
+              <div class="range-row">
+                <input id="motion-slider" type="range" min="-2" max="2" step="0.05" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="motion" aria-label="Reset motion" title="Reset motion">↺</button>
+              <span class="value-label" id="motion-value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="color">
+      <button id="color-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="color-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Color</button>
+      <div id="color-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <span class="group-label">Rain</span>
+          <div id="rain-swatches" class="swatch-row"></div>
+          <button id="add-color-button" class="small-button" type="button">Add color</button>
+          <div id="color-picker" aria-label="Rain color picker"></div>
+          <div class="color-hex-row">
+            <input id="color-input" type="text" inputmode="text" maxlength="7" spellcheck="false" aria-label="Rain color hex value" />
+            <button id="color-reset-button" class="small-button" type="button">Reset Color</button>
+          </div>
+        </div>
+        <div class="setting-group">
+          <span class="group-label">Background</span>
+          <div class="bg-row">
+            <input id="bg-color-picker" type="color" aria-label="Background color" />
+            <input id="bg-hex-input" type="text" inputmode="text" maxlength="7" spellcheck="false" aria-label="Background color hex value" />
+          </div>
+          <button id="bg-transparent-button" class="small-button" type="button" aria-pressed="false">Transparent</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="glitch">
+      <button id="glitch-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="glitch-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Glitch</button>
+      <div id="glitch-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-amount-slider"><span>Amount</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-amount-slider" type="range" min="0" max="1" step="0.01" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitch" aria-label="Reset glitch amount" title="Reset glitch amount">↺</button>
+              <span class="value-label" id="glitch-amount-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-shift-slider"><span>Band shift</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-shift-slider" type="range" min="0" max="1" step="0.01" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitchShift" aria-label="Reset band shift" title="Reset band shift">↺</button>
+              <span class="value-label" id="glitch-shift-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-chroma-slider"><span>Chroma</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-chroma-slider" type="range" min="0" max="1" step="0.01" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitchChroma" aria-label="Reset chroma" title="Reset chroma">↺</button>
+              <span class="value-label" id="glitch-chroma-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-bulge-slider"><span>Bulge</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-bulge-slider" type="range" min="0" max="1" step="0.01" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitchBulge" aria-label="Reset bulge" title="Reset bulge">↺</button>
+              <span class="value-label" id="glitch-bulge-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-rate-slider"><span>Rate</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-rate-slider" type="range" min="0.5" max="8" step="0.1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitchRate" aria-label="Reset glitch rate" title="Reset glitch rate">↺</button>
+              <span class="value-label" id="glitch-rate-value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="reset-button" class="menu-action">Reset all</button>
+
+    <div class="setting-group copy-row">
+      <button id="copy-url-button" class="small-button menu-action">Copy URL</button>
+      <button id="copy-url-obs-button" class="small-button menu-action">Copy URL for OBS</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+  <script src="../glitch-post.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

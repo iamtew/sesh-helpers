@@ -55,7 +55,8 @@ sesh-helpers/
 │   ├── glitch-post.js        # Shared glitch post-process (band shift, chroma, bulge)
 │   ├── diamond/              # Diamond — LCD geometric diamond lattice
 │   ├── ripple/               # Ripple — pulsing pixel wave backdrop
-│   └── voroni/               # Voroni — Voronoi pulse field backdrop
+│   ├── voroni/               # Voroni — Voronoi pulse field backdrop
+│   └── coderain/             # Code Rain — matrix code rain backdrop / overlay
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
 │   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
@@ -82,6 +83,7 @@ sesh-helpers/
 | `abs/diamond/` | **Exists** | Diamond lattice backdrop; per-app palettes in `notes.md` |
 | `abs/ripple/` | **Exists** | Ripple pixel wave backdrop; per-app palettes in `notes.md` |
 | `abs/voroni/` | **Exists** | Voroni Voronoi pulse field; per-app palettes in `notes.md` |
+| `abs/coderain/` | **Exists** | Code Rain matrix rain; per-app color/bg/dir in `notes.md` |
 | `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
 | `*/notes.md` | **Exists** | Operator setup and complete URL parameter contracts |
 | `seshbanner/playlist.js` | **Exists** | Public YouTube playlist extraction and ticker formatting |
@@ -155,6 +157,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 | Diamond (ABS) | [`abs/diamond/`](../abs/diamond/) |
 | Ripple (ABS) | [`abs/ripple/`](../abs/ripple/) |
 | Voroni (ABS) | [`abs/voroni/`](../abs/voroni/) |
+| Code Rain (ABS) | [`abs/coderain/`](../abs/coderain/) |
 | Logo asset | [`img/seshhelpers.png`](../img/seshhelpers.png) |
 | Root README | [`README.md`](../README.md) |
 
