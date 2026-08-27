@@ -19,6 +19,7 @@ the hosted site or serve the repository root with any static web server.
 | [Ripple](abs/ripple/) | Pulsing pixel wave backdrop (ABS) | [Setup and URL parameters](abs/ripple/notes.md) |
 | [Voroni](abs/voroni/) | Voronoi pulse field with edge ripples (ABS) | [Setup and URL parameters](abs/voroni/notes.md) |
 | [Code Rain](abs/coderain/) | Matrix code rain backdrop / overlay (ABS) | [Setup and URL parameters](abs/coderain/notes.md) |
+| [Shard](abs/shard/) | Recursive stained-glass triangle mosaic (ABS) | [Setup and URL parameters](abs/shard/notes.md) |
 
 ## Install in OBS
 

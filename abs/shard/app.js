@@ -1,0 +1,925 @@
+// Shard — ABS recursive stained-glass triangle mosaic.
+// Query string is the complete shareable config for meat bags and OBS.
+
+const MAX_SIDE = 640;
+const GLITCH_MAX_SIDE = 320;
+const PULSE_BASE_DURATION_MS = 1600;
+const PULSE_BAND_RATIO = 0.085;
+const FRAME_MS = 50;
+const REDUCE_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const EPS = 0.6;
+
+const PALETTES = {
+  stained: [
+    [10, 8, 22],
+    [28, 16, 64],
+    [120, 22, 58],
+    [18, 72, 118],
+    [22, 108, 72],
+    [132, 52, 168],
+    [196, 140, 42],
+    [210, 78, 96]
+  ],
+  lcd: [
+    [6, 11, 20],
+    [10, 22, 40],
+    [14, 34, 62],
+    [24, 56, 96],
+    [36, 78, 120],
+    [48, 100, 140],
+    [40, 120, 150],
+    [70, 40, 90]
+  ],
+  violet: [
+    [8, 6, 18],
+    [16, 12, 36],
+    [28, 20, 58],
+    [44, 32, 90],
+    [64, 48, 120],
+    [88, 64, 150],
+    [110, 80, 170],
+    [200, 70, 160]
+  ],
+  ember: [
+    [12, 6, 4],
+    [28, 12, 6],
+    [48, 20, 8],
+    [78, 32, 10],
+    [120, 48, 14],
+    [160, 70, 20],
+    [190, 100, 30],
+    [220, 160, 40]
+  ],
+  jade: [
+    [4, 12, 10],
+    [8, 24, 20],
+    [12, 40, 32],
+    [18, 64, 48],
+    [28, 96, 68],
+    [40, 128, 88],
+    [56, 160, 110],
+    [180, 220, 60]
+  ],
+  rose: [
+    [14, 6, 12],
+    [28, 10, 24],
+    [48, 16, 40],
+    [78, 28, 58],
+    [120, 44, 80],
+    [160, 64, 110],
+    [200, 90, 140],
+    [255, 140, 190]
+  ],
+  acid: [
+    [6, 12, 4],
+    [12, 28, 6],
+    [24, 48, 8],
+    [40, 78, 10],
+    [64, 120, 14],
+    [96, 170, 20],
+    [140, 220, 30],
+    [220, 255, 40]
+  ]
+};
+
+const PALETTE_IDS = new Set(Object.keys(PALETTES));
+
+const defaults = {
+  palette: "stained",
+  depth: 4,
+  jitter: 0.35,
+  speed: 4,
+  pulseInterval: 8,
+  pulseSpeed: 1,
+  ...AbsGlitchPost.defaults,
+  vignette: true,
+  vignetteStrength: 100,
+  settingsMode: "ON",
+  side: "right"
+};
+
+const params = new URLSearchParams(location.search);
+
+function getParam(key, fallback) {
+  return params.has(key) ? params.get(key) : fallback;
+}
+
+function getBooleanParam(key, fallback) {
+  return params.has(key) ? params.get(key) === "true" : fallback;
+}
+
+function getNumberParam(key, fallback) {
+  const value = Number.parseFloat(getParam(key, fallback));
+  return Number.isFinite(value) ? value : fallback;
+}
+
+function normalizePalette(value) {
+  const id = String(value ?? "").toLowerCase();
+  return PALETTE_IDS.has(id) ? id : defaults.palette;
+}
+
+function clampDepth(value) {
+  return Math.min(6, Math.max(2, Math.round(value)));
+}
+
+function clampJitter(value) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function clampSpeed(value) {
+  return Math.min(10, Math.max(0, value));
+}
+
+function clampPulseInterval(value) {
+  return Math.min(30, Math.max(0, value));
+}
+
+function clampPulseSpeed(value) {
+  return Math.min(4, Math.max(0.25, value));
+}
+
+function clampVignetteStrength(value) {
+  return Math.min(100, Math.max(0, Math.round(value)));
+}
+
+let state = {
+  palette: normalizePalette(getParam("palette", defaults.palette)),
+  depth: clampDepth(getNumberParam("depth", defaults.depth)),
+  jitter: clampJitter(getNumberParam("jitter", defaults.jitter)),
+  speed: clampSpeed(getNumberParam("speed", defaults.speed)),
+  pulseInterval: clampPulseInterval(getNumberParam("pulseInterval", defaults.pulseInterval)),
+  pulseSpeed: clampPulseSpeed(getNumberParam("pulseSpeed", defaults.pulseSpeed)),
+  glitch: AbsGlitchPost.clampAmount(getNumberParam("glitch", defaults.glitch)),
+  glitchShift: AbsGlitchPost.clampUnit(getNumberParam("glitchShift", defaults.glitchShift)),
+  glitchChroma: AbsGlitchPost.clampUnit(getNumberParam("glitchChroma", defaults.glitchChroma)),
+  glitchBulge: AbsGlitchPost.clampUnit(getNumberParam("glitchBulge", defaults.glitchBulge)),
+  glitchRate: AbsGlitchPost.clampRate(getNumberParam("glitchRate", defaults.glitchRate)),
+  vignette: getBooleanParam("vignette", defaults.vignette),
+  vignetteStrength: clampVignetteStrength(getNumberParam("vignetteStrength", defaults.vignetteStrength)),
+  settingsMode: getParam("menu", defaults.settingsMode) === "DISABLE" ? "DISABLE" : "ON",
+  side: getParam("side", defaults.side) === "left" ? "left" : "right"
+};
+
+const canvas = document.getElementById("shard-canvas");
+const ctx = canvas.getContext("2d", { alpha: false, willReadFrequently: true });
+
+const glitchCanvas = document.createElement("canvas");
+const glitchCtx = glitchCanvas.getContext("2d", { alpha: false, willReadFrequently: true });
+
+let verts = [];
+let leaves = [];
+let midMap = new Map();
+let meshKey = "";
+let glitchImage = null;
+let glitchData = null;
+let glitchSource = null;
+
+const pulseBurst = {
+  active: false,
+  start: 0,
+  originX: 0,
+  originY: 0,
+  maxRadius: 0
+};
+
+let nextPulseAt = 0;
+
+const vignetteEl = document.getElementById("vignette");
+const settingsMenu = document.getElementById("settings-menu");
+const flipSideButton = document.getElementById("flip-side-button");
+const closeSettingsButton = document.getElementById("close-menu-button");
+const depthSlider = document.getElementById("depth-slider");
+const depthValue = document.getElementById("depth-value");
+const jitterSlider = document.getElementById("jitter-slider");
+const jitterValue = document.getElementById("jitter-value");
+const speedSlider = document.getElementById("speed-slider");
+const speedValue = document.getElementById("speed-value");
+const pulseIntervalSlider = document.getElementById("pulse-interval-slider");
+const pulseIntervalValue = document.getElementById("pulse-interval-value");
+const pulseSpeedSlider = document.getElementById("pulse-speed-slider");
+const pulseSpeedValue = document.getElementById("pulse-speed-value");
+const glitchAmountSlider = document.getElementById("glitch-amount-slider");
+const glitchAmountValue = document.getElementById("glitch-amount-value");
+const glitchShiftSlider = document.getElementById("glitch-shift-slider");
+const glitchShiftValue = document.getElementById("glitch-shift-value");
+const glitchChromaSlider = document.getElementById("glitch-chroma-slider");
+const glitchChromaValue = document.getElementById("glitch-chroma-value");
+const glitchBulgeSlider = document.getElementById("glitch-bulge-slider");
+const glitchBulgeValue = document.getElementById("glitch-bulge-value");
+const glitchRateSlider = document.getElementById("glitch-rate-slider");
+const glitchRateValue = document.getElementById("glitch-rate-value");
+const paletteSelect = document.getElementById("palette-select");
+const vignetteToggle = document.getElementById("vignette-toggle");
+const vignetteStrengthSlider = document.getElementById("vignette-strength-slider");
+const vignetteStrengthValue = document.getElementById("vignette-strength-value");
+const resetButton = document.getElementById("reset-button");
+const copyUrlButton = document.getElementById("copy-url-button");
+const copyUrlObsButton = document.getElementById("copy-url-obs-button");
+const sectionToggles = document.querySelectorAll("[data-section-toggle]");
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function fract(n) {
+  return n - Math.floor(n);
+}
+
+function hash2(a, b) {
+  const x = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
+  return fract(x);
+}
+
+function hash3(a, b, c) {
+  const x = Math.sin(a * 12.9898 + b * 78.233 + c * 37.719) * 43758.5453;
+  return fract(x);
+}
+
+function sampleRamp(colors, t) {
+  const wrapped = fract(t);
+  const n = colors.length - 1;
+  const x = wrapped * n;
+  const i = Math.min(n - 1, Math.floor(x));
+  const f = x - i;
+  const a = colors[i];
+  const b = colors[i + 1];
+  return [
+    lerp(a[0], b[0], f),
+    lerp(a[1], b[1], f),
+    lerp(a[2], b[2], f)
+  ];
+}
+
+function rgbCss(r, g, b) {
+  return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+}
+
+function edgeKey(a, b) {
+  return a < b ? `${a}:${b}` : `${b}:${a}`;
+}
+
+function classify(x, y, w, h) {
+  const left = x <= EPS;
+  const right = x >= w - EPS;
+  const top = y <= EPS;
+  const bottom = y >= h - EPS;
+  let edge = null;
+  if (left) edge = "left";
+  else if (right) edge = "right";
+  else if (top) edge = "top";
+  else if (bottom) edge = "bottom";
+  const corner = (left || right) && (top || bottom);
+  return { edge, corner };
+}
+
+function addVertex(x, y, w, h, seed) {
+  x = Math.min(w, Math.max(0, x));
+  y = Math.min(h, Math.max(0, y));
+  const { edge, corner } = classify(x, y, w, h);
+  if (corner) {
+    x = x < w * 0.5 ? 0 : w;
+    y = y < h * 0.5 ? 0 : h;
+  } else if (edge === "left") x = 0;
+  else if (edge === "right") x = w;
+  else if (edge === "top") y = 0;
+  else if (edge === "bottom") y = h;
+
+  const minDim = Math.min(w, h);
+  const orbitScale = corner ? 0 : edge ? 0.007 : 0.016;
+  const orbitR = orbitScale * minDim * (0.4 + 0.6 * seed);
+
+  verts.push({
+    restX: x,
+    restY: y,
+    x,
+    y,
+    orbitR,
+    phase: seed * Math.PI * 2,
+    edge,
+    corner
+  });
+  return verts.length - 1;
+}
+
+function getMidpoint(ia, ib, w, h) {
+  const key = edgeKey(ia, ib);
+  if (midMap.has(key)) return midMap.get(key);
+
+  const a = verts[ia];
+  const b = verts[ib];
+  let mx = (a.restX + b.restX) * 0.5;
+  let my = (a.restY + b.restY) * 0.5;
+  const dx = b.restX - a.restX;
+  const dy = b.restY - a.restY;
+  const len = Math.hypot(dx, dy) || 1;
+  const jitterAmt = state.jitter * len * 0.28 * (hash2(ia + 1, ib + 3) * 2 - 1);
+  const sharedEdge = a.edge && a.edge === b.edge;
+
+  if (Math.abs(jitterAmt) > 0.001) {
+    if (sharedEdge || (a.corner && b.corner && (a.restX === b.restX || a.restY === b.restY))) {
+      mx += (dx / len) * jitterAmt * 0.45;
+      my += (dy / len) * jitterAmt * 0.45;
+    } else {
+      mx += (-dy / len) * jitterAmt;
+      my += (dx / len) * jitterAmt;
+    }
+  }
+
+  const idx = addVertex(mx, my, w, h, hash2(ia + 11, ib + 29));
+  midMap.set(key, idx);
+  return idx;
+}
+
+function subdivide(ia, ib, ic, depth, w, h) {
+  const maxDepth = state.depth;
+  const tint = hash3(ia + 1, ib + 5, ic + 9);
+  const earlyStop = depth >= 2 && depth < maxDepth && tint > 0.58;
+  if (depth >= maxDepth || earlyStop) {
+    leaves.push({ a: ia, b: ib, c: ic, depth, tint });
+    return;
+  }
+
+  const mab = getMidpoint(ia, ib, w, h);
+  const mbc = getMidpoint(ib, ic, w, h);
+  const mca = getMidpoint(ic, ia, w, h);
+  subdivide(ia, mab, mca, depth + 1, w, h);
+  subdivide(ib, mbc, mab, depth + 1, w, h);
+  subdivide(ic, mca, mbc, depth + 1, w, h);
+  subdivide(mab, mbc, mca, depth + 1, w, h);
+}
+
+function rebuildMesh() {
+  const w = canvas.width;
+  const h = canvas.height;
+  verts = [];
+  leaves = [];
+  midMap = new Map();
+
+  const i00 = addVertex(0, 0, w, h, 0.11);
+  const i10 = addVertex(w, 0, w, h, 0.27);
+  const i11 = addVertex(w, h, w, h, 0.43);
+  const i01 = addVertex(0, h, w, h, 0.61);
+  subdivide(i00, i10, i01, 0, w, h);
+  subdivide(i10, i11, i01, 0, w, h);
+
+  meshKey = `${w}x${h}:${state.depth}:${state.jitter.toFixed(3)}`;
+}
+
+function resizeCanvas() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const scale = Math.min(1, MAX_SIDE / Math.max(vw, vh));
+  const w = Math.max(1, Math.round(vw * scale));
+  const h = Math.max(1, Math.round(vh * scale));
+  if (canvas.width !== w || canvas.height !== h) {
+    canvas.width = w;
+    canvas.height = h;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    glitchImage = null;
+  }
+}
+
+function ensureMesh() {
+  const key = `${canvas.width}x${canvas.height}:${state.depth}:${state.jitter.toFixed(3)}`;
+  if (key !== meshKey) rebuildMesh();
+}
+
+function scheduleNextPulse(fromNow = performance.now()) {
+  if (state.pulseInterval <= 0) {
+    nextPulseAt = Infinity;
+    return;
+  }
+  nextPulseAt = fromNow + state.pulseInterval * 1000;
+}
+
+function triggerPulseBurst(now) {
+  const w = canvas.width;
+  const h = canvas.height;
+  pulseBurst.active = true;
+  pulseBurst.start = now;
+  pulseBurst.originX = Math.random() * w;
+  pulseBurst.originY = Math.random() * h;
+  pulseBurst.maxRadius = Math.hypot(w, h) * 1.2;
+}
+
+function applyBreath(now) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const speedFactor = state.speed / 10;
+  const t = REDUCE_MOTION ? 0 : now * 0.0012 * speedFactor;
+
+  for (let i = 0; i < verts.length; i++) {
+    const v = verts[i];
+    if (v.corner || v.orbitR <= 0 || t === 0) {
+      v.x = v.restX;
+      v.y = v.restY;
+      continue;
+    }
+
+    const s = Math.sin(t + v.phase) * v.orbitR;
+    if (v.edge === "left" || v.edge === "right") {
+      v.x = v.restX;
+      v.y = Math.min(h, Math.max(0, v.restY + s));
+    } else if (v.edge === "top" || v.edge === "bottom") {
+      v.y = v.restY;
+      v.x = Math.min(w, Math.max(0, v.restX + s));
+    } else {
+      v.x = v.restX + Math.cos(t + v.phase) * v.orbitR;
+      v.y = v.restY + Math.sin(t * 0.87 + v.phase) * v.orbitR;
+    }
+  }
+}
+
+function pulseGlow(tri, radius, envelope, band) {
+  if (envelope <= 0 || radius <= 0) return 0;
+  const a = verts[tri.a];
+  const b = verts[tri.b];
+  const c = verts[tri.c];
+  const cx = (a.x + b.x + c.x) / 3;
+  const cy = (a.y + b.y + c.y) / 3;
+  const dist = Math.hypot(cx - pulseBurst.originX, cy - pulseBurst.originY);
+  const ring = Math.max(0, 1 - Math.abs(dist - radius) / band);
+  const depthW = 0.22 + 0.78 * (tri.depth / Math.max(1, state.depth));
+  return ring * ring * depthW * envelope;
+}
+
+function applyGlitchPost(now, w, h) {
+  if (state.glitch <= 0) return;
+
+  const scale = Math.min(1, GLITCH_MAX_SIDE / Math.max(w, h));
+  const gw = Math.max(1, Math.round(w * scale));
+  const gh = Math.max(1, Math.round(h * scale));
+
+  if (glitchCanvas.width !== gw || glitchCanvas.height !== gh) {
+    glitchCanvas.width = gw;
+    glitchCanvas.height = gh;
+    glitchImage = glitchCtx.createImageData(gw, gh);
+    glitchData = glitchImage.data;
+    glitchSource = new Uint8ClampedArray(glitchData.length);
+  }
+
+  glitchCtx.imageSmoothingEnabled = true;
+  glitchCtx.drawImage(canvas, 0, 0, gw, gh);
+  const sampled = glitchCtx.getImageData(0, 0, gw, gh);
+  glitchSource.set(sampled.data);
+  AbsGlitchPost.applyPostProcess(now, glitchSource, glitchData, gw, gh, state, FRAME_MS);
+  glitchCtx.putImageData(glitchImage, 0, 0);
+
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(glitchCanvas, 0, 0, w, h);
+}
+
+function paint(now) {
+  const w = canvas.width;
+  const h = canvas.height;
+  if (w < 1 || h < 1) return;
+
+  ensureMesh();
+  applyBreath(now);
+
+  if (!REDUCE_MOTION && state.pulseInterval > 0 && !pulseBurst.active && now >= nextPulseAt) {
+    triggerPulseBurst(now);
+    scheduleNextPulse(now);
+  }
+
+  let pulseRadius = 0;
+  let pulseEnvelope = 0;
+  if (pulseBurst.active) {
+    const burstDuration = PULSE_BASE_DURATION_MS / state.pulseSpeed;
+    const t = (now - pulseBurst.start) / burstDuration;
+    if (t >= 1) {
+      pulseBurst.active = false;
+    } else {
+      pulseEnvelope = 1 - t * t;
+      pulseRadius = t * pulseBurst.maxRadius;
+    }
+  }
+
+  const colors = PALETTES[state.palette] || PALETTES[defaults.palette];
+  const bg = colors[0];
+  const lead = [
+    Math.max(0, bg[0] * 0.18),
+    Math.max(0, bg[1] * 0.18),
+    Math.max(0, bg[2] * 0.22)
+  ];
+  const highlight = colors[colors.length - 1];
+  const speedFactor = state.speed / 10;
+  const drift = REDUCE_MOTION ? 0 : now * 0.00006 * (0.25 + speedFactor);
+  const band = Math.hypot(w, h) * PULSE_BAND_RATIO;
+  const leadWidth = Math.max(0.85, Math.min(w, h) * 0.0042);
+
+  ctx.fillStyle = rgbCss(bg[0] * 0.45, bg[1] * 0.45, bg[2] * 0.5);
+  ctx.fillRect(0, 0, w, h);
+  ctx.lineJoin = "round";
+  ctx.lineWidth = leadWidth;
+
+  for (let i = 0; i < leaves.length; i++) {
+    const tri = leaves[i];
+    const a = verts[tri.a];
+    const b = verts[tri.b];
+    const c = verts[tri.c];
+    const tint = fract(tri.tint + drift + tri.depth * 0.07);
+    let rgb = sampleRamp(colors, tint * 0.92 + 0.04);
+    const glow = pulseGlow(tri, pulseRadius, pulseEnvelope, band);
+    if (glow > 0.01) {
+      rgb = [
+        lerp(rgb[0], highlight[0], glow * 0.55) + glow * 90,
+        lerp(rgb[1], highlight[1], glow * 0.55) + glow * 70,
+        lerp(rgb[2], highlight[2], glow * 0.55) + glow * 50
+      ];
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.lineTo(c.x, c.y);
+    ctx.closePath();
+    ctx.fillStyle = rgbCss(
+      Math.min(255, rgb[0]),
+      Math.min(255, rgb[1]),
+      Math.min(255, rgb[2])
+    );
+    ctx.fill();
+    ctx.strokeStyle = rgbCss(lead[0], lead[1], lead[2]);
+    ctx.stroke();
+  }
+
+  applyGlitchPost(now, w, h);
+}
+
+let raf = 0;
+let lastFrame = 0;
+let animRunning = false;
+
+function tick(now) {
+  raf = requestAnimationFrame(tick);
+  if (document.hidden) return;
+  if (now - lastFrame < FRAME_MS) return;
+  lastFrame = now;
+  paint(now);
+}
+
+function startAnimation() {
+  if (REDUCE_MOTION || animRunning) return;
+  animRunning = true;
+  lastFrame = 0;
+  raf = requestAnimationFrame(tick);
+}
+
+function stopAnimation() {
+  animRunning = false;
+  if (raf) {
+    cancelAnimationFrame(raf);
+    raf = 0;
+  }
+}
+
+function repaintNow() {
+  paint(REDUCE_MOTION ? 0 : performance.now());
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (REDUCE_MOTION) return;
+  if (document.hidden) {
+    stopAnimation();
+  } else {
+    startAnimation();
+  }
+});
+
+function flashMenuAction(button, tempLabel) {
+  if (!button) return;
+  const original = button.textContent;
+  button.classList.add("is-clicked");
+  if (tempLabel) button.textContent = tempLabel;
+  clearTimeout(button._flashTimer);
+  button._flashTimer = setTimeout(() => {
+    button.classList.remove("is-clicked");
+    if (tempLabel) button.textContent = original;
+  }, 550);
+}
+
+function updateURL() {
+  params.set("palette", state.palette);
+  params.set("depth", String(state.depth));
+  params.set("jitter", String(state.jitter));
+  params.set("speed", String(state.speed));
+  params.set("pulseInterval", String(state.pulseInterval));
+  params.set("pulseSpeed", String(state.pulseSpeed));
+  params.set("glitch", String(state.glitch));
+  params.set("glitchShift", String(state.glitchShift));
+  params.set("glitchChroma", String(state.glitchChroma));
+  params.set("glitchBulge", String(state.glitchBulge));
+  params.set("glitchRate", String(state.glitchRate));
+  params.set("vignette", String(state.vignette));
+  params.set("vignetteStrength", String(state.vignetteStrength));
+  params.set("menu", state.settingsMode);
+  params.set("side", state.side);
+  history.replaceState({}, "", "?" + params.toString());
+}
+
+function applySettingsMode() {
+  if (state.settingsMode === "DISABLE") {
+    settingsMenu.classList.remove("open");
+    document.body.classList.remove("settings-mode");
+  } else {
+    settingsMenu.classList.add("open");
+    document.body.classList.add("settings-mode");
+  }
+}
+
+function applySide() {
+  settingsMenu.classList.toggle("side-right", state.side === "right");
+}
+
+function applyVignette() {
+  const on = state.vignette;
+  vignetteToggle.checked = on;
+  vignetteStrengthSlider.disabled = !on;
+  if (!on) {
+    vignetteEl.hidden = true;
+    return;
+  }
+  vignetteEl.hidden = false;
+  vignetteEl.style.opacity = String(state.vignetteStrength / 100);
+}
+
+function formatPulseInterval(seconds) {
+  return seconds <= 0 ? "Off" : `${seconds.toFixed(1)}s`;
+}
+
+function syncInputs() {
+  depthSlider.value = state.depth;
+  depthValue.textContent = String(state.depth);
+  jitterSlider.value = state.jitter;
+  jitterValue.textContent = AbsGlitchPost.formatPercent(state.jitter);
+  speedSlider.value = state.speed;
+  speedValue.textContent = state.speed.toFixed(1);
+  pulseIntervalSlider.value = state.pulseInterval;
+  pulseIntervalValue.textContent = formatPulseInterval(state.pulseInterval);
+  pulseSpeedSlider.value = state.pulseSpeed;
+  pulseSpeedValue.textContent = `${state.pulseSpeed.toFixed(2)}x`;
+  glitchAmountSlider.value = state.glitch;
+  glitchAmountValue.textContent = AbsGlitchPost.formatPercent(state.glitch);
+  glitchShiftSlider.value = state.glitchShift;
+  glitchShiftValue.textContent = AbsGlitchPost.formatPercent(state.glitchShift);
+  glitchChromaSlider.value = state.glitchChroma;
+  glitchChromaValue.textContent = AbsGlitchPost.formatPercent(state.glitchChroma);
+  glitchBulgeSlider.value = state.glitchBulge;
+  glitchBulgeValue.textContent = AbsGlitchPost.formatPercent(state.glitchBulge);
+  glitchRateSlider.value = state.glitchRate;
+  glitchRateValue.textContent = `${state.glitchRate.toFixed(1)}Hz`;
+  paletteSelect.value = state.palette;
+  vignetteStrengthSlider.value = state.vignetteStrength;
+  vignetteStrengthValue.textContent = `${state.vignetteStrength}%`;
+  applyVignette();
+}
+
+function applyAll() {
+  resizeCanvas();
+  ensureMesh();
+  applySettingsMode();
+  applySide();
+  syncInputs();
+  scheduleNextPulse();
+  repaintNow();
+}
+
+function resetParam(key) {
+  switch (key) {
+    case "depth":
+      state.depth = defaults.depth;
+      break;
+    case "jitter":
+      state.jitter = defaults.jitter;
+      break;
+    case "speed":
+      state.speed = defaults.speed;
+      break;
+    case "pulseInterval":
+      state.pulseInterval = defaults.pulseInterval;
+      if (!pulseBurst.active) scheduleNextPulse();
+      break;
+    case "pulseSpeed":
+      state.pulseSpeed = defaults.pulseSpeed;
+      break;
+    case "glitch":
+      state.glitch = defaults.glitch;
+      break;
+    case "glitchShift":
+      state.glitchShift = defaults.glitchShift;
+      break;
+    case "glitchChroma":
+      state.glitchChroma = defaults.glitchChroma;
+      break;
+    case "glitchBulge":
+      state.glitchBulge = defaults.glitchBulge;
+      break;
+    case "glitchRate":
+      state.glitchRate = defaults.glitchRate;
+      break;
+    case "vignetteStrength":
+      state.vignetteStrength = defaults.vignetteStrength;
+      break;
+    default:
+      return;
+  }
+  syncInputs();
+  if (key === "depth" || key === "jitter") ensureMesh();
+  if (key !== "vignetteStrength") repaintNow();
+  updateURL();
+}
+
+sectionToggles.forEach((toggle) => {
+  toggle.addEventListener("click", () => {
+    const section = toggle.closest(".settings-section");
+    const panel = section.querySelector(".section-panel");
+    const icon = toggle.querySelector(".section-toggle-icon");
+    const willOpen = toggle.getAttribute("aria-expanded") !== "true";
+
+    sectionToggles.forEach((other) => {
+      const otherSection = other.closest(".settings-section");
+      const otherPanel = otherSection.querySelector(".section-panel");
+      const otherIcon = other.querySelector(".section-toggle-icon");
+      other.setAttribute("aria-expanded", "false");
+      otherPanel.hidden = true;
+      if (otherIcon) otherIcon.textContent = "⏵";
+    });
+
+    if (willOpen) {
+      toggle.setAttribute("aria-expanded", "true");
+      panel.hidden = false;
+      if (icon) icon.textContent = "⏷";
+    }
+  });
+});
+
+document.addEventListener("click", (e) => {
+  if (e.detail !== 2) return;
+  if (state.settingsMode === "DISABLE") {
+    state.settingsMode = "ON";
+    applySettingsMode();
+    updateURL();
+    return;
+  }
+  if (e.target instanceof Element && e.target.closest("#settings-menu")) return;
+});
+
+flipSideButton.addEventListener("click", () => {
+  state.side = state.side === "left" ? "right" : "left";
+  applySide();
+  updateURL();
+});
+
+closeSettingsButton.addEventListener("click", () => {
+  state.settingsMode = "DISABLE";
+  applySettingsMode();
+  updateURL();
+});
+
+depthSlider.addEventListener("input", (e) => {
+  state.depth = clampDepth(Number.parseFloat(e.target.value));
+  ensureMesh();
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+jitterSlider.addEventListener("input", (e) => {
+  state.jitter = clampJitter(Number.parseFloat(e.target.value));
+  ensureMesh();
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+speedSlider.addEventListener("input", (e) => {
+  state.speed = clampSpeed(Number.parseFloat(e.target.value));
+  syncInputs();
+  updateURL();
+});
+
+pulseIntervalSlider.addEventListener("input", (e) => {
+  state.pulseInterval = clampPulseInterval(Number.parseFloat(e.target.value));
+  syncInputs();
+  if (!pulseBurst.active) scheduleNextPulse();
+  updateURL();
+});
+
+pulseSpeedSlider.addEventListener("input", (e) => {
+  state.pulseSpeed = clampPulseSpeed(Number.parseFloat(e.target.value));
+  syncInputs();
+  updateURL();
+});
+
+glitchAmountSlider.addEventListener("input", (e) => {
+  state.glitch = AbsGlitchPost.clampAmount(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+glitchShiftSlider.addEventListener("input", (e) => {
+  state.glitchShift = AbsGlitchPost.clampUnit(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+glitchChromaSlider.addEventListener("input", (e) => {
+  state.glitchChroma = AbsGlitchPost.clampUnit(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+glitchBulgeSlider.addEventListener("input", (e) => {
+  state.glitchBulge = AbsGlitchPost.clampUnit(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+glitchRateSlider.addEventListener("input", (e) => {
+  state.glitchRate = AbsGlitchPost.clampRate(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+paletteSelect.addEventListener("change", (e) => {
+  state.palette = normalizePalette(e.target.value);
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+vignetteToggle.addEventListener("change", (e) => {
+  state.vignette = e.target.checked;
+  applyVignette();
+  updateURL();
+});
+
+vignetteStrengthSlider.addEventListener("input", (e) => {
+  state.vignetteStrength = clampVignetteStrength(Number.parseFloat(e.target.value));
+  syncInputs();
+  updateURL();
+});
+
+for (const button of document.querySelectorAll("[data-reset]")) {
+  button.addEventListener("click", () => {
+    resetParam(button.getAttribute("data-reset"));
+  });
+}
+
+resetButton.addEventListener("click", () => {
+  state.palette = defaults.palette;
+  state.depth = defaults.depth;
+  state.jitter = defaults.jitter;
+  state.speed = defaults.speed;
+  state.pulseInterval = defaults.pulseInterval;
+  state.pulseSpeed = defaults.pulseSpeed;
+  state.glitch = defaults.glitch;
+  state.glitchShift = defaults.glitchShift;
+  state.glitchChroma = defaults.glitchChroma;
+  state.glitchBulge = defaults.glitchBulge;
+  state.glitchRate = defaults.glitchRate;
+  state.vignette = defaults.vignette;
+  state.vignetteStrength = defaults.vignetteStrength;
+  state.side = defaults.side;
+  pulseBurst.active = false;
+  applyAll();
+  updateURL();
+  flashMenuAction(resetButton, "Reset!");
+});
+
+copyUrlButton.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(location.href);
+    flashMenuAction(copyUrlButton, "Copied!");
+  } catch {
+    flashMenuAction(copyUrlButton, "Failed");
+  }
+});
+
+copyUrlObsButton.addEventListener("click", async () => {
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set("menu", "DISABLE");
+    await navigator.clipboard.writeText(url.toString());
+    flashMenuAction(copyUrlObsButton, "Copied!");
+  } catch {
+    flashMenuAction(copyUrlObsButton, "Failed");
+  }
+});
+
+window.addEventListener("resize", () => {
+  resizeCanvas();
+  ensureMesh();
+  repaintNow();
+});
+
+applyAll();
+updateURL();
+if (!REDUCE_MOTION) startAnimation();
