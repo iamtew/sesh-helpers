@@ -8,6 +8,11 @@ const PULSE_BAND_RATIO = 0.085;
 const FRAME_MS = 50;
 const REDUCE_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const EPS = 0.6;
+const MAX_LEAVES = 2500;
+const MIN_SPLIT_AREA_FRAC = 0.00008;
+const MAX_MERGE_AREA_FRAC = 0.04;
+const EVOLVE_BASE_MS = 12000;
+const EVOLVE_SCAN_ATTEMPTS = 40;
 
 const PALETTES = {
   stained: [
@@ -19,6 +24,46 @@ const PALETTES = {
     [132, 52, 168],
     [196, 140, 42],
     [210, 78, 96]
+  ],
+  cathedral: [
+    [8, 10, 28],
+    [18, 28, 72],
+    [140, 28, 48],
+    [22, 88, 52],
+    [180, 120, 32],
+    [72, 48, 120],
+    [28, 100, 140],
+    [220, 180, 80]
+  ],
+  sunset: [
+    [12, 6, 18],
+    [48, 12, 36],
+    [140, 28, 48],
+    [200, 60, 32],
+    [220, 100, 28],
+    [180, 48, 88],
+    [100, 32, 72],
+    [255, 160, 90]
+  ],
+  ocean: [
+    [4, 12, 18],
+    [8, 32, 48],
+    [12, 72, 88],
+    [24, 120, 110],
+    [48, 160, 140],
+    [20, 80, 140],
+    [140, 60, 100],
+    [180, 220, 200]
+  ],
+  aurora: [
+    [6, 8, 22],
+    [16, 20, 48],
+    [32, 80, 72],
+    [48, 140, 100],
+    [88, 48, 140],
+    [120, 60, 180],
+    [40, 120, 180],
+    [200, 255, 180]
   ],
   lcd: [
     [6, 11, 20],
@@ -90,11 +135,12 @@ const defaults = {
   jitter: 0.35,
   mix: 0.55,
   speed: 4,
+  evolve: 4,
   pulseInterval: 8,
   pulseSpeed: 1,
   ...AbsGlitchPost.defaults,
   vignette: true,
-  vignetteStrength: 100,
+  vignetteStrength: 33,
   settingsMode: "ON",
   side: "right"
 };
@@ -135,6 +181,10 @@ function clampSpeed(value) {
   return Math.min(10, Math.max(0, value));
 }
 
+function clampEvolve(value) {
+  return Math.min(10, Math.max(0, value));
+}
+
 function clampPulseInterval(value) {
   return Math.min(30, Math.max(0, value));
 }
@@ -153,6 +203,7 @@ let state = {
   jitter: clampJitter(getNumberParam("jitter", defaults.jitter)),
   mix: clampMix(getNumberParam("mix", defaults.mix)),
   speed: clampSpeed(getNumberParam("speed", defaults.speed)),
+  evolve: clampEvolve(getNumberParam("evolve", defaults.evolve)),
   pulseInterval: clampPulseInterval(getNumberParam("pulseInterval", defaults.pulseInterval)),
   pulseSpeed: clampPulseSpeed(getNumberParam("pulseSpeed", defaults.pulseSpeed)),
   glitch: AbsGlitchPost.clampAmount(getNumberParam("glitch", defaults.glitch)),
@@ -191,6 +242,7 @@ const pulseBurst = {
 };
 
 let nextPulseAt = 0;
+let nextEvolveAt = 0;
 
 const vignetteEl = document.getElementById("vignette");
 const settingsMenu = document.getElementById("settings-menu");
@@ -204,6 +256,8 @@ const mixSlider = document.getElementById("mix-slider");
 const mixValue = document.getElementById("mix-value");
 const speedSlider = document.getElementById("speed-slider");
 const speedValue = document.getElementById("speed-value");
+const evolveSlider = document.getElementById("evolve-slider");
+const evolveValue = document.getElementById("evolve-value");
 const pulseIntervalSlider = document.getElementById("pulse-interval-slider");
 const pulseIntervalValue = document.getElementById("pulse-interval-value");
 const pulseSpeedSlider = document.getElementById("pulse-speed-slider");
@@ -615,6 +669,258 @@ function mergeTriangleIntoQuad() {
   }
 }
 
+function leafArea(indices) {
+  return Math.abs(polygonArea(indices));
+}
+
+function childTint(parentTint, seed) {
+  return fract(parentTint + (hash2(seed, seed + 7) - 0.5) * 0.08);
+}
+
+function makeChildLeaf(indices, depth, tint, seed) {
+  const ordered = orderCCW(indices);
+  if (!isConvexCCW(ordered)) return null;
+  return { indices: ordered, depth, tint: childTint(tint, seed) };
+}
+
+function canSplitLeaf(leaf, canvasArea) {
+  if (leaf.depth >= state.depth) return false;
+  if (leaves.length >= MAX_LEAVES) return false;
+  return leafArea(leaf.indices) >= canvasArea * MIN_SPLIT_AREA_FRAC;
+}
+
+function splitLeafAt(index, w, h) {
+  const leaf = leaves[index];
+  const canvasArea = w * h;
+  if (!canSplitLeaf(leaf, canvasArea)) return false;
+
+  const depth = leaf.depth + 1;
+  const replacements = [];
+
+  if (leaf.indices.length === 3) {
+    const [ia, ib, ic] = leaf.indices;
+    const mab = getMidpoint(ia, ib, w, h);
+    const mbc = getMidpoint(ib, ic, w, h);
+    const mca = getMidpoint(ic, ia, w, h);
+    const children = [
+      makeChildLeaf([ia, mab, mca], depth, leaf.tint, ia + mab),
+      makeChildLeaf([ib, mbc, mab], depth, leaf.tint, ib + mbc),
+      makeChildLeaf([ic, mca, mbc], depth, leaf.tint, ic + mca),
+      makeChildLeaf([mab, mbc, mca], depth, leaf.tint, mab + mbc)
+    ];
+    for (const child of children) {
+      if (!child) return false;
+      replacements.push(child);
+    }
+  } else if (leaf.indices.length === 4) {
+    const [ia, ib, ic, id] = leaf.indices;
+    const splitTri = hash3(ia + depth, ib, id) > 0.68 - state.mix * 0.38;
+    if (splitTri) {
+      if (hash2(ia, ic) > 0.5) {
+        const c1 = makeChildLeaf([ia, ib, id], depth, leaf.tint, ia + id);
+        const c2 = makeChildLeaf([ia, id, ic], depth, leaf.tint, ia + ic);
+        if (!c1 || !c2) return false;
+        replacements.push(c1, c2);
+      } else {
+        const c1 = makeChildLeaf([ia, ib, ic], depth, leaf.tint, ia + ic);
+        const c2 = makeChildLeaf([ib, ic, id], depth, leaf.tint, ib + id);
+        if (!c1 || !c2) return false;
+        replacements.push(c1, c2);
+      }
+    } else {
+      const mab = getMidpoint(ia, ib, w, h);
+      const mbc = getMidpoint(ib, ic, w, h);
+      const mcd = getMidpoint(ic, id, w, h);
+      const mda = getMidpoint(id, ia, w, h);
+      const center = getQuadCenter(ia, ib, ic, id, w, h);
+      const children = [
+        makeChildLeaf([ia, mab, center, mda], depth, leaf.tint, ia + center),
+        makeChildLeaf([mab, ib, mbc, center], depth, leaf.tint, mab + ib),
+        makeChildLeaf([center, mbc, ic, mcd], depth, leaf.tint, center + ic),
+        makeChildLeaf([mda, center, mcd, id], depth, leaf.tint, mda + id)
+      ];
+      for (const child of children) {
+        if (!child) return false;
+        replacements.push(child);
+      }
+    }
+  } else if (leaf.indices.length === 5) {
+    const indices = leaf.indices;
+    let bestI = 0;
+    let bestLen = Infinity;
+    for (let i = 0; i < 5; i++) {
+      const v0 = indices[i];
+      const v2 = indices[(i + 2) % 5];
+      const a = verts[v0];
+      const b = verts[v2];
+      const len = Math.hypot(a.restX - b.restX, a.restY - b.restY);
+      if (len < bestLen) {
+        bestLen = len;
+        bestI = i;
+      }
+    }
+    const v0 = indices[bestI];
+    const v1 = indices[(bestI + 1) % 5];
+    const v2 = indices[(bestI + 2) % 5];
+    const v3 = indices[(bestI + 3) % 5];
+    const v4 = indices[(bestI + 4) % 5];
+    const tri = makeChildLeaf([v0, v1, v2], depth, leaf.tint, v0 + v2);
+    const quad = makeChildLeaf([v0, v2, v3, v4], depth, leaf.tint, v2 + v4);
+    if (!tri || !quad) return false;
+    replacements.push(tri, quad);
+  } else {
+    return false;
+  }
+
+  leaves.splice(index, 1, ...replacements);
+  return true;
+}
+
+function sharesEdge(indicesA, indicesB) {
+  for (let e = 0; e < indicesA.length; e++) {
+    const v0 = indicesA[e];
+    const v1 = indicesA[(e + 1) % indicesA.length];
+    for (let f = 0; f < indicesB.length; f++) {
+      const u0 = indicesB[f];
+      const u1 = indicesB[(f + 1) % indicesB.length];
+      if ((v0 === u0 && v1 === u1) || (v0 === u1 && v1 === u0)) {
+        return { v0, v1 };
+      }
+    }
+  }
+  return null;
+}
+
+function canMergeLeaves(leafA, leafB, canvasArea) {
+  return leafArea(leafA.indices) + leafArea(leafB.indices) <= canvasArea * MAX_MERGE_AREA_FRAC;
+}
+
+function replaceLeavesWithMerged(lo, hi, merged) {
+  leaves.splice(hi, 1);
+  leaves.splice(lo, 1, merged);
+}
+
+function tryMergeOne(w, h) {
+  const canvasArea = w * h;
+  const n = leaves.length;
+  if (n < 2) return false;
+
+  const start = Math.floor(Math.random() * n);
+  for (let attempt = 0; attempt < EVOLVE_SCAN_ATTEMPTS; attempt++) {
+    const li = (start + attempt) % n;
+    const leaf = leaves[li];
+    if (!leaf) continue;
+
+    if (state.mix >= 0.12 && leaf.indices.length === 3) {
+      for (let lj = 0; lj < n; lj++) {
+        if (lj === li) continue;
+        const other = leaves[lj];
+        if (!other || other.indices.length !== 3) continue;
+        const edge = sharesEdge(leaf.indices, other.indices);
+        if (!edge) continue;
+        if (!canMergeLeaves(leaf, other, canvasArea)) continue;
+        if (hash2(li + 1, lj + 3) > 0.28 + (1 - state.mix) * 0.52) continue;
+
+        const quadVerts = joinTrianglesOnEdge(leaf, other, edge.v0, edge.v1);
+        if (!quadVerts) continue;
+
+        replaceLeavesWithMerged(Math.min(li, lj), Math.max(li, lj), {
+          indices: quadVerts,
+          depth: Math.max(leaf.depth, other.depth),
+          tint: (leaf.tint + other.tint) * 0.5
+        });
+        return true;
+      }
+    }
+
+    if (state.mix >= 0.45 && leaf.indices.length === 3) {
+      for (let lj = 0; lj < n; lj++) {
+        if (lj === li) continue;
+        const quad = leaves[lj];
+        if (!quad || quad.indices.length !== 4) continue;
+        if (hash2(li + 5, lj + 9) > 0.42 + (1 - state.mix) * 0.45) continue;
+        if (!canMergeLeaves(leaf, quad, canvasArea)) continue;
+
+        const edge = sharesEdge(leaf.indices, quad.indices);
+        if (!edge) continue;
+
+        const mergedVerts = orderVertsAroundCentroid([...new Set([...leaf.indices, ...quad.indices])]);
+        if (mergedVerts.length !== 5 || !isConvexCCW(mergedVerts)) continue;
+
+        replaceLeavesWithMerged(Math.min(li, lj), Math.max(li, lj), {
+          indices: orderCCW(mergedVerts),
+          depth: Math.max(leaf.depth, quad.depth),
+          tint: (leaf.tint + quad.tint) * 0.5
+        });
+        return true;
+      }
+    }
+
+    if (state.mix >= 0.45 && leaf.indices.length === 4) {
+      for (let lj = 0; lj < n; lj++) {
+        if (lj === li) continue;
+        const tri = leaves[lj];
+        if (!tri || tri.indices.length !== 3) continue;
+        if (hash2(lj + 5, li + 9) > 0.42 + (1 - state.mix) * 0.45) continue;
+        if (!canMergeLeaves(leaf, tri, canvasArea)) continue;
+
+        const edge = sharesEdge(leaf.indices, tri.indices);
+        if (!edge) continue;
+
+        const mergedVerts = orderVertsAroundCentroid([...new Set([...leaf.indices, ...tri.indices])]);
+        if (mergedVerts.length !== 5 || !isConvexCCW(mergedVerts)) continue;
+
+        replaceLeavesWithMerged(Math.min(li, lj), Math.max(li, lj), {
+          indices: orderCCW(mergedVerts),
+          depth: Math.max(leaf.depth, tri.depth),
+          tint: (leaf.tint + tri.tint) * 0.5
+        });
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function pickEvolveOp(w, h) {
+  const n = leaves.length;
+  if (n === 0) return false;
+
+  const start = Math.floor(Math.random() * n);
+  const preferMerge = Math.random() < state.mix;
+
+  if (preferMerge && state.mix >= 0.12) {
+    if (tryMergeOne(w, h)) return true;
+    for (let attempt = 0; attempt < EVOLVE_SCAN_ATTEMPTS; attempt++) {
+      const idx = (start + attempt) % n;
+      if (splitLeafAt(idx, w, h)) return true;
+    }
+    return false;
+  }
+
+  for (let attempt = 0; attempt < EVOLVE_SCAN_ATTEMPTS; attempt++) {
+    const idx = (start + attempt) % n;
+    if (splitLeafAt(idx, w, h)) return true;
+  }
+  if (state.mix >= 0.12 && tryMergeOne(w, h)) return true;
+  return false;
+}
+
+function scheduleNextEvolve(fromNow = performance.now()) {
+  if (state.evolve <= 0 || REDUCE_MOTION) {
+    nextEvolveAt = Infinity;
+    return;
+  }
+  nextEvolveAt = fromNow + EVOLVE_BASE_MS / (state.evolve + 0.5);
+}
+
+function evolveTopology(now) {
+  if (REDUCE_MOTION || state.evolve <= 0 || now < nextEvolveAt) return;
+  pickEvolveOp(canvas.width, canvas.height);
+  scheduleNextEvolve(now);
+}
+
 function rebuildMesh() {
   const w = canvas.width;
   const h = canvas.height;
@@ -761,6 +1067,7 @@ function paint(now) {
   if (w < 1 || h < 1) return;
 
   ensureMesh();
+  evolveTopology(now);
   applyBreath(now);
 
   if (!REDUCE_MOTION && state.pulseInterval > 0 && !pulseBurst.active && now >= nextPulseAt) {
@@ -891,6 +1198,7 @@ function updateURL() {
   params.set("jitter", String(state.jitter));
   params.set("mix", String(state.mix));
   params.set("speed", String(state.speed));
+  params.set("evolve", String(state.evolve));
   params.set("pulseInterval", String(state.pulseInterval));
   params.set("pulseSpeed", String(state.pulseSpeed));
   params.set("glitch", String(state.glitch));
@@ -944,6 +1252,8 @@ function syncInputs() {
   mixValue.textContent = AbsGlitchPost.formatPercent(state.mix);
   speedSlider.value = state.speed;
   speedValue.textContent = state.speed.toFixed(1);
+  evolveSlider.value = state.evolve;
+  evolveValue.textContent = state.evolve.toFixed(1);
   pulseIntervalSlider.value = state.pulseInterval;
   pulseIntervalValue.textContent = formatPulseInterval(state.pulseInterval);
   pulseSpeedSlider.value = state.pulseSpeed;
@@ -971,6 +1281,7 @@ function applyAll() {
   applySide();
   syncInputs();
   scheduleNextPulse();
+  scheduleNextEvolve();
   repaintNow();
 }
 
@@ -987,6 +1298,10 @@ function resetParam(key) {
       break;
     case "speed":
       state.speed = defaults.speed;
+      break;
+    case "evolve":
+      state.evolve = defaults.evolve;
+      if (!REDUCE_MOTION) scheduleNextEvolve();
       break;
     case "pulseInterval":
       state.pulseInterval = defaults.pulseInterval;
@@ -1099,6 +1414,13 @@ speedSlider.addEventListener("input", (e) => {
   updateURL();
 });
 
+evolveSlider.addEventListener("input", (e) => {
+  state.evolve = clampEvolve(Number.parseFloat(e.target.value));
+  scheduleNextEvolve();
+  syncInputs();
+  updateURL();
+});
+
 pulseIntervalSlider.addEventListener("input", (e) => {
   state.pulseInterval = clampPulseInterval(Number.parseFloat(e.target.value));
   syncInputs();
@@ -1178,6 +1500,7 @@ resetButton.addEventListener("click", () => {
   state.jitter = defaults.jitter;
   state.mix = defaults.mix;
   state.speed = defaults.speed;
+  state.evolve = defaults.evolve;
   state.pulseInterval = defaults.pulseInterval;
   state.pulseSpeed = defaults.pulseSpeed;
   state.glitch = defaults.glitch;

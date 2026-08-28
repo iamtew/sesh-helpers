@@ -6,7 +6,7 @@ can drop a living shard field behind the sofa without a particle plugin.
 
 ABS apps are backdrops, not overlays: they paint the scene. They do **not** use
 shared overlay themes. Palettes are Shard-specific
-(`stained`, `lcd`, `violet`, `ember`, `jade`, `rose`, `acid`).
+(`stained`, `cathedral`, `sunset`, `ocean`, `aurora`, `lcd`, `violet`, `ember`, `jade`, `rose`, `acid`).
 ABS settings menus omit the checkerboard util — the animation *is* the background.
 
 ## Installation
@@ -33,11 +33,12 @@ the address bar immediately; there is no save button or local storage.
 
 | Parameter | Default | Meaning |
 |-----------|---------|---------|
-| `palette` | `stained` | Color ramp: `stained`, `lcd`, `violet`, `ember`, `jade`, `rose`, or `acid` (unknown → `stained`) |
+| `palette` | `stained` | Color ramp: `stained`, `cathedral`, `sunset`, `ocean`, `aurora`, `lcd`, `violet`, `ember`, `jade`, `rose`, or `acid` (unknown → `stained`) |
 | `depth` | `4` | Subdivision levels (`2`–`6`). Some branches stop early so shard sizes mix |
 | `jitter` | `0.35` | Midpoint irregularity (`0`–`1`; `0` = geometric mesh) |
 | `mix` | `0.55` | Shape variety (`0`–`1`; more triangles at `0`, more quads and pentagons at `1`) |
 | `speed` | `4` | Vertex breath speed (`0`–`10`) |
+| `evolve` | `4` | Pattern evolution rate (`0`–`10`; `0` = static topology, higher = more splits/merges) |
 | `pulseInterval` | `8` | Seconds between depth pulses (`0`–`30`; `0` = off) |
 | `pulseSpeed` | `1` | Pulse propagation speed (`0.25`–`4`) |
 | `glitch` | `0` | Glitch master amount (`0`–`1`; `0` = off) |
@@ -46,18 +47,19 @@ the address bar immediately; there is no save button or local storage.
 | `glitchBulge` | `0.3` | Fisheye bulge warp (`0`–`1`) |
 | `glitchRate` | `2.5` | Glitch pulse rate in Hz (`0.5`–`8`) |
 | `vignette` | `true` | Radial darkening overlay on/off |
-| `vignetteStrength` | `100` | Vignette opacity percent (`0`–`100`; ignored when vignette is off) |
+| `vignetteStrength` | `33` | Vignette opacity percent (`0`–`100`; ignored when vignette is off) |
 | `menu` | `ON` | `DISABLE` hides controls for clean OBS output |
 | `side` | `right` | Settings panel edge: `left` or `right` |
 
 Example clean-output URL:
 
-`https://helpers.seshsofa.nl/abs/shard/?palette=stained&depth=4&jitter=0.35&mix=0.55&speed=4&pulseInterval=8&pulseSpeed=1&glitch=0&glitchShift=0.55&glitchChroma=0.45&glitchBulge=0.3&glitchRate=2.5&vignette=true&vignetteStrength=100&menu=DISABLE`
+`https://helpers.seshsofa.nl/abs/shard/?palette=stained&depth=4&jitter=0.35&mix=0.55&speed=4&evolve=4&pulseInterval=8&pulseSpeed=1&glitch=0&glitchShift=0.55&glitchChroma=0.45&glitchBulge=0.3&glitchRate=2.5&vignette=true&vignetteStrength=33&menu=DISABLE`
 
 ## Runtime notes
 
 - Vector polygon paths (triangles, quads, occasional pentagons) on a working canvas (longest side capped at 640), bilinear-scaled to the viewport (~20fps). Not a square-cell pixel grid.
 - Vertices breathe around rest positions; a depth-weighted ring pulse lights finer shards more.
+- When `evolve > 0`, the mosaic topology slowly splits and merges (cells gain or lose neighbors over time); `evolve=0` keeps the initial pattern fixed while breath still runs.
 - Glitch post-process runs only when `glitch > 0`, on a downsampled buffer.
 - `prefers-reduced-motion: reduce` paints a static frame (no RAF loop).
 - No external runtime dependencies.
