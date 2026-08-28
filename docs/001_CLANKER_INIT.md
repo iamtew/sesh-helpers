@@ -57,7 +57,8 @@ sesh-helpers/
 │   ├── ripple/               # Ripple — pulsing pixel wave backdrop
 │   ├── voroni/               # Voroni — Voronoi pulse field backdrop
 │   ├── coderain/             # Code Rain — matrix code rain backdrop / overlay
-│   └── shard/                # Shard — recursive stained-glass triangle mosaic
+│   ├── shard/                # Shard — recursive stained-glass triangle mosaic
+│   └── fractals/             # Fractals — WebGL classic fractal zoomer
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
 │   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
@@ -87,6 +88,7 @@ sesh-helpers/
 | `abs/voroni/` | **Exists** | Voroni Voronoi pulse field; per-app palettes in `notes.md` |
 | `abs/coderain/` | **Exists** | Code Rain matrix rain; per-app color/bg/dir in `notes.md` |
 | `abs/shard/` | **Exists** | Shard stained-glass mosaic; per-app palettes in `notes.md` |
+| `abs/fractals/` | **Exists** | Fractals WebGL zoomer; per-app palettes in `notes.md` |
 | `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
 | `*/notes.md` | **Exists** | Operator setup and complete URL parameter contracts |
 | `seshbanner/playlist.js` | **Exists** | Public YouTube playlist extraction and ticker formatting |
