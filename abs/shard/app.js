@@ -1,4 +1,4 @@
-// Shard — ABS recursive stained-glass triangle mosaic.
+// Shard — ABS recursive stained-glass polygon mosaic.
 // Query string is the complete shareable config for meat bags and OBS.
 
 const MAX_SIDE = 640;
@@ -88,6 +88,7 @@ const defaults = {
   palette: "stained",
   depth: 4,
   jitter: 0.35,
+  mix: 0.55,
   speed: 4,
   pulseInterval: 8,
   pulseSpeed: 1,
@@ -126,6 +127,10 @@ function clampJitter(value) {
   return Math.min(1, Math.max(0, value));
 }
 
+function clampMix(value) {
+  return Math.min(1, Math.max(0, value));
+}
+
 function clampSpeed(value) {
   return Math.min(10, Math.max(0, value));
 }
@@ -146,6 +151,7 @@ let state = {
   palette: normalizePalette(getParam("palette", defaults.palette)),
   depth: clampDepth(getNumberParam("depth", defaults.depth)),
   jitter: clampJitter(getNumberParam("jitter", defaults.jitter)),
+  mix: clampMix(getNumberParam("mix", defaults.mix)),
   speed: clampSpeed(getNumberParam("speed", defaults.speed)),
   pulseInterval: clampPulseInterval(getNumberParam("pulseInterval", defaults.pulseInterval)),
   pulseSpeed: clampPulseSpeed(getNumberParam("pulseSpeed", defaults.pulseSpeed)),
@@ -169,6 +175,8 @@ const glitchCtx = glitchCanvas.getContext("2d", { alpha: false, willReadFrequent
 let verts = [];
 let leaves = [];
 let midMap = new Map();
+let gridMap = new Map();
+let centerMap = new Map();
 let meshKey = "";
 let glitchImage = null;
 let glitchData = null;
@@ -192,6 +200,8 @@ const depthSlider = document.getElementById("depth-slider");
 const depthValue = document.getElementById("depth-value");
 const jitterSlider = document.getElementById("jitter-slider");
 const jitterValue = document.getElementById("jitter-value");
+const mixSlider = document.getElementById("mix-slider");
+const mixValue = document.getElementById("mix-value");
 const speedSlider = document.getElementById("speed-slider");
 const speedValue = document.getElementById("speed-value");
 const pulseIntervalSlider = document.getElementById("pulse-interval-slider");
@@ -330,12 +340,101 @@ function getMidpoint(ia, ib, w, h) {
   return idx;
 }
 
+function quadKey(...indices) {
+  return [...indices].sort((a, b) => a - b).join(",");
+}
+
+function polygonArea(indices) {
+  let sum = 0;
+  for (let i = 0; i < indices.length; i++) {
+    const a = verts[indices[i]];
+    const b = verts[indices[(i + 1) % indices.length]];
+    sum += a.restX * b.restY - b.restX * a.restY;
+  }
+  return sum * 0.5;
+}
+
+function isConvexCCW(indices) {
+  const area = polygonArea(indices);
+  if (Math.abs(area) < 1) return false;
+  const ccw = area > 0;
+  const n = indices.length;
+  let sign = 0;
+
+  for (let i = 0; i < n; i++) {
+    const a = verts[indices[i]];
+    const b = verts[indices[(i + 1) % n]];
+    const c = verts[indices[(i + 2) % n]];
+    const cross = (b.restX - a.restX) * (c.restY - b.restY) - (b.restY - a.restY) * (c.restX - b.restX);
+    if (Math.abs(cross) < 0.5) continue;
+    const s = Math.sign(cross);
+    if (sign === 0) sign = s;
+    else if (s !== sign) return false;
+  }
+
+  return ccw ? sign >= 0 : sign <= 0;
+}
+
+function orderCCW(indices) {
+  if (indices.length < 3) return indices;
+  if (polygonArea(indices) >= 0) return indices;
+  return [...indices].reverse();
+}
+
+function getGridVertex(gx, gy, cols, rows, w, h) {
+  const key = `g:${gx},${gy}`;
+  if (gridMap.has(key)) return gridMap.get(key);
+
+  const x = (gx / cols) * w;
+  const y = (gy / rows) * h;
+  let jx = x;
+  let jy = y;
+  const interior = gx > 0 && gy > 0 && gx < cols && gy < rows;
+
+  if (interior && state.jitter > 0) {
+    const cellW = w / cols;
+    const cellH = h / rows;
+    jx += (hash2(gx, gy) * 2 - 1) * state.jitter * cellW * 0.32;
+    jy += (hash2(gx + 13, gy + 7) * 2 - 1) * state.jitter * cellH * 0.32;
+  }
+
+  const idx = addVertex(jx, jy, w, h, hash2(gx + 3, gy + 5));
+  gridMap.set(key, idx);
+  return idx;
+}
+
+function getQuadCenter(ia, ib, ic, id, w, h) {
+  const key = `c:${quadKey(ia, ib, ic, id)}`;
+  if (centerMap.has(key)) return centerMap.get(key);
+
+  const a = verts[ia];
+  const b = verts[ib];
+  const c = verts[ic];
+  const d = verts[id];
+  let cx = (a.restX + b.restX + c.restX + d.restX) * 0.25;
+  let cy = (a.restY + b.restY + c.restY + d.restY) * 0.25;
+  const minDim = Math.min(w, h);
+  const wobble = state.jitter * minDim * 0.045 * (hash3(ia, ib, ic) - 0.5);
+  cx += wobble;
+  cy += wobble * 0.85;
+
+  const idx = addVertex(cx, cy, w, h, hash3(ia, ic, id));
+  centerMap.set(key, idx);
+  return idx;
+}
+
+function pushLeaf(indices, depth, tint) {
+  const ordered = orderCCW(indices);
+  if (!isConvexCCW(ordered)) return;
+  leaves.push({ indices: ordered, depth, tint });
+}
+
 function subdivide(ia, ib, ic, depth, w, h) {
   const maxDepth = state.depth;
   const tint = hash3(ia + 1, ib + 5, ic + 9);
-  const earlyStop = depth >= 2 && depth < maxDepth && tint > 0.58;
+  const earlyStop = depth >= 2 && depth < maxDepth && tint > 0.58 - state.mix * 0.12;
   if (depth >= maxDepth || earlyStop) {
-    leaves.push({ a: ia, b: ib, c: ic, depth, tint });
+    pushLeaf([ia, ib, ic], depth, tint);
     return;
   }
 
@@ -348,21 +447,201 @@ function subdivide(ia, ib, ic, depth, w, h) {
   subdivide(mab, mbc, mca, depth + 1, w, h);
 }
 
+function subdivideQuad(ia, ib, ic, id, depth, w, h) {
+  const maxDepth = state.depth;
+  const tint = hash3(ia + 2, ib + 7, ic + 11) * 0.55 + hash3(ic + 3, id + 5, ia + 9) * 0.45;
+  const earlyStop = depth >= 2 && depth < maxDepth && tint > 0.52 - state.mix * 0.14;
+  if (depth >= maxDepth || earlyStop) {
+    pushLeaf([ia, ib, ic, id], depth, tint);
+    return;
+  }
+
+  const splitTri = hash3(ia + depth, ib, id) > 0.68 - state.mix * 0.38;
+  if (splitTri) {
+    if (hash2(ia, ic) > 0.5) {
+      subdivide(ia, ib, id, depth + 1, w, h);
+      subdivide(ia, id, ic, depth + 1, w, h);
+    } else {
+      subdivide(ia, ib, ic, depth + 1, w, h);
+      subdivide(ib, ic, id, depth + 1, w, h);
+    }
+    return;
+  }
+
+  const mab = getMidpoint(ia, ib, w, h);
+  const mbc = getMidpoint(ib, ic, w, h);
+  const mcd = getMidpoint(ic, id, w, h);
+  const mda = getMidpoint(id, ia, w, h);
+  const center = getQuadCenter(ia, ib, ic, id, w, h);
+
+  subdivideQuad(ia, mab, center, mda, depth + 1, w, h);
+  subdivideQuad(mab, ib, mbc, center, depth + 1, w, h);
+  subdivideQuad(center, mbc, ic, mcd, depth + 1, w, h);
+  subdivideQuad(mda, center, mcd, id, depth + 1, w, h);
+}
+
+function joinTrianglesOnEdge(triA, triB, v0, v1) {
+  const oppA = triA.indices.find((v) => v !== v0 && v !== v1);
+  const oppB = triB.indices.find((v) => v !== v0 && v !== v1);
+  if (oppA === undefined || oppB === undefined || oppA === oppB) return null;
+
+  const candidates = [
+    [oppA, v0, oppB, v1],
+    [oppA, v1, oppB, v0],
+    [oppB, v0, oppA, v1],
+    [oppB, v1, oppA, v0]
+  ];
+
+  for (const quad of candidates) {
+    if (isConvexCCW(quad)) return orderCCW(quad);
+  }
+  return null;
+}
+
+function mergeTrianglePairs() {
+  if (state.mix < 0.12) return;
+
+  const threshold = 0.28 + (1 - state.mix) * 0.52;
+  let changed = true;
+
+  while (changed) {
+    changed = false;
+    const edgeMap = new Map();
+    const removed = new Set();
+    const additions = [];
+
+    for (let li = 0; li < leaves.length; li++) {
+      if (removed.has(li)) continue;
+      const leaf = leaves[li];
+      if (leaf.indices.length !== 3) continue;
+
+      for (let e = 0; e < 3; e++) {
+        const v0 = leaf.indices[e];
+        const v1 = leaf.indices[(e + 1) % 3];
+        const key = edgeKey(v0, v1);
+        const entry = edgeMap.get(key);
+
+        if (!entry) {
+          edgeMap.set(key, { li, leaf });
+          continue;
+        }
+
+        if (removed.has(entry.li) || entry.li === li) continue;
+        if (hash2(entry.li + 1, li + 3) > threshold) continue;
+
+        const quadVerts = joinTrianglesOnEdge(entry.leaf, leaf, v0, v1);
+        if (!quadVerts) continue;
+
+        removed.add(entry.li);
+        removed.add(li);
+        additions.push({
+          indices: quadVerts,
+          depth: Math.max(entry.leaf.depth, leaf.depth),
+          tint: (entry.leaf.tint + leaf.tint) * 0.5
+        });
+        changed = true;
+        break;
+      }
+      if (removed.has(li)) break;
+    }
+
+    if (!additions.length) break;
+    leaves = leaves.filter((_, i) => !removed.has(i)).concat(additions);
+  }
+}
+
+function orderVertsAroundCentroid(indices) {
+  let cx = 0;
+  let cy = 0;
+  for (let i = 0; i < indices.length; i++) {
+    cx += verts[indices[i]].restX;
+    cy += verts[indices[i]].restY;
+  }
+  cx /= indices.length;
+  cy /= indices.length;
+
+  return [...indices].sort((a, b) => {
+    const aa = Math.atan2(verts[a].restY - cy, verts[a].restX - cx);
+    const ab = Math.atan2(verts[b].restY - cy, verts[b].restX - cx);
+    return aa - ab;
+  });
+}
+
+function mergeTriangleIntoQuad() {
+  if (state.mix < 0.45) return;
+
+  const threshold = 0.42 + (1 - state.mix) * 0.45;
+  const removed = new Set();
+  const additions = [];
+
+  for (let li = 0; li < leaves.length; li++) {
+    if (removed.has(li)) continue;
+    const tri = leaves[li];
+    if (tri.indices.length !== 3) continue;
+
+    for (let qi = 0; qi < leaves.length; qi++) {
+      if (qi === li || removed.has(qi)) continue;
+      const quad = leaves[qi];
+      if (quad.indices.length !== 4) continue;
+      if (hash2(li + 5, qi + 9) > threshold) continue;
+
+      for (let e = 0; e < 3; e++) {
+        const v0 = tri.indices[e];
+        const v1 = tri.indices[(e + 1) % 3];
+        const sharesEdge = quad.indices.some((v, i) => {
+          const n = quad.indices[(i + 1) % 4];
+          return (v === v0 && n === v1) || (v === v1 && n === v0);
+        });
+        if (!sharesEdge) continue;
+
+        const merged = orderVertsAroundCentroid([...new Set([...tri.indices, ...quad.indices])]);
+        if (merged.length !== 5 || !isConvexCCW(merged)) continue;
+
+        removed.add(li);
+        removed.add(qi);
+        additions.push({
+          indices: orderCCW(merged),
+          depth: Math.max(tri.depth, quad.depth),
+          tint: (tri.tint + quad.tint) * 0.5
+        });
+        break;
+      }
+      if (removed.has(li)) break;
+    }
+  }
+
+  if (additions.length) {
+    leaves = leaves.filter((_, i) => !removed.has(i)).concat(additions);
+  }
+}
+
 function rebuildMesh() {
   const w = canvas.width;
   const h = canvas.height;
   verts = [];
   leaves = [];
   midMap = new Map();
+  gridMap = new Map();
+  centerMap = new Map();
 
-  const i00 = addVertex(0, 0, w, h, 0.11);
-  const i10 = addVertex(w, 0, w, h, 0.27);
-  const i11 = addVertex(w, h, w, h, 0.43);
-  const i01 = addVertex(0, h, w, h, 0.61);
-  subdivide(i00, i10, i01, 0, w, h);
-  subdivide(i10, i11, i01, 0, w, h);
+  const unit = Math.min(w, h);
+  const cols = Math.max(2, Math.min(5, Math.round((w / unit) * 2.2)));
+  const rows = Math.max(2, Math.min(4, Math.round((h / unit) * 2.2)));
 
-  meshKey = `${w}x${h}:${state.depth}:${state.jitter.toFixed(3)}`;
+  for (let gy = 0; gy < rows; gy++) {
+    for (let gx = 0; gx < cols; gx++) {
+      const ia = getGridVertex(gx, gy, cols, rows, w, h);
+      const ib = getGridVertex(gx + 1, gy, cols, rows, w, h);
+      const ic = getGridVertex(gx + 1, gy + 1, cols, rows, w, h);
+      const id = getGridVertex(gx, gy + 1, cols, rows, w, h);
+      subdivideQuad(ia, ib, ic, id, 0, w, h);
+    }
+  }
+
+  mergeTrianglePairs();
+  mergeTriangleIntoQuad();
+
+  meshKey = `${w}x${h}:${state.depth}:${state.jitter.toFixed(3)}:${state.mix.toFixed(3)}`;
 }
 
 function resizeCanvas() {
@@ -381,7 +660,7 @@ function resizeCanvas() {
 }
 
 function ensureMesh() {
-  const key = `${canvas.width}x${canvas.height}:${state.depth}:${state.jitter.toFixed(3)}`;
+  const key = `${canvas.width}x${canvas.height}:${state.depth}:${state.jitter.toFixed(3)}:${state.mix.toFixed(3)}`;
   if (key !== meshKey) rebuildMesh();
 }
 
@@ -431,16 +710,22 @@ function applyBreath(now) {
   }
 }
 
-function pulseGlow(tri, radius, envelope, band) {
+function pulseGlow(leaf, radius, envelope, band) {
   if (envelope <= 0 || radius <= 0) return 0;
-  const a = verts[tri.a];
-  const b = verts[tri.b];
-  const c = verts[tri.c];
-  const cx = (a.x + b.x + c.x) / 3;
-  const cy = (a.y + b.y + c.y) / 3;
+
+  let cx = 0;
+  let cy = 0;
+  for (let i = 0; i < leaf.indices.length; i++) {
+    const v = verts[leaf.indices[i]];
+    cx += v.x;
+    cy += v.y;
+  }
+  cx /= leaf.indices.length;
+  cy /= leaf.indices.length;
+
   const dist = Math.hypot(cx - pulseBurst.originX, cy - pulseBurst.originY);
   const ring = Math.max(0, 1 - Math.abs(dist - radius) / band);
-  const depthW = 0.22 + 0.78 * (tri.depth / Math.max(1, state.depth));
+  const depthW = 0.22 + 0.78 * (leaf.depth / Math.max(1, state.depth));
   return ring * ring * depthW * envelope;
 }
 
@@ -515,13 +800,10 @@ function paint(now) {
   ctx.lineWidth = leadWidth;
 
   for (let i = 0; i < leaves.length; i++) {
-    const tri = leaves[i];
-    const a = verts[tri.a];
-    const b = verts[tri.b];
-    const c = verts[tri.c];
-    const tint = fract(tri.tint + drift + tri.depth * 0.07);
+    const leaf = leaves[i];
+    const tint = fract(leaf.tint + drift + leaf.depth * 0.07);
     let rgb = sampleRamp(colors, tint * 0.92 + 0.04);
-    const glow = pulseGlow(tri, pulseRadius, pulseEnvelope, band);
+    const glow = pulseGlow(leaf, pulseRadius, pulseEnvelope, band);
     if (glow > 0.01) {
       rgb = [
         lerp(rgb[0], highlight[0], glow * 0.55) + glow * 90,
@@ -530,10 +812,13 @@ function paint(now) {
       ];
     }
 
+    const first = verts[leaf.indices[0]];
     ctx.beginPath();
-    ctx.moveTo(a.x, a.y);
-    ctx.lineTo(b.x, b.y);
-    ctx.lineTo(c.x, c.y);
+    ctx.moveTo(first.x, first.y);
+    for (let v = 1; v < leaf.indices.length; v++) {
+      const pt = verts[leaf.indices[v]];
+      ctx.lineTo(pt.x, pt.y);
+    }
     ctx.closePath();
     ctx.fillStyle = rgbCss(
       Math.min(255, rgb[0]),
@@ -604,6 +889,7 @@ function updateURL() {
   params.set("palette", state.palette);
   params.set("depth", String(state.depth));
   params.set("jitter", String(state.jitter));
+  params.set("mix", String(state.mix));
   params.set("speed", String(state.speed));
   params.set("pulseInterval", String(state.pulseInterval));
   params.set("pulseSpeed", String(state.pulseSpeed));
@@ -654,6 +940,8 @@ function syncInputs() {
   depthValue.textContent = String(state.depth);
   jitterSlider.value = state.jitter;
   jitterValue.textContent = AbsGlitchPost.formatPercent(state.jitter);
+  mixSlider.value = state.mix;
+  mixValue.textContent = AbsGlitchPost.formatPercent(state.mix);
   speedSlider.value = state.speed;
   speedValue.textContent = state.speed.toFixed(1);
   pulseIntervalSlider.value = state.pulseInterval;
@@ -694,6 +982,9 @@ function resetParam(key) {
     case "jitter":
       state.jitter = defaults.jitter;
       break;
+    case "mix":
+      state.mix = defaults.mix;
+      break;
     case "speed":
       state.speed = defaults.speed;
       break;
@@ -726,7 +1017,7 @@ function resetParam(key) {
       return;
   }
   syncInputs();
-  if (key === "depth" || key === "jitter") ensureMesh();
+  if (key === "depth" || key === "jitter" || key === "mix") ensureMesh();
   if (key !== "vignetteStrength") repaintNow();
   updateURL();
 }
@@ -788,6 +1079,14 @@ depthSlider.addEventListener("input", (e) => {
 
 jitterSlider.addEventListener("input", (e) => {
   state.jitter = clampJitter(Number.parseFloat(e.target.value));
+  ensureMesh();
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+mixSlider.addEventListener("input", (e) => {
+  state.mix = clampMix(Number.parseFloat(e.target.value));
   ensureMesh();
   syncInputs();
   repaintNow();
@@ -877,6 +1176,7 @@ resetButton.addEventListener("click", () => {
   state.palette = defaults.palette;
   state.depth = defaults.depth;
   state.jitter = defaults.jitter;
+  state.mix = defaults.mix;
   state.speed = defaults.speed;
   state.pulseInterval = defaults.pulseInterval;
   state.pulseSpeed = defaults.pulseSpeed;

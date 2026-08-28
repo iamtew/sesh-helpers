@@ -1,6 +1,6 @@
 # Shard — ABS operator notes
 
-Full-screen recursive stained-glass triangle mosaic for OBS Browser Sources.
+Full-screen recursive stained-glass polygon mosaic for OBS Browser Sources.
 Part of the **Animated Background Scene** (ABS). Built by clankers so meat bags
 can drop a living shard field behind the sofa without a particle plugin.
 
@@ -36,6 +36,7 @@ the address bar immediately; there is no save button or local storage.
 | `palette` | `stained` | Color ramp: `stained`, `lcd`, `violet`, `ember`, `jade`, `rose`, or `acid` (unknown → `stained`) |
 | `depth` | `4` | Subdivision levels (`2`–`6`). Some branches stop early so shard sizes mix |
 | `jitter` | `0.35` | Midpoint irregularity (`0`–`1`; `0` = geometric mesh) |
+| `mix` | `0.55` | Shape variety (`0`–`1`; more triangles at `0`, more quads and pentagons at `1`) |
 | `speed` | `4` | Vertex breath speed (`0`–`10`) |
 | `pulseInterval` | `8` | Seconds between depth pulses (`0`–`30`; `0` = off) |
 | `pulseSpeed` | `1` | Pulse propagation speed (`0.25`–`4`) |
@@ -51,11 +52,11 @@ the address bar immediately; there is no save button or local storage.
 
 Example clean-output URL:
 
-`https://helpers.seshsofa.nl/abs/shard/?palette=stained&depth=4&jitter=0.35&speed=4&pulseInterval=8&pulseSpeed=1&glitch=0&glitchShift=0.55&glitchChroma=0.45&glitchBulge=0.3&glitchRate=2.5&vignette=true&vignetteStrength=100&menu=DISABLE`
+`https://helpers.seshsofa.nl/abs/shard/?palette=stained&depth=4&jitter=0.35&mix=0.55&speed=4&pulseInterval=8&pulseSpeed=1&glitch=0&glitchShift=0.55&glitchChroma=0.45&glitchBulge=0.3&glitchRate=2.5&vignette=true&vignetteStrength=100&menu=DISABLE`
 
 ## Runtime notes
 
-- Vector triangle paths on a working canvas (longest side capped at 640), bilinear-scaled to the viewport (~20fps). Not a square-cell pixel grid.
+- Vector polygon paths (triangles, quads, occasional pentagons) on a working canvas (longest side capped at 640), bilinear-scaled to the viewport (~20fps). Not a square-cell pixel grid.
 - Vertices breathe around rest positions; a depth-weighted ring pulse lights finer shards more.
 - Glitch post-process runs only when `glitch > 0`, on a downsampled buffer.
 - `prefers-reduced-motion: reduce` paints a static frame (no RAF loop).
