@@ -51,9 +51,12 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `side` | Settings panel `left` \| `right` | `right` |
 | `checkerboard` | Settings preview backdrop | `false` |
 
+Params that match their default are **omitted** from the live URL. Free-text params
+are written last, in order: `title` → `user` → `message`.
+
 Example:
 
-`https://helpers.seshsofa.nl/trbanner/?title=Trick%20Request%20by:&user=Modney%20Rullen&message=Do%20a%20kickflip!&menu=DISABLE&bg=0`
+`https://helpers.seshsofa.nl/trbanner/?menu=DISABLE&title=Request%20from&user=Skater&message=Hardflip`
 
 ## Background (`bg`)
 

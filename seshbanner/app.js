@@ -733,44 +733,52 @@ function applyBackground() {
   }
 }
 
-function updateURL() {
-  // Drop first so re-set at the end — URLSearchParams keeps insertion order.
-  params.delete("title");
-  params.delete("message");
+function setIfChanged(out, key, value, defaultValue) {
+  if (String(value) !== String(defaultValue)) out.set(key, String(value));
+}
 
-  params.set("layout", state.layout);
-  params.set("theme", state.theme);
-  params.set("titleFont", String(fontIndex(state.titleFont, ALL_FONTS)));
-  params.set("messageFont", String(fontIndex(state.messageFont, ALL_FONTS)));
-  params.set("titleSize", String(state.titleSize));
-  params.set("messageSize", String(state.messageSize));
-  params.set("width", String(state.width));
-  params.set("height", String(state.height));
-  params.set("alignX", state.alignX);
-  params.set("alignY", state.alignY);
-  params.delete("scale");
-  params.delete("scaleX");
-  params.delete("scaleY");
-  params.set("bannerX", state.bannerX.toFixed(2));
-  params.set("bannerY", state.bannerY.toFixed(2));
-  params.set("playlist", state.playlist);
-  params.set("playlistLayout", state.playlistLayout);
-  params.set("playlistDelimiter", state.playlistDelimiter);
-  params.set("playlistDelimiterCustom", state.playlistDelimiterCustom);
-  params.set("marqueeSpeed", String(state.marqueeSpeed));
-  params.set("bg", state.bg);
-  params.set("checkerboard", String(state.checkerboardEnabled));
-  params.set("menu", state.settingsMode);
-  params.set("side", state.side);
-  params.set("title", state.title);
-  params.set("message", state.message);
-  params.set("prefix", state.prefix);
-  params.set("prefixEnabled", String(state.prefixEnabled));
-  params.set("prefixAlign", state.prefixAlign);
-  params.set("nameAlign", state.nameAlign);
-  params.set("prefixFont", String(fontIndex(state.prefixFont, ALL_FONTS)));
-  params.set("prefixSize", String(state.prefixSize));
-  history.replaceState({}, "", "?" + params.toString());
+/** Build query: omit defaults; free-text title/message/playlist/prefix last. */
+function buildSearchParams(source, options = {}) {
+  const out = new URLSearchParams();
+  const menu = options.menu != null ? options.menu : source.settingsMode;
+  const preferred = getThemePreferredFonts(source.theme);
+
+  setIfChanged(out, "layout", source.layout, defaults.layout);
+  setIfChanged(out, "theme", source.theme, defaults.theme);
+  setIfChanged(out, "titleFont", fontIndex(source.titleFont, ALL_FONTS), fontIndex(preferred.display, ALL_FONTS));
+  setIfChanged(out, "messageFont", fontIndex(source.messageFont, ALL_FONTS), fontIndex(preferred.regular, ALL_FONTS));
+  setIfChanged(out, "titleSize", source.titleSize, defaults.titleSize);
+  setIfChanged(out, "messageSize", source.messageSize, defaults.messageSize);
+  setIfChanged(out, "width", source.width, defaults.width);
+  setIfChanged(out, "height", source.height, defaults.height);
+  setIfChanged(out, "alignX", source.alignX, defaults.alignX);
+  setIfChanged(out, "alignY", source.alignY, defaults.alignY);
+  setIfChanged(out, "bannerX", Number(source.bannerX).toFixed(2), Number(defaults.bannerX).toFixed(2));
+  setIfChanged(out, "bannerY", Number(source.bannerY).toFixed(2), Number(defaults.bannerY).toFixed(2));
+  setIfChanged(out, "playlistLayout", source.playlistLayout, defaults.playlistLayout);
+  setIfChanged(out, "playlistDelimiter", source.playlistDelimiter, defaults.playlistDelimiter);
+  setIfChanged(out, "playlistDelimiterCustom", source.playlistDelimiterCustom, defaults.playlistDelimiterCustom);
+  setIfChanged(out, "marqueeSpeed", source.marqueeSpeed, defaults.marqueeSpeed);
+  setIfChanged(out, "bg", source.bg, defaults.bg);
+  setIfChanged(out, "checkerboard", source.checkerboardEnabled, defaults.checkerboardEnabled);
+  setIfChanged(out, "menu", menu, defaults.settingsMode);
+  setIfChanged(out, "side", source.side, defaults.side);
+  setIfChanged(out, "prefixEnabled", source.prefixEnabled, defaults.prefixEnabled);
+  setIfChanged(out, "prefixAlign", source.prefixAlign, defaults.prefixAlign);
+  setIfChanged(out, "nameAlign", source.nameAlign, defaults.nameAlign);
+  setIfChanged(out, "prefixFont", fontIndex(source.prefixFont, ALL_FONTS), fontIndex(preferred.display, ALL_FONTS));
+  setIfChanged(out, "prefixSize", source.prefixSize, defaults.prefixSize);
+
+  setIfChanged(out, "title", source.title, defaults.title);
+  setIfChanged(out, "message", source.message, defaults.message);
+  setIfChanged(out, "playlist", source.playlist, defaults.playlist);
+  setIfChanged(out, "prefix", source.prefix, defaults.prefix);
+  return out;
+}
+
+function updateURL() {
+  const search = buildSearchParams(state).toString();
+  history.replaceState({}, "", search ? "?" + search : location.pathname);
 }
 
 function applySettingsMode() {
@@ -1580,7 +1588,8 @@ copyUrlButton.addEventListener("click", () => {
 copyUrlObsButton.addEventListener("click", () => {
   flashMenuAction(copyUrlObsButton, "Copied!");
   const url = new URL(location.href);
-  url.searchParams.set("menu", "DISABLE");
+  const search = buildSearchParams(state, { menu: "DISABLE" }).toString();
+  url.search = search;
   navigator.clipboard.writeText(url.toString());
 });
 

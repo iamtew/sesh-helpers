@@ -604,35 +604,43 @@ function startBgAnimation() {
 
 // --- APPLY ------------------------------------------------------------
 
-function updateURL() {
-  params.delete("title");
-  params.delete("user");
-  params.delete("message");
+function setIfChanged(out, key, value, defaultValue) {
+  if (String(value) !== String(defaultValue)) out.set(key, String(value));
+}
 
-  params.set("theme", state.theme);
-  params.set("titleFont", String(fontIndex(state.titleFont, ALL_FONTS)));
-  params.set("userFont", String(fontIndex(state.userFont, ALL_FONTS)));
-  params.set("messageFont", String(fontIndex(state.messageFont, ALL_FONTS)));
-  params.set("titleSize", String(state.titleSize));
-  params.set("userSize", String(state.userSize));
-  params.set("messageSize", String(state.messageSize));
-  params.set("width", String(state.width));
-  params.set("height", String(state.height));
-  params.set("alignX", state.alignX);
-  params.set("alignY", state.alignY);
-  params.delete("scale");
-  params.delete("scaleX");
-  params.delete("scaleY");
-  params.set("bannerX", state.bannerX.toFixed(2));
-  params.set("bannerY", state.bannerY.toFixed(2));
-  params.set("bg", state.bg);
-  params.set("checkerboard", String(state.checkerboardEnabled));
-  params.set("menu", state.settingsMode);
-  params.set("side", state.side);
-  params.set("title", state.title);
-  params.set("user", state.user);
-  params.set("message", state.message);
-  history.replaceState({}, "", "?" + params.toString());
+/** Build query: omit defaults; free-text title/user/message last. */
+function buildSearchParams(source, options = {}) {
+  const out = new URLSearchParams();
+  const menu = options.menu != null ? options.menu : source.settingsMode;
+  const preferred = getThemePreferredFonts(source.theme);
+
+  setIfChanged(out, "theme", source.theme, defaults.theme);
+  setIfChanged(out, "titleFont", fontIndex(source.titleFont, ALL_FONTS), fontIndex(preferred.display, ALL_FONTS));
+  setIfChanged(out, "userFont", fontIndex(source.userFont, ALL_FONTS), fontIndex(preferred.display, ALL_FONTS));
+  setIfChanged(out, "messageFont", fontIndex(source.messageFont, ALL_FONTS), fontIndex(preferred.regular, ALL_FONTS));
+  setIfChanged(out, "titleSize", source.titleSize, defaults.titleSize);
+  setIfChanged(out, "userSize", source.userSize, defaults.userSize);
+  setIfChanged(out, "messageSize", source.messageSize, defaults.messageSize);
+  setIfChanged(out, "width", source.width, defaults.width);
+  setIfChanged(out, "height", source.height, defaults.height);
+  setIfChanged(out, "alignX", source.alignX, defaults.alignX);
+  setIfChanged(out, "alignY", source.alignY, defaults.alignY);
+  setIfChanged(out, "bannerX", Number(source.bannerX).toFixed(2), Number(defaults.bannerX).toFixed(2));
+  setIfChanged(out, "bannerY", Number(source.bannerY).toFixed(2), Number(defaults.bannerY).toFixed(2));
+  setIfChanged(out, "bg", source.bg, defaults.bg);
+  setIfChanged(out, "checkerboard", source.checkerboardEnabled, defaults.checkerboardEnabled);
+  setIfChanged(out, "menu", menu, defaults.settingsMode);
+  setIfChanged(out, "side", source.side, defaults.side);
+
+  setIfChanged(out, "title", source.title, defaults.title);
+  setIfChanged(out, "user", source.user, defaults.user);
+  setIfChanged(out, "message", source.message, defaults.message);
+  return out;
+}
+
+function updateURL() {
+  const search = buildSearchParams(state).toString();
+  history.replaceState({}, "", search ? "?" + search : location.pathname);
 }
 
 function applySettingsMode() {
@@ -1069,7 +1077,8 @@ copyUrlButton.addEventListener("click", () => {
 copyUrlObsButton.addEventListener("click", () => {
   flashMenuAction(copyUrlObsButton, "Copied!");
   const url = new URL(location.href);
-  url.searchParams.set("menu", "DISABLE");
+  const search = buildSearchParams(state, { menu: "DISABLE" }).toString();
+  url.search = search;
   navigator.clipboard.writeText(url.toString());
 });
 

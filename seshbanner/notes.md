@@ -57,9 +57,12 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `bg` | Demo background `0`–`3` | `0` (None) |
 | `checkerboard` | Settings preview backdrop | `false` |
 
+Params that match their default are **omitted** from the live URL. Free-text params
+are written last, in order: `title` → `message` → `playlist` → `prefix`.
+
 Example:
 
-`https://helpers.seshsofa.nl/seshbanner/?title=LIVE&message=Starting%20soon&layout=1&menu=DISABLE&bg=0`
+`https://helpers.seshsofa.nl/seshbanner/?menu=DISABLE&title=LIVE&message=Starting%20soon`
 
 ## Background (`bg`)
 

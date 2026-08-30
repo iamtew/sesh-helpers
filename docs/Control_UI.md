@@ -84,9 +84,12 @@ Diamond pattern: `.reset-param` with `data-reset`).
 | Test / Preview | recommended | Runtime only — not URL-persisted |
 | Reset all | recommended | Defaults → apply live → rewrite URL |
 | Copy URL | yes | Clipboard ← `location.href` as-is |
-| Copy URL for OBS | yes | Clone URL → set `menu=DISABLE` → copy |
+| Copy URL for OBS | yes | Rebuild config URL with `menu=DISABLE` via the same param helper |
 
-Copy buttons **only** read the address bar. They never assemble params. Stale URL = broken OBS save.
+Copy buttons must produce the same omit-defaults + string-order rules as the
+address bar. Copy URL reads `location.href` as-is. **Copy URL for OBS** rebuilds
+via the shared helper with `menu=DISABLE` — do not append `menu` onto an existing
+query (that would put it after free-text params).
 
 ---
 
@@ -101,14 +104,15 @@ On **every** setting change, do **both** in the **same** handler. No Save. No re
 control event
   → update state
   → apply to page (effect, labels, overlays)
-  → write ALL persisted params → history.replaceState
+  → rewrite query (non-default params only) → history.replaceState
 ```
 
 | DO | DO NOT |
 |----|--------|
 | Fire on `input` while dragging | Wait for Save, blur, or menu close |
 | Apply to the running render path now | Defer visuals until refresh |
-| Rewrite the **full** param set each time | Leave URL stale until Copy |
+| Rewrite the query each time (omit defaults) | Leave URL stale until Copy |
+| Keep free-text content params last | Append `menu` onto an existing query for OBS |
 | Keep readouts synced | Treat URL as a separate export step |
 
 Operators tweak until it looks right, then Copy. Clipboard must match what they see.
@@ -119,15 +123,17 @@ same overlay.
 
 | Rule | Detail |
 |------|--------|
-| Every persisted setting | Has a URL query param |
+| Every persisted setting | Has a short, stable query param name |
+| Write | Only params that **differ from defaults**; missing on load → defaults |
+| Free-text content params | Last in the query, fixed order (see each app’s `notes.md`) |
 | On load | Parse params → hydrate state → sync UI → apply to page; missing → defaults |
 | Runtime-only (e.g. Test) | No URL param; still update page live |
 | Booleans | `"true"` / `"false"` |
 | Param names | Short, stable |
 | Copy URL | `navigator.clipboard.writeText(location.href)` |
-| Copy URL for OBS | Clone → `menu=DISABLE` → copy |
+| Copy URL for OBS | Rebuild via the same helper with `menu=DISABLE` (do not append onto the live query) |
 
-**Minimum params:** `menu` (`DISABLE` = hidden), `side` (`left` \| `right`).
+**Minimum params:** `menu` (`DISABLE` = hidden; omit when `ON`), `side` (`left` \| `right`; omit when `right`).
 
 App params: see each app's `defaults` + `updateURL()` and operator notes:
 [`spotsmoke`](../spotsmoke/notes.md), [`seshbanner`](../seshbanner/notes.md),
@@ -165,9 +171,9 @@ If refresh loses settings, live URL sync is broken — fix that first.
 - [ ] Double-click shows menu when hidden; ignore clicks inside panel
 - [ ] ✕ hides menu and updates URL
 - [ ] **Live page:** every setting change updates the effect immediately
-- [ ] **Live URL:** every setting change rewrites full query via `replaceState`
-- [ ] Every persisted setting ↔ URL param; load hydrates from URL
-- [ ] Copy URL = `location.href`; Copy for OBS = same + `menu=DISABLE`
+- [ ] **Live URL:** every setting change rewrites query via `replaceState` (omit defaults)
+- [ ] Every persisted setting has a param name; load hydrates from URL; defaults omitted when writing
+- [ ] Copy URL = `location.href`; Copy for OBS = same helper with `menu=DISABLE`
 - [ ] Verify: drag slider → effect changes → URL changes → copy → new tab matches
 - [ ] `body.settings-mode` for overlays; **transparent** page bg (OBS)
 - [ ] Document app-specific params in that project's docs — not here

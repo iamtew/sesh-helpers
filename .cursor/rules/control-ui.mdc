@@ -22,13 +22,12 @@ Every setting change does **both**, in the **same** handler. No Save, no reload.
 slider.addEventListener('input', (e) => {   // 'input', not 'change'/blur
   state.radius = Number(e.target.value);
   applyToPage(state);                       // running render path updates now
-  updateURL();                              // rewrite the FULL param set
+  updateURL();                              // rewrite query (omit defaults)
 });
 
 function updateURL() {
-  const url = new URL(location.href);
-  url.search = new URLSearchParams(allPersistedParams(state)).toString();
-  history.replaceState(null, '', url);      // location.href == what they see
+  const search = buildSearchParams(state).toString();
+  history.replaceState({}, "", search ? "?" + search : location.pathname);
 }
 ```
 
@@ -41,12 +40,15 @@ as in Sesh Banner and Diamond — next to the value readout.
 
 No `localStorage`, no account, no config server. Every persisted setting has a short,
 stable query param. On load: parse params, hydrate state, sync UI, apply to page;
-missing params fall back to defaults. Booleans are `"true"` / `"false"`. Runtime-only
-controls (Test / Preview) get no param but still update the page live.
+missing params fall back to defaults. **When writing**, omit any param that matches
+its effective default. Free-text content params (`title`, `user`, `message`,
+`playlist`, `prefix`, …) go **last** in a fixed per-app order. Booleans are
+`"true"` / `"false"`. Runtime-only controls (Test / Preview) get no param but still
+update the page live.
 
-Copy buttons **only** read the address bar — they never assemble params:
-Copy URL is `navigator.clipboard.writeText(location.href)`; Copy for OBS clones the URL,
-sets `menu=DISABLE`, then copies.
+Copy URL is `navigator.clipboard.writeText(location.href)`. **Copy URL for OBS**
+rebuilds via the same `buildSearchParams` helper with `menu=DISABLE` — do not
+append `menu` onto the live query string.
 
 ## Visibility
 
