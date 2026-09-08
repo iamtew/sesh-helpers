@@ -20,6 +20,7 @@ the hosted site or serve the repository root with any static web server.
 | [Voroni](abs/voroni/) | Voronoi pulse field with edge ripples (ABS) | [Setup and URL parameters](abs/voroni/notes.md) |
 | [Code Rain](abs/coderain/) | Matrix code rain backdrop / overlay (ABS) | [Setup and URL parameters](abs/coderain/notes.md) |
 | [Shard](abs/shard/) | Recursive stained-glass polygon mosaic (ABS) | [Setup and URL parameters](abs/shard/notes.md) |
+| [Digicamo](abs/digicamo/) | Animated pixel digicam woodland backdrop (ABS) | [Setup and URL parameters](abs/digicamo/notes.md) |
 
 ## Install in OBS
 

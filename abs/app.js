@@ -30,6 +30,11 @@ const ABS_APPS = [
     href: "fractals/",
     name: "Fractals",
     desc: "Classic fractal sets with infinite zoom"
+  },
+  {
+    href: "digicamo/",
+    name: "Digicamo",
+    desc: "Animated pixel digicam woodland backdrop"
   }
 ];
 

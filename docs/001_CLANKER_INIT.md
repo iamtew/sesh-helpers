@@ -61,7 +61,8 @@ sesh-helpers/
 │   ├── voroni/               # Voroni — Voronoi pulse field backdrop
 │   ├── coderain/             # Code Rain — matrix code rain backdrop / overlay
 │   ├── shard/                # Shard — recursive stained-glass triangle mosaic
-│   └── fractals/             # Fractals — WebGL classic fractal zoomer
+│   ├── fractals/             # Fractals — WebGL classic fractal zoomer
+│   └── digicamo/             # Digicamo — animated pixel digicam woodland backdrop
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
 │   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
@@ -92,6 +93,7 @@ sesh-helpers/
 | `abs/coderain/` | **Exists** | Code Rain matrix rain; per-app color/bg/dir in `notes.md` |
 | `abs/shard/` | **Exists** | Shard stained-glass mosaic; per-app palettes in `notes.md` |
 | `abs/fractals/` | **Exists** | Fractals WebGL zoomer; per-app palettes in `notes.md` |
+| `abs/digicamo/` | **Exists** | Digicamo pixel digicam backdrop; per-app palettes in `notes.md` |
 | `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
 | `*/notes.md` | **Exists** | Operator setup and complete URL parameter contracts |
 | `seshbanner/playlist.js` | **Exists** | Public YouTube playlist extraction and ticker formatting |
@@ -168,6 +170,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 | Voroni (ABS) | [`abs/voroni/`](../abs/voroni/) |
 | Code Rain (ABS) | [`abs/coderain/`](../abs/coderain/) |
 | Shard (ABS) | [`abs/shard/`](../abs/shard/) |
+| Digicamo (ABS) | [`abs/digicamo/`](../abs/digicamo/) |
 | Logo asset | [`img/seshhelpers.png`](../img/seshhelpers.png) |
 | Root README | [`README.md`](../README.md) |
 
