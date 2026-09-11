@@ -74,8 +74,11 @@ Fixed panel, one edge, ~300px, scrollable, dark glass + blur.
 
 **Controls:** range (label + slider + per-param **↺** reset + value, on `input`),
 toggle (+ disable dependents), color (picker + hex sync), buttons (primary /
-destructive / small). **Sliders should include a reset button** (Sesh Banner /
-Diamond pattern: `.reset-param` with `data-reset`).
+destructive / small), **menu picker** (custom button + listbox — never native
+`<select>`; OBS Interact’s CEF does not handle OS select popups). Shared impl:
+[`ui/menu-picker.js`](../ui/menu-picker.js) + [`ui/menu-picker.css`](../ui/menu-picker.css).
+**Sliders should include a reset button** (Sesh Banner / Diamond pattern:
+`.reset-param` with `data-reset`).
 
 ### Footer
 

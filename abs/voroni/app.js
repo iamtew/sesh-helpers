@@ -190,7 +190,7 @@ const glitchBulgeSlider = document.getElementById("glitch-bulge-slider");
 const glitchBulgeValue = document.getElementById("glitch-bulge-value");
 const glitchRateSlider = document.getElementById("glitch-rate-slider");
 const glitchRateValue = document.getElementById("glitch-rate-value");
-const paletteSelect = document.getElementById("palette-select");
+const palettePickerEl = document.getElementById("palette-picker");
 const vignetteToggle = document.getElementById("vignette-toggle");
 const vignetteStrengthSlider = document.getElementById("vignette-strength-slider");
 const vignetteStrengthValue = document.getElementById("vignette-strength-value");
@@ -198,6 +198,52 @@ const resetButton = document.getElementById("reset-button");
 const copyUrlButton = document.getElementById("copy-url-button");
 const copyUrlObsButton = document.getElementById("copy-url-obs-button");
 const sectionToggles = document.querySelectorAll("[data-section-toggle]");
+
+const createMenuPicker = window.SeshMenuPicker.create;
+const closeAllMenuPickers = window.SeshMenuPicker.closeAll;
+
+const PALETTE_LABELS = {
+  procedural: "Procedural",
+  blue: "Blue",
+  pink: "Pink",
+  mint: "Mint",
+  gold: "Gold",
+  red: "Red",
+  electric: "Electric Purple",
+  bubblegum: "Bubblegum Neon",
+  aqua: "Aqua Laser",
+  amber: "Solar Amber",
+  cyber: "Cyber Mint",
+  inferno: "Inferno Orange",
+  toxic: "Toxic Lime",
+  plasma: "Magenta Plasma",
+  royal: "Royal Blue Glow",
+  pastel: "Soft Pastel Pink",
+  lavender: "Lavender Dream",
+  teal: "Crystal Teal",
+  peach: "Peach Ember",
+  volt: "Volt Yellow",
+  hyper: "Hyper Red"
+};
+
+const paletteOptions = ["procedural", ...Object.keys(PALETTE_HEX)].map((id) => ({
+  value: id,
+  label: PALETTE_LABELS[id] || id.charAt(0).toUpperCase() + id.slice(1)
+}));
+
+const palettePicker = createMenuPicker({
+  root: palettePickerEl,
+  options: paletteOptions,
+  labelledBy: "palette-label",
+  getValue: () => state.palette,
+  setValue: (value) => {
+    state.palette = normalizePalette(value);
+    updateStaticBaseHsl();
+    syncInputs();
+    repaintNow();
+    updateURL();
+  }
+});
 
 function lerp(a, b, t) {
   return a + (b - a) * t;
@@ -629,7 +675,7 @@ function syncInputs() {
   glitchBulgeValue.textContent = AbsGlitchPost.formatPercent(state.glitchBulge);
   glitchRateSlider.value = state.glitchRate;
   glitchRateValue.textContent = `${state.glitchRate.toFixed(1)}Hz`;
-  paletteSelect.value = state.palette;
+  palettePicker.sync();
   vignetteStrengthSlider.value = state.vignetteStrength;
   vignetteStrengthValue.textContent = `${state.vignetteStrength}%`;
   applyVignette();
@@ -693,6 +739,7 @@ function resetParam(key) {
 
 sectionToggles.forEach((toggle) => {
   toggle.addEventListener("click", () => {
+    closeAllMenuPickers();
     const section = toggle.closest(".settings-section");
     const panel = section.querySelector(".section-panel");
     const icon = toggle.querySelector(".section-toggle-icon");
@@ -802,14 +849,6 @@ glitchBulgeSlider.addEventListener("input", (e) => {
 
 glitchRateSlider.addEventListener("input", (e) => {
   state.glitchRate = AbsGlitchPost.clampRate(Number.parseFloat(e.target.value));
-  syncInputs();
-  repaintNow();
-  updateURL();
-});
-
-paletteSelect.addEventListener("change", (e) => {
-  state.palette = normalizePalette(e.target.value);
-  updateStaticBaseHsl();
   syncInputs();
   repaintNow();
   updateURL();

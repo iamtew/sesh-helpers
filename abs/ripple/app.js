@@ -108,7 +108,7 @@ const vignetteEl = document.getElementById("vignette");
 const settingsMenu = document.getElementById("settings-menu");
 const flipSideButton = document.getElementById("flip-side-button");
 const closeSettingsButton = document.getElementById("close-menu-button");
-const patternSelect = document.getElementById("pattern-select");
+const patternPickerEl = document.getElementById("pattern-picker");
 const speedSlider = document.getElementById("speed-slider");
 const speedValue = document.getElementById("speed-value");
 const cellSizeSlider = document.getElementById("cell-size-slider");
@@ -123,7 +123,7 @@ const glitchBulgeSlider = document.getElementById("glitch-bulge-slider");
 const glitchBulgeValue = document.getElementById("glitch-bulge-value");
 const glitchRateSlider = document.getElementById("glitch-rate-slider");
 const glitchRateValue = document.getElementById("glitch-rate-value");
-const paletteSelect = document.getElementById("palette-select");
+const palettePickerEl = document.getElementById("palette-picker");
 const vignetteToggle = document.getElementById("vignette-toggle");
 const vignetteStrengthSlider = document.getElementById("vignette-strength-slider");
 const vignetteStrengthValue = document.getElementById("vignette-strength-value");
@@ -131,6 +131,47 @@ const resetButton = document.getElementById("reset-button");
 const copyUrlButton = document.getElementById("copy-url-button");
 const copyUrlObsButton = document.getElementById("copy-url-obs-button");
 const sectionToggles = document.querySelectorAll("[data-section-toggle]");
+
+const createMenuPicker = window.SeshMenuPicker.create;
+const closeAllMenuPickers = window.SeshMenuPicker.closeAll;
+
+function humanizeId(id) {
+  if (id === "lcd") return "LCD";
+  return id.charAt(0).toUpperCase() + id.slice(1);
+}
+
+const patternOptions = PATTERN_IDS.map((id) => ({ value: id, label: humanizeId(id) }));
+const paletteOptions = ["spectrum", ...Object.keys(PALETTE_BASE)].map((id) => ({
+  value: id,
+  label: humanizeId(id)
+}));
+
+const patternPicker = createMenuPicker({
+  root: patternPickerEl,
+  options: patternOptions,
+  labelledBy: "pattern-label",
+  getValue: () => state.pattern,
+  setValue: (value) => {
+    state.pattern = normalizePattern(value);
+    syncInputs();
+    repaintNow();
+    updateURL();
+  }
+});
+
+const palettePicker = createMenuPicker({
+  root: palettePickerEl,
+  options: paletteOptions,
+  labelledBy: "palette-label",
+  getValue: () => state.palette,
+  setValue: (value) => {
+    state.palette = normalizePalette(value);
+    updateTriadicPalette();
+    syncInputs();
+    repaintNow();
+    updateURL();
+  }
+});
 
 function lerp(a, b, t) {
   return a + (b - a) * t;
@@ -420,7 +461,7 @@ function applyVignette() {
 }
 
 function syncInputs() {
-  patternSelect.value = state.pattern;
+  patternPicker.sync();
   speedSlider.value = state.speed;
   speedValue.textContent = state.speed.toFixed(3);
   cellSizeSlider.value = state.cellSize;
@@ -435,7 +476,7 @@ function syncInputs() {
   glitchBulgeValue.textContent = AbsGlitchPost.formatPercent(state.glitchBulge);
   glitchRateSlider.value = state.glitchRate;
   glitchRateValue.textContent = `${state.glitchRate.toFixed(1)}Hz`;
-  paletteSelect.value = state.palette;
+  palettePicker.sync();
   vignetteStrengthSlider.value = state.vignetteStrength;
   vignetteStrengthValue.textContent = `${state.vignetteStrength}%`;
   applyVignette();
@@ -489,6 +530,7 @@ function resetParam(key) {
 
 sectionToggles.forEach((toggle) => {
   toggle.addEventListener("click", () => {
+    closeAllMenuPickers();
     const section = toggle.closest(".settings-section");
     const panel = section.querySelector(".section-panel");
     const icon = toggle.querySelector(".section-toggle-icon");
@@ -531,13 +573,6 @@ flipSideButton.addEventListener("click", () => {
 closeSettingsButton.addEventListener("click", () => {
   state.settingsMode = "DISABLE";
   applySettingsMode();
-  updateURL();
-});
-
-patternSelect.addEventListener("change", (e) => {
-  state.pattern = normalizePattern(e.target.value);
-  syncInputs();
-  repaintNow();
   updateURL();
 });
 
@@ -585,14 +620,6 @@ glitchBulgeSlider.addEventListener("input", (e) => {
 
 glitchRateSlider.addEventListener("input", (e) => {
   state.glitchRate = AbsGlitchPost.clampRate(Number.parseFloat(e.target.value));
-  syncInputs();
-  repaintNow();
-  updateURL();
-});
-
-paletteSelect.addEventListener("change", (e) => {
-  state.palette = normalizePalette(e.target.value);
-  updateTriadicPalette();
   syncInputs();
   repaintNow();
   updateURL();

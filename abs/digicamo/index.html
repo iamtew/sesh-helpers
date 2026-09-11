@@ -5,6 +5,7 @@
   <title>Digicamo — ABS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../../ui/menu-picker.css" />
 </head>
 <body>
   <canvas id="digicamo-canvas" aria-hidden="true"></canvas>
@@ -26,21 +27,8 @@
       <button id="pattern-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="pattern-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Pattern</button>
       <div id="pattern-controls" class="section-panel">
         <div class="setting-group">
-          <label for="palette-select"><span>Palette</span></label>
-          <select id="palette-select">
-            <optgroup label="Camo">
-              <option value="woodland">Woodland</option>
-              <option value="desert">Desert</option>
-              <option value="urban">Urban</option>
-              <option value="arctic">Arctic</option>
-            </optgroup>
-            <optgroup label="Wacky">
-              <option value="neon">Neon</option>
-              <option value="synth">Synth</option>
-              <option value="toxic">Toxic</option>
-              <option value="candy">Candy</option>
-            </optgroup>
-          </select>
+          <label id="palette-label"><span>Palette</span></label>
+          <div class="menu-picker" id="palette-picker"></div>
         </div>
         <div class="setting-group">
           <div class="range-control">
@@ -216,6 +204,7 @@
   </div>
 
   <script src="../glitch-post.js"></script>
+  <script src="../../ui/menu-picker.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

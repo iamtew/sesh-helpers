@@ -36,6 +36,11 @@ function updateURL() {
 Range controls should include a per-param **↺** reset (`.reset-param` + `data-reset`),
 as in Sesh Banner and Diamond — next to the value readout.
 
+## Menu pickers
+
+Never use native `<select>` in OBS control panels — Interact (CEF) breaks OS option
+popups. Use [`ui/menu-picker.js`](../../ui/menu-picker.js) (`SeshMenuPicker.create`).
+
 ## URL is the entire config
 
 No `localStorage`, no account, no config server. Every persisted setting has a short,

@@ -1,0 +1,99 @@
+/* Custom menu picker — native <select> fails in OBS Interact; option lists also unreadable on Windows */
+.menu-picker {
+  position: relative;
+  width: 100%;
+}
+
+.menu-picker-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.1rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--accent, #00ffff);
+  border-radius: 4px;
+  background: rgba(0, 255, 255, 0.1);
+  color: var(--settings-text, #f5f5f5);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.menu-picker-trigger:hover,
+.menu-picker-trigger:focus-visible {
+  background: rgba(0, 255, 255, 0.16);
+  box-shadow: 0 0 0 1px var(--accent, #00ffff), 0 0 0.75rem rgba(0, 255, 255, 0.18);
+  outline: none;
+}
+
+.menu-picker-trigger .menu-picker-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-picker-trigger .menu-picker-caret {
+  flex-shrink: 0;
+  opacity: 0.85;
+  color: var(--accent, #00ffff);
+  font-size: 0.75rem;
+}
+
+.menu-picker[data-open="true"] .menu-picker-caret {
+  transform: rotate(180deg);
+}
+
+.menu-picker-list {
+  position: fixed;
+  z-index: 100;
+  max-height: min(14rem, 42vh);
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  border: 1px solid var(--accent, #00ffff);
+  border-radius: 4px;
+  background: #12141f;
+  color: #f5f5f5;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.85),
+    0 10px 32px rgba(0, 0, 0, 0.65),
+    0 0 18px rgba(0, 255, 255, 0.12);
+}
+
+.menu-picker-list[hidden] {
+  display: none;
+}
+
+.menu-picker-option {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: #f5f5f5;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+  text-align: left;
+  line-height: 1.3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.menu-picker-option:hover,
+.menu-picker-option:focus-visible {
+  background: rgba(0, 255, 255, 0.18);
+  color: #ffffff;
+  outline: none;
+}
+
+.menu-picker-option[aria-selected="true"] {
+  background: rgba(0, 255, 255, 0.28);
+  color: var(--accent, #00ffff);
+}

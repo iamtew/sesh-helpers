@@ -5,6 +5,7 @@
   <title>Fractals — ABS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../../ui/menu-picker.css" />
 </head>
 <body>
   <canvas id="fractals-canvas" aria-hidden="true"></canvas>
@@ -25,13 +26,8 @@
       <button id="animation-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="animation-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Animation</button>
       <div id="animation-controls" class="section-panel">
         <div class="setting-group">
-          <label for="set-select"><span>Set</span></label>
-          <select id="set-select">
-            <option value="mandelbrot">Mandelbrot</option>
-            <option value="julia">Julia</option>
-            <option value="burningship">Burning Ship</option>
-            <option value="tricorn">Tricorn</option>
-          </select>
+          <label id="set-label"><span>Set</span></label>
+          <div class="menu-picker" id="set-picker"></div>
         </div>
         <div class="setting-group">
           <div class="range-control">
@@ -142,15 +138,8 @@
       <button id="display-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="display-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Display</button>
       <div id="display-controls" class="section-panel" hidden>
         <div class="setting-group">
-          <label for="palette-select"><span>Palette</span></label>
-          <select id="palette-select">
-            <option value="cosmic">Cosmic</option>
-            <option value="ember">Ember</option>
-            <option value="aurora">Aurora</option>
-            <option value="neon">Neon</option>
-            <option value="ocean">Ocean</option>
-            <option value="plasma">Plasma</option>
-          </select>
+          <label id="palette-label"><span>Palette</span></label>
+          <div class="menu-picker" id="palette-picker"></div>
         </div>
         <div class="setting-group">
           <label class="switch-row">
@@ -186,6 +175,7 @@
   </div>
 
   <script src="../glitch-post.js"></script>
+  <script src="../../ui/menu-picker.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

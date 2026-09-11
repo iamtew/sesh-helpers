@@ -34,7 +34,7 @@ metadata for meat bags and tooling; current apps load the catalog entry register
 | Field | Meaning |
 |-------|---------|
 | `id` | Stable slug — URL param value, `data-theme` attribute |
-| `name` | Label for settings dropdowns |
+| `name` | Label for settings menu pickers |
 | `description` | What it looks like |
 | `preferredDisplay` | Default Display face when fonts are unset / reset ([`TYPOGRAPHY.md`](TYPOGRAPHY.md)) |
 | `preferredRegular` | Default Regular face when fonts are unset / reset |
@@ -46,7 +46,7 @@ metadata for meat bags and tooling; current apps load the catalog entry register
 1. Link the theme CSS and JS from the app HTML (path relative to the app folder).
 2. Set `document.documentElement.dataset.theme` to the theme `id`.
 3. Put `class="theme-panel"` on the glass surface (the banner box, not the page).
-4. Settings dropdowns read `window.SeshThemes.catalog` (each `theme.js` registers itself).
+4. Settings menu pickers read `window.SeshThemes.catalog` (each `theme.js` registers itself).
 5. Effects: `window.SeshThemes.effects[id].start(el)` / `.stop(el)` — pass the panel or an ancestor. Glass themes write `--theme-text-shadow` so child text pulses.
 6. When font URL params are missing, or fonts are reset / theme is changed, apply
    `preferredDisplay` / `preferredRegular` to the overlay field roles (see
@@ -95,7 +95,7 @@ Preferred fonts — Display: `Lemondrop`; Regular: `Brighton Sans NBP`.
 5. Link the new CSS/JS from each app that should offer it.
 6. Test switching themes repeatedly. One panel should have one animation runner—no
    multiplying clanker heartbeats. Confirm preferred fonts apply when font params are
-   absent and when the theme select changes.
+   absent and when the theme picker changes.
 
 ---
 

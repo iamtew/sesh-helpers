@@ -338,8 +338,7 @@ body.settings-mode #banner.dragging {
   color: var(--accent);
 }
 
-#settings-menu input[type="text"],
-#settings-menu select {
+#settings-menu input[type="text"] {
   width: 100%;
   height: 1.9rem;
   padding: 0 0.4rem;
@@ -352,116 +351,8 @@ body.settings-mode #banner.dragging {
   font-size: 0.8rem;
 }
 
-#settings-menu select {
-  cursor: pointer;
-}
-
-#settings-menu select option {
-  background: #12141f;
-  color: #f5f5f5;
-}
-
-#settings-menu input:focus,
-#settings-menu select:focus {
+#settings-menu input:focus {
   box-shadow: 0 0 0 1px var(--accent), 0 0 0.75rem rgba(0, 255, 255, 0.18);
-}
-
-.font-picker {
-  position: relative;
-  width: 100%;
-}
-
-.font-picker-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  width: 100%;
-  min-height: 2.1rem;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--accent);
-  border-radius: 4px;
-  background: rgba(0, 255, 255, 0.1);
-  color: var(--settings-text);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.9rem;
-  text-align: left;
-  line-height: 1.2;
-}
-
-.font-picker-trigger:hover,
-.font-picker-trigger:focus-visible {
-  background: rgba(0, 255, 255, 0.16);
-  box-shadow: 0 0 0 1px var(--accent), 0 0 0.75rem rgba(0, 255, 255, 0.18);
-  outline: none;
-}
-
-.font-picker-trigger .font-picker-value {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.font-picker-trigger .font-picker-caret {
-  flex-shrink: 0;
-  opacity: 0.85;
-  color: var(--accent);
-  font-size: 0.75rem;
-}
-
-.font-picker[data-open="true"] .font-picker-caret {
-  transform: rotate(180deg);
-}
-
-.font-picker-list {
-  position: fixed;
-  z-index: 100;
-  max-height: min(14rem, 42vh);
-  overflow-y: auto;
-  margin: 0;
-  padding: 0.35rem;
-  list-style: none;
-  border: 1px solid var(--accent);
-  border-radius: 4px;
-  background: #12141f;
-  color: #f5f5f5;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.85),
-    0 10px 32px rgba(0, 0, 0, 0.65),
-    0 0 18px rgba(0, 255, 255, 0.12);
-}
-
-.font-picker-list[hidden] {
-  display: none;
-}
-
-.font-picker-option {
-  display: block;
-  width: 100%;
-  padding: 0.55rem 0.6rem;
-  border: none;
-  border-radius: 3px;
-  background: transparent;
-  color: #f5f5f5;
-  cursor: pointer;
-  font-size: 1rem;
-  text-align: left;
-  line-height: 1.3;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-}
-
-.font-picker-option:hover,
-.font-picker-option:focus-visible {
-  background: rgba(0, 255, 255, 0.18);
-  color: #ffffff;
-  outline: none;
-}
-
-.font-picker-option[aria-selected="true"] {
-  background: rgba(0, 255, 255, 0.28);
-  color: var(--accent);
 }
 
 .range-control {

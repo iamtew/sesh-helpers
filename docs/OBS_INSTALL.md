@@ -25,6 +25,7 @@ parameters live in each app’s `notes.md`.
 - **Interact** → opens the control window. Resize if you need more room.
 - **Double-click** anywhere → **Settings Menu**.
 - Tweak the controls for that app (see its `notes.md`). Changes apply live.
+  Dropdowns are custom (not OS menus) so they work inside Interact.
 - Close the menu when you’re done.
 - Hide/unhide the browser source — the page reloads when OBS refreshes it, so
   effects that run on load start again automatically.

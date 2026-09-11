@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <title>Sesh Banner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css?v=34" />
+  <link rel="stylesheet" href="style.css?v=35" />
+  <link rel="stylesheet" href="../ui/menu-picker.css" />
   <link rel="stylesheet" href="../themes/lcd-glass/theme.css" />
   <link rel="stylesheet" href="../themes/sesh-glass/theme.css" />
   <link rel="stylesheet" href="../themes/3026-d3c0/theme.css" />
@@ -149,8 +150,8 @@
           </div>
         </div>
         <div class="setting-group">
-          <label for="playlist-delimiter-select"><span>Ticker delimiter</span></label>
-          <select id="playlist-delimiter-select"></select>
+          <label id="playlist-delimiter-label"><span>Ticker delimiter</span></label>
+          <div class="menu-picker" id="playlist-delimiter-picker"></div>
         </div>
         <div class="setting-group" id="playlist-delimiter-custom-group">
           <label for="playlist-delimiter-custom"><span>Custom delimiter</span></label>
@@ -181,8 +182,8 @@
       <button id="theme-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="theme-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Theme</button>
       <div id="theme-controls" class="section-panel" hidden>
         <div class="setting-group">
-          <label for="theme-select"><span>Theme</span></label>
-          <select id="theme-select"></select>
+          <label id="theme-label"><span>Theme</span></label>
+          <div class="menu-picker" id="theme-picker"></div>
           <p class="field-hint" id="theme-description"></p>
         </div>
       </div>
@@ -254,7 +255,7 @@
             <span class="field-label" id="prefix-font-label">Prefix font</span>
             <button type="button" class="reset-param" data-reset="prefixFont" aria-label="Reset prefix font" title="Reset prefix font">↺</button>
           </div>
-          <div class="font-picker" id="prefix-font-picker" data-font-role="prefix"></div>
+          <div class="menu-picker" id="prefix-font-picker" data-font-role="prefix"></div>
           <div class="range-control">
             <div class="range-details">
               <div class="range-label-row">
@@ -275,7 +276,7 @@
             <span class="field-label" id="title-font-label">Title font</span>
             <button type="button" class="reset-param" data-reset="titleFont" aria-label="Reset title font" title="Reset title font">↺</button>
           </div>
-          <div class="font-picker" id="title-font-picker" data-font-role="title"></div>
+          <div class="menu-picker" id="title-font-picker" data-font-role="title"></div>
           <div class="range-control">
             <div class="range-details">
               <div class="range-label-row">
@@ -296,7 +297,7 @@
             <span class="field-label" id="message-font-label">Message font</span>
             <button type="button" class="reset-param" data-reset="messageFont" aria-label="Reset message font" title="Reset message font">↺</button>
           </div>
-          <div class="font-picker" id="message-font-picker" data-font-role="message"></div>
+          <div class="menu-picker" id="message-font-picker" data-font-role="message"></div>
           <div class="range-control">
             <div class="range-details">
               <div class="range-label-row">
@@ -349,9 +350,10 @@
   </div>
 
   <script src="playlist.js?v=6"></script>
+  <script src="../ui/menu-picker.js"></script>
   <script src="../themes/lcd-glass/theme.js"></script>
   <script src="../themes/sesh-glass/theme.js"></script>
   <script src="../themes/3026-d3c0/theme.js"></script>
-  <script src="app.js?v=25"></script>
+  <script src="app.js?v=26"></script>
 </body>
 </html>

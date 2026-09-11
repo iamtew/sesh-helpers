@@ -5,6 +5,7 @@
   <title>Ripple — ABS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../../ui/menu-picker.css" />
 </head>
 <body>
   <canvas id="ripple-canvas" aria-hidden="true"></canvas>
@@ -25,20 +26,8 @@
       <button id="animation-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="animation-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Animation</button>
       <div id="animation-controls" class="section-panel">
         <div class="setting-group">
-          <label for="pattern-select"><span>Pattern</span></label>
-          <select id="pattern-select">
-            <option value="radial">Radial</option>
-            <option value="linear">Linear</option>
-            <option value="diagonal">Diagonal</option>
-            <option value="noise">Noise</option>
-            <option value="pulse">Pulse</option>
-            <option value="turbulence">Turbulence</option>
-            <option value="helix">Helix</option>
-            <option value="flow">Flow</option>
-            <option value="weave">Weave</option>
-            <option value="checkerwarp">Checkerwarp</option>
-            <option value="fog">Fog</option>
-          </select>
+          <label id="pattern-label"><span>Pattern</span></label>
+          <div class="menu-picker" id="pattern-picker"></div>
         </div>
         <div class="setting-group">
           <div class="range-control">
@@ -165,16 +154,8 @@
       <button id="display-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="display-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Display</button>
       <div id="display-controls" class="section-panel" hidden>
         <div class="setting-group">
-          <label for="palette-select"><span>Palette</span></label>
-          <select id="palette-select">
-            <option value="spectrum">Spectrum</option>
-            <option value="lcd">LCD</option>
-            <option value="violet">Violet</option>
-            <option value="ember">Ember</option>
-            <option value="jade">Jade</option>
-            <option value="rose">Rose</option>
-            <option value="acid">Acid</option>
-          </select>
+          <label id="palette-label"><span>Palette</span></label>
+          <div class="menu-picker" id="palette-picker"></div>
         </div>
         <div class="setting-group">
           <label class="switch-row">
@@ -210,6 +191,7 @@
   </div>
 
   <script src="../glitch-post.js"></script>
+  <script src="../../ui/menu-picker.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

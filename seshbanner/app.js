@@ -396,7 +396,7 @@ const playlistInput = document.getElementById("playlist-input");
 const playlistStatus = document.getElementById("playlist-status");
 const youtubePlaylistSection = document.getElementById("youtube-playlist-section");
 const playlistLayoutRadios = document.querySelectorAll('input[name="playlist-layout"]');
-const playlistDelimiterSelect = document.getElementById("playlist-delimiter-select");
+const playlistDelimiterPickerEl = document.getElementById("playlist-delimiter-picker");
 const playlistDelimiterCustomGroup = document.getElementById("playlist-delimiter-custom-group");
 const playlistDelimiterCustomInput = document.getElementById("playlist-delimiter-custom");
 const marqueeSpeedSlider = document.getElementById("marquee-speed-slider");
@@ -424,7 +424,7 @@ const heightSlider = document.getElementById("height-slider");
 const heightValue = document.getElementById("height-value");
 const layoutRadios = document.querySelectorAll('input[name="layout"]');
 const bgRadios = document.querySelectorAll('input[name="bg"]');
-const themeSelect = document.getElementById("theme-select");
+const themePickerEl = document.getElementById("theme-picker");
 const themeDescription = document.getElementById("theme-description");
 
 const resetButton = document.getElementById("reset-button");
@@ -446,226 +446,104 @@ function flashMenuAction(button, tempLabel) {
   }, 550);
 }
 
-// --- FONT PICKER ------------------------------------------------------
+// --- MENU PICKERS -----------------------------------------------------
 
-function createFontPicker(root, fonts, labelledBy, getValue, setValue) {
-  root.innerHTML = "";
-  root.dataset.open = "false";
+const createMenuPicker = window.SeshMenuPicker.create;
+const closeAllMenuPickers = window.SeshMenuPicker.closeAll;
 
-  const trigger = document.createElement("button");
-  trigger.type = "button";
-  trigger.className = "font-picker-trigger";
-  trigger.setAttribute("aria-haspopup", "listbox");
-  trigger.setAttribute("aria-expanded", "false");
-  trigger.setAttribute("aria-labelledby", labelledBy);
-
-  const valueEl = document.createElement("span");
-  valueEl.className = "font-picker-value";
-  const caret = document.createElement("span");
-  caret.className = "font-picker-caret";
-  caret.setAttribute("aria-hidden", "true");
-  caret.textContent = "▾";
-  trigger.append(valueEl, caret);
-
-  const list = document.createElement("ul");
-  list.className = "font-picker-list";
-  list.setAttribute("role", "listbox");
-  list.hidden = true;
-
-  const optionButtons = [];
-
-  for (const font of fonts) {
-    const li = document.createElement("li");
-    li.setAttribute("role", "presentation");
-    const option = document.createElement("button");
-    option.type = "button";
-    option.className = "font-picker-option";
-    option.setAttribute("role", "option");
-    option.dataset.value = font;
-    option.textContent = font;
-    option.style.fontFamily = `'${font}', sans-serif`;
-    option.addEventListener("click", e => {
-      e.stopPropagation();
-      setValue(font);
-      close();
-      trigger.focus();
-    });
-    li.appendChild(option);
-    list.appendChild(li);
-    optionButtons.push(option);
-  }
-
-  function sync() {
-    const value = getValue();
-    valueEl.textContent = value;
-    valueEl.style.fontFamily = `'${value}', sans-serif`;
-    for (const option of optionButtons) {
-      option.setAttribute("aria-selected", String(option.dataset.value === value));
-    }
-  }
-
-  function positionList() {
-    const rect = trigger.getBoundingClientRect();
-    const maxHeight = Math.min(14 * 16, window.innerHeight * 0.42);
-    const spaceBelow = window.innerHeight - rect.bottom - 8;
-    const spaceAbove = rect.top - 8;
-    const openUp = spaceBelow < Math.min(maxHeight, 160) && spaceAbove > spaceBelow;
-    const height = Math.min(maxHeight, openUp ? spaceAbove : spaceBelow);
-
-    list.style.left = `${Math.round(rect.left)}px`;
-    list.style.width = `${Math.round(rect.width)}px`;
-    list.style.maxHeight = `${Math.max(120, Math.round(height))}px`;
-
-    if (openUp) {
-      list.style.top = "auto";
-      list.style.bottom = `${Math.round(window.innerHeight - rect.top + 4)}px`;
-    } else {
-      list.style.bottom = "auto";
-      list.style.top = `${Math.round(rect.bottom + 4)}px`;
-    }
-  }
-
-  function open() {
-    closeAllFontPickers(root);
-    root.dataset.open = "true";
-    // Portal outside #settings-menu — backdrop-filter creates a fixed containing block
-    // and overflow clips the list if it stays nested.
-    document.body.appendChild(list);
-    list.hidden = false;
-    trigger.setAttribute("aria-expanded", "true");
-    positionList();
-    const selected = optionButtons.find(o => o.getAttribute("aria-selected") === "true");
-    (selected || optionButtons[0])?.focus();
-  }
-
-  function close() {
-    root.dataset.open = "false";
-    list.hidden = true;
-    trigger.setAttribute("aria-expanded", "false");
-    if (list.parentElement !== root) root.appendChild(list);
-  }
-
-  function toggle() {
-    if (root.dataset.open === "true") close();
-    else open();
-  }
-
-  trigger.addEventListener("click", e => {
-    e.stopPropagation();
-    toggle();
-  });
-
-  trigger.addEventListener("keydown", e => {
-    if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      open();
-    }
-  });
-
-  list.addEventListener("keydown", e => {
-    const current = document.activeElement;
-    const index = optionButtons.indexOf(current);
-    if (e.key === "Escape") {
-      e.preventDefault();
-      close();
-      trigger.focus();
-      return;
-    }
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      optionButtons[Math.min(index + 1, optionButtons.length - 1)]?.focus();
-    }
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      optionButtons[Math.max(index - 1, 0)]?.focus();
-    }
-    if (e.key === "Home") {
-      e.preventDefault();
-      optionButtons[0]?.focus();
-    }
-    if (e.key === "End") {
-      e.preventDefault();
-      optionButtons[optionButtons.length - 1]?.focus();
-    }
-  });
-
-  window.addEventListener("resize", () => {
-    if (root.dataset.open === "true") positionList();
-  });
-
-  root.append(trigger, list);
-  sync();
-
-  return { sync, close, reposition: positionList, root };
+function renderFontValue(el, value) {
+  el.textContent = value;
+  el.style.fontFamily = `'${value}', sans-serif`;
 }
 
-const fontPickers = [];
-
-function closeAllFontPickers(except) {
-  for (const picker of fontPickers) {
-    if (picker.root !== except) picker.close();
-  }
+function renderFontOption(el, option) {
+  el.textContent = option.label;
+  el.style.fontFamily = `'${option.value}', sans-serif`;
 }
 
-const titleFontPicker = createFontPicker(
-  titleFontPickerEl,
-  ALL_FONTS,
-  "title-font-label",
-  () => state.titleFont,
-  font => {
+const fontOptions = ALL_FONTS.map(font => ({ value: font, label: font }));
+
+const titleFontPicker = createMenuPicker({
+  root: titleFontPickerEl,
+  options: fontOptions,
+  labelledBy: "title-font-label",
+  getValue: () => state.titleFont,
+  setValue: font => {
     state.titleFont = pickFont(font, ALL_FONTS, getThemePreferredFonts(state.theme).display);
     applyFonts();
     titleFontPicker.sync();
     updateURL();
-  }
-);
+  },
+  renderValue: renderFontValue,
+  renderOption: renderFontOption
+});
 
-const messageFontPicker = createFontPicker(
-  messageFontPickerEl,
-  ALL_FONTS,
-  "message-font-label",
-  () => state.messageFont,
-  font => {
+const messageFontPicker = createMenuPicker({
+  root: messageFontPickerEl,
+  options: fontOptions,
+  labelledBy: "message-font-label",
+  getValue: () => state.messageFont,
+  setValue: font => {
     state.messageFont = pickFont(font, ALL_FONTS, getThemePreferredFonts(state.theme).regular);
     applyFonts();
     messageFontPicker.sync();
     updateURL();
-  }
-);
+  },
+  renderValue: renderFontValue,
+  renderOption: renderFontOption
+});
 
-const prefixFontPicker = createFontPicker(
-  prefixFontPickerEl,
-  ALL_FONTS,
-  "prefix-font-label",
-  () => state.prefixFont,
-  font => {
+const prefixFontPicker = createMenuPicker({
+  root: prefixFontPickerEl,
+  options: fontOptions,
+  labelledBy: "prefix-font-label",
+  getValue: () => state.prefixFont,
+  setValue: font => {
     state.prefixFont = pickFont(font, ALL_FONTS, getThemePreferredFonts(state.theme).display);
     applyFonts();
     prefixFontPicker.sync();
     updateURL();
-  }
-);
-
-fontPickers.push(titleFontPicker, messageFontPicker, prefixFontPicker);
-
-document.addEventListener("click", e => {
-  if (!(e.target instanceof Element)) {
-    closeAllFontPickers();
-    return;
-  }
-  if (e.target.closest(".font-picker") || e.target.closest(".font-picker-list")) return;
-  closeAllFontPickers();
+  },
+  renderValue: renderFontValue,
+  renderOption: renderFontOption
 });
 
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeAllFontPickers();
+const themePicker = createMenuPicker({
+  root: themePickerEl,
+  options: THEMES.map(theme => ({ value: theme.id, label: theme.name })),
+  labelledBy: "theme-label",
+  getValue: () => state.theme,
+  setValue: value => {
+    state.theme = normalizeTheme(value);
+    applyThemePreferredFonts();
+    applyTheme();
+    applyFonts();
+    syncInputs();
+    updateURL();
+  }
 });
 
-settingsMenu.addEventListener("scroll", () => {
-  for (const picker of fontPickers) {
-    if (picker.root.dataset.open === "true") picker.reposition();
-  }
-}, { passive: true });
+const delimiterApi = window.SeshBannerPlaylist;
+const delimiterOptions =
+  delimiterApi && Array.isArray(delimiterApi.ITEM_DELIMITERS)
+    ? delimiterApi.ITEM_DELIMITERS.map(entry => ({ value: entry.id, label: entry.label }))
+    : [];
+
+const playlistDelimiterPicker =
+  playlistDelimiterPickerEl && delimiterOptions.length
+    ? createMenuPicker({
+        root: playlistDelimiterPickerEl,
+        options: delimiterOptions,
+        labelledBy: "playlist-delimiter-label",
+        getValue: () => state.playlistDelimiter,
+        setValue: value => {
+          state.playlistDelimiter = normalizePlaylistDelimiter(value);
+          applyPlaylistControls();
+          applyPlaylistBanner();
+          updateURL();
+        }
+      })
+    : null;
 
 // --- APPLY ------------------------------------------------------------
 
@@ -1229,13 +1107,13 @@ function syncInputs() {
   for (const radio of bgRadios) {
     radio.checked = radio.value === state.bg;
   }
-  themeSelect.value = state.theme;
+  themePicker.sync();
   const themeMeta = findTheme(state.theme);
   themeDescription.textContent = formatThemeDescription(themeMeta);
   playlistInput.disabled = !isPlaylistLayout(state.layout);
   youtubePlaylistSection.hidden = !isPlaylistLayout(state.layout);
-  if (playlistDelimiterSelect) {
-    playlistDelimiterSelect.value = state.playlistDelimiter;
+  if (playlistDelimiterPicker) {
+    playlistDelimiterPicker.sync();
   }
   if (playlistDelimiterCustomInput) {
     playlistDelimiterCustomInput.value = state.playlistDelimiterCustom;
@@ -1251,7 +1129,7 @@ function syncInputs() {
 }
 
 function setOpenSection(section) {
-  closeAllFontPickers();
+  closeAllMenuPickers();
   for (const toggle of sectionToggles) {
     const panel = document.getElementById(toggle.getAttribute("aria-controls"));
     const isOpen = toggle.closest("[data-section]") === section;
@@ -1521,15 +1399,6 @@ for (const radio of playlistLayoutRadios) {
   });
 }
 
-if (playlistDelimiterSelect) {
-  playlistDelimiterSelect.addEventListener("change", () => {
-    state.playlistDelimiter = normalizePlaylistDelimiter(playlistDelimiterSelect.value);
-    applyPlaylistControls();
-    applyPlaylistBanner();
-    updateURL();
-  });
-}
-
 if (playlistDelimiterCustomInput) {
   playlistDelimiterCustomInput.addEventListener("input", e => {
     const next = normalizePlaylistDelimiterCustom(e.target.value);
@@ -1560,21 +1429,12 @@ for (const radio of bgRadios) {
   });
 }
 
-themeSelect.addEventListener("change", () => {
-  state.theme = normalizeTheme(themeSelect.value);
-  applyThemePreferredFonts();
-  applyTheme();
-  applyFonts();
-  syncInputs();
-  updateURL();
-});
-
 resetButton.addEventListener("click", () => {
   flashMenuAction(resetButton);
   state = { ...defaults };
   applyThemePreferredFonts(defaults.theme);
   resetPlaylistCache();
-  closeAllFontPickers();
+  closeAllMenuPickers();
   syncInputs();
   applyAll();
   updateURL();
@@ -1594,23 +1454,6 @@ copyUrlObsButton.addEventListener("click", () => {
 });
 
 // --- INIT --------------------------------------------------------------
-
-for (const theme of THEMES) {
-  const option = document.createElement("option");
-  option.value = theme.id;
-  option.textContent = theme.name;
-  themeSelect.appendChild(option);
-}
-
-const delimiterApi = window.SeshBannerPlaylist;
-if (playlistDelimiterSelect && delimiterApi && Array.isArray(delimiterApi.ITEM_DELIMITERS)) {
-  for (const entry of delimiterApi.ITEM_DELIMITERS) {
-    const option = document.createElement("option");
-    option.value = entry.id;
-    option.textContent = entry.label;
-    playlistDelimiterSelect.appendChild(option);
-  }
-}
 
 syncInputs();
 applyAll();

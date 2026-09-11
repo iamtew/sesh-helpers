@@ -170,7 +170,7 @@ const glitchBulgeSlider = document.getElementById("glitch-bulge-slider");
 const glitchBulgeValue = document.getElementById("glitch-bulge-value");
 const glitchRateSlider = document.getElementById("glitch-rate-slider");
 const glitchRateValue = document.getElementById("glitch-rate-value");
-const paletteSelect = document.getElementById("palette-select");
+const palettePickerEl = document.getElementById("palette-picker");
 const vignetteToggle = document.getElementById("vignette-toggle");
 const vignetteStrengthSlider = document.getElementById("vignette-strength-slider");
 const vignetteStrengthValue = document.getElementById("vignette-strength-value");
@@ -178,6 +178,29 @@ const resetButton = document.getElementById("reset-button");
 const copyUrlButton = document.getElementById("copy-url-button");
 const copyUrlObsButton = document.getElementById("copy-url-obs-button");
 const sectionToggles = document.querySelectorAll("[data-section-toggle]");
+
+const createMenuPicker = window.SeshMenuPicker.create;
+const closeAllMenuPickers = window.SeshMenuPicker.closeAll;
+
+function humanizeId(id) {
+  if (id === "lcd") return "LCD";
+  return id.charAt(0).toUpperCase() + id.slice(1);
+}
+
+const paletteOptions = Object.keys(PALETTES).map((id) => ({ value: id, label: humanizeId(id) }));
+
+const palettePicker = createMenuPicker({
+  root: palettePickerEl,
+  options: paletteOptions,
+  labelledBy: "palette-label",
+  getValue: () => state.palette,
+  setValue: (value) => {
+    state.palette = normalizePalette(value);
+    syncInputs();
+    repaintNow();
+    updateURL();
+  }
+});
 
 function flashMenuAction(button, tempLabel) {
   if (!button) return;
@@ -343,7 +366,7 @@ function syncInputs() {
   glitchBulgeValue.textContent = AbsGlitchPost.formatPercent(state.glitchBulge);
   glitchRateSlider.value = state.glitchRate;
   glitchRateValue.textContent = `${state.glitchRate.toFixed(1)}Hz`;
-  paletteSelect.value = state.palette;
+  palettePicker.sync();
   vignetteStrengthSlider.value = state.vignetteStrength;
   vignetteStrengthValue.textContent = `${state.vignetteStrength}%`;
   applyVignette();
@@ -392,6 +415,7 @@ function resetParam(key) {
 
 sectionToggles.forEach((toggle) => {
   toggle.addEventListener("click", () => {
+    closeAllMenuPickers();
     const section = toggle.closest(".settings-section");
     const panel = section.querySelector(".section-panel");
     const icon = toggle.querySelector(".section-toggle-icon");
@@ -481,13 +505,6 @@ glitchBulgeSlider.addEventListener("input", (e) => {
 
 glitchRateSlider.addEventListener("input", (e) => {
   state.glitchRate = AbsGlitchPost.clampRate(Number.parseFloat(e.target.value));
-  syncInputs();
-  repaintNow();
-  updateURL();
-});
-
-paletteSelect.addEventListener("change", (e) => {
-  state.palette = normalizePalette(e.target.value);
   syncInputs();
   repaintNow();
   updateURL();

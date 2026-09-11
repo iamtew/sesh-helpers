@@ -5,6 +5,7 @@
   <title>Voroni — ABS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../../ui/menu-picker.css" />
 </head>
 <body>
   <canvas id="voroni-canvas" aria-hidden="true"></canvas>
@@ -197,30 +198,8 @@
       <button id="display-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="display-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Display</button>
       <div id="display-controls" class="section-panel" hidden>
         <div class="setting-group">
-          <label for="palette-select"><span>Palette</span></label>
-          <select id="palette-select">
-            <option value="procedural">Procedural</option>
-            <option value="blue">Blue</option>
-            <option value="pink">Pink</option>
-            <option value="mint">Mint</option>
-            <option value="gold">Gold</option>
-            <option value="red">Red</option>
-            <option value="electric">Electric Purple</option>
-            <option value="bubblegum">Bubblegum Neon</option>
-            <option value="aqua">Aqua Laser</option>
-            <option value="amber">Solar Amber</option>
-            <option value="cyber">Cyber Mint</option>
-            <option value="inferno">Inferno Orange</option>
-            <option value="toxic">Toxic Lime</option>
-            <option value="plasma">Magenta Plasma</option>
-            <option value="royal">Royal Blue Glow</option>
-            <option value="pastel">Soft Pastel Pink</option>
-            <option value="lavender">Lavender Dream</option>
-            <option value="teal">Crystal Teal</option>
-            <option value="peach">Peach Ember</option>
-            <option value="volt">Volt Yellow</option>
-            <option value="hyper">Hyper Red</option>
-          </select>
+          <label id="palette-label"><span>Palette</span></label>
+          <div class="menu-picker" id="palette-picker"></div>
         </div>
         <div class="setting-group">
           <label class="switch-row">
@@ -256,6 +235,7 @@
   </div>
 
   <script src="../glitch-post.js"></script>
+  <script src="../../ui/menu-picker.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -226,7 +226,7 @@ const vignetteEl = document.getElementById("vignette");
 const settingsMenu = document.getElementById("settings-menu");
 const flipSideButton = document.getElementById("flip-side-button");
 const closeSettingsButton = document.getElementById("close-menu-button");
-const paletteSelect = document.getElementById("palette-select");
+const palettePickerEl = document.getElementById("palette-picker");
 const speedSlider = document.getElementById("speed-slider");
 const speedValue = document.getElementById("speed-value");
 const cellSizeSlider = document.getElementById("cell-size-slider");
@@ -250,6 +250,28 @@ const resetButton = document.getElementById("reset-button");
 const copyUrlButton = document.getElementById("copy-url-button");
 const copyUrlObsButton = document.getElementById("copy-url-obs-button");
 const sectionToggles = document.querySelectorAll("[data-section-toggle]");
+
+const createMenuPicker = window.SeshMenuPicker.create;
+const closeAllMenuPickers = window.SeshMenuPicker.closeAll;
+
+const paletteOptions = Object.keys(PALETTES).map((id) => ({
+  value: id,
+  label: id.charAt(0).toUpperCase() + id.slice(1)
+}));
+
+const palettePicker = createMenuPicker({
+  root: palettePickerEl,
+  options: paletteOptions,
+  labelledBy: "palette-label",
+  getValue: () => state.palette,
+  setValue: (value) => {
+    state.palette = normalizePalette(value);
+    applyGlow();
+    syncInputs();
+    repaintNow();
+    updateURL();
+  }
+});
 
 let cols = 0;
 let rows = 0;
@@ -456,7 +478,7 @@ function applyVignette() {
 }
 
 function syncInputs() {
-  paletteSelect.value = state.palette;
+  palettePicker.sync();
   speedSlider.value = state.speed;
   speedValue.textContent = state.speed === 0 ? "0x" : `${state.speed.toFixed(2)}x`;
   cellSizeSlider.value = state.cellSize;
@@ -531,6 +553,7 @@ function resetParam(key) {
 
 sectionToggles.forEach((toggle) => {
   toggle.addEventListener("click", () => {
+    closeAllMenuPickers();
     const section = toggle.closest(".settings-section");
     const panel = section.querySelector(".section-panel");
     const icon = toggle.querySelector(".section-toggle-icon");
@@ -573,14 +596,6 @@ flipSideButton.addEventListener("click", () => {
 closeSettingsButton.addEventListener("click", () => {
   state.settingsMode = "DISABLE";
   applySettingsMode();
-  updateURL();
-});
-
-paletteSelect.addEventListener("change", (e) => {
-  state.palette = normalizePalette(e.target.value);
-  applyGlow();
-  syncInputs();
-  repaintNow();
   updateURL();
 });
 

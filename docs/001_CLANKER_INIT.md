@@ -63,6 +63,9 @@ sesh-helpers/
 │   ├── shard/                # Shard — recursive stained-glass triangle mosaic
 │   ├── fractals/             # Fractals — WebGL classic fractal zoomer
 │   └── digicamo/             # Digicamo — animated pixel digicam woodland backdrop
+├── ui/                       # Shared Control UI widgets
+│   ├── menu-picker.js        # Custom dropdown (OBS Interact–safe; no native <select>)
+│   └── menu-picker.css
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
 │   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
@@ -95,6 +98,7 @@ sesh-helpers/
 | `abs/fractals/` | **Exists** | Fractals WebGL zoomer; per-app palettes in `notes.md` |
 | `abs/digicamo/` | **Exists** | Digicamo pixel digicam backdrop; per-app palettes in `notes.md` |
 | `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
+| `ui/` | **Exists** | Shared Control UI widgets (menu picker for OBS Interact) |
 | `*/notes.md` | **Exists** | Operator setup and complete URL parameter contracts |
 | `seshbanner/playlist.js` | **Exists** | Public YouTube playlist extraction and ticker formatting |
 | Build tooling / CI | **None** | Intentional: static files, no build step |
