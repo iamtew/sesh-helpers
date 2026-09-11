@@ -39,6 +39,9 @@ When stuck, check **Known gaps / TBD** below before inventing architecture. Ask 
 ```text
 sesh-helpers/
 ├── index.html                # Landing page — logo + project list
+├── style.css                 # Landing page + backdrop settings chrome
+├── app.js                    # Landing backdrop paint + Control UI
+├── notes.md                  # Landing backdrop URL parameter contract
 ├── README.md                 # Human overview
 ├── LICENSE                   # AGPL-3.0
 ├── CNAME                     # GitHub Pages custom domain
@@ -85,6 +88,8 @@ sesh-helpers/
 | `docs/` | **Exists** | Living documentation; extend as project grows |
 | `docs/index.html` | **Exists** | Docs viewer — themed markdown browser for spec files |
 | `index.html` | **Exists** | Landing page with project list (add new apps here) |
+| `style.css` / `app.js` | **Exists** | Landing backdrop + Control UI (menu closed by default) |
+| `notes.md` | **Exists** | Landing backdrop URL parameter contract |
 | `img/seshhelpers.png` | **Exists** | Brand reference for UI styling |
 | `spotsmoke/` | **Exists** | First helper app; Control UI reference impl |
 | `seshbanner/` | **Exists** | Banner overlay; Control UI + layouts |
@@ -165,6 +170,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 | Typography | [`TYPOGRAPHY.md`](TYPOGRAPHY.md) |
 | Overlay themes | [`THEMES.md`](THEMES.md) |
 | Landing page | [`index.html`](../index.html) |
+| Landing backdrop notes | [`notes.md`](../notes.md) |
 | Spot Smoke | [`spotsmoke/`](../spotsmoke/) |
 | Sesh Banner | [`seshbanner/`](../seshbanner/) |
 | Trick Request Banner | [`trbanner/`](../trbanner/) |

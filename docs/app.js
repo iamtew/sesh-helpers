@@ -21,6 +21,7 @@
     { slug: "themes", path: "docs/THEMES.md", fetch: "THEMES.md", label: "Themes" },
     { slug: "typography", path: "docs/TYPOGRAPHY.md", fetch: "TYPOGRAPHY.md", label: "Typography" },
     { slug: "root-readme", path: "README.md", fetch: "../README.md", label: "Repo overview" },
+    { slug: "landing-notes", path: "notes.md", fetch: "../notes.md", label: "Landing backdrop" },
     { slug: "spotsmoke/notes", path: "spotsmoke/notes.md", fetch: "../spotsmoke/notes.md", label: "Spot Smoke" },
     { slug: "spotsmoke/poster", path: "spotsmoke/poster.md", fetch: "../spotsmoke/poster.md", label: "Poster" },
     { slug: "seshbanner/notes", path: "seshbanner/notes.md", fetch: "../seshbanner/notes.md", label: "Sesh Banner" },

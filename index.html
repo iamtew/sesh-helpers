@@ -4,315 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sesh Helpers</title>
-  
+
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="manifest" href="/site.webmanifest">  
-  
+  <link rel="manifest" href="/site.webmanifest">
+
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/better-vcr">
   <link rel="stylesheet" href="themes/lcd-glass/theme.css">
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      color-scheme: dark;
-    }
-
-    body {
-      position: relative;
-      min-height: 100vh;
-      padding: 2.5rem 1.5rem 3rem;
-      color: var(--lcd-text-base, #eee);
-      font-family: "Better VCR", monospace;
-      line-height: 1.6;
-      background: #060b14;
-      overflow-x: hidden;
-    }
-
-    .backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background: #060b14;
-    }
-
-    .backdrop canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-    }
-
-    .backdrop::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 70% 55% at 50% 28%, rgba(14, 34, 62, 0.2), transparent 65%),
-        radial-gradient(ellipse at center, transparent 30%, rgba(2, 6, 14, 0.82) 100%);
-    }
-
-    .page {
-      position: relative;
-      z-index: 1;
-      max-width: 40rem;
-      margin: 0 auto;
-    }
-
-    .hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 1.5rem;
-      margin-bottom: 2.75rem;
-    }
-
-    .logo {
-      width: min(90vw, 36rem);
-      height: auto;
-      display: block;
-      filter: drop-shadow(0 8px 28px rgba(0, 0, 0, 0.45));
-    }
-
-    .tagline {
-      max-width: 28rem;
-      font-size: clamp(0.95rem, 2.4vw, 1.15rem);
-      letter-spacing: 0.06em;
-      color: var(--lcd-text-primary, #e0fefe);
-      text-shadow: var(--theme-text-shadow);
-    }
-
-    .obs-install {
-      max-width: 36rem;
-      margin: 0 auto 2.75rem;
-      text-align: left;
-    }
-
-    .obs-install > .theme-panel {
-      display: block;
-      padding: 1.35rem 1.5rem 1.5rem;
-      background: linear-gradient(
-        135deg,
-        rgba(14, 34, 62, 0.78),
-        rgba(48, 92, 144, 0.52)
-      );
-      backdrop-filter: blur(28px) saturate(140%);
-      -webkit-backdrop-filter: blur(28px) saturate(140%);
-    }
-
-    .obs-install h2 {
-      font-size: 0.8rem;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(170, 220, 255, 0.55);
-      margin-bottom: 0.85rem;
-      text-align: center;
-    }
-
-    .obs-install .lede {
-      margin-bottom: 1.15rem;
-      font-size: 0.85rem;
-      letter-spacing: 0.04em;
-      color: rgba(224, 254, 254, 0.7);
-      text-align: center;
-      text-shadow: none;
-    }
-
-    .obs-install h3 {
-      margin: 1rem 0 0.45rem;
-      font-size: 0.95rem;
-      font-weight: 400;
-      letter-spacing: 0.06em;
-      color: var(--lcd-text-primary, #e0fefe);
-      text-shadow: var(--theme-text-shadow);
-    }
-
-    .obs-install h3:first-of-type {
-      margin-top: 0;
-    }
-
-    .obs-install ul {
-      margin: 0;
-      padding-left: 1.15rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      font-size: 0.8rem;
-      letter-spacing: 0.03em;
-      color: rgba(224, 254, 254, 0.78);
-      text-shadow: none;
-    }
-
-    .obs-install li::marker {
-      color: rgba(170, 220, 255, 0.55);
-    }
-
-    .obs-install .guide-link {
-      display: block;
-      margin-top: 1.15rem;
-      text-align: center;
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
-      color: rgba(170, 220, 255, 0.85);
-      text-decoration: none;
-      transition: color 0.15s ease, text-shadow 0.15s ease;
-    }
-
-    .obs-install .guide-link:hover,
-    .obs-install .guide-link:focus-visible {
-      color: var(--lcd-text-primary, #e0fefe);
-      text-shadow: var(--theme-text-shadow);
-      outline: none;
-    }
-
-    .projects {
-      max-width: 22rem;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .projects h2 {
-      font-size: 0.8rem;
-      font-weight: 400;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(170, 220, 255, 0.55);
-      margin-bottom: 1rem;
-    }
-
-    .projects ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-    }
-
-    .projects a.theme-panel {
-      display: block;
-      padding: 1rem 1.35rem;
-      text-decoration: none;
-      letter-spacing: 0.05em;
-      /* Stronger frost than default LCD Glass — less see-through on the landing */
-      background: linear-gradient(
-        135deg,
-        rgba(14, 34, 62, 0.78),
-        rgba(48, 92, 144, 0.52)
-      );
-      backdrop-filter: blur(28px) saturate(140%);
-      -webkit-backdrop-filter: blur(28px) saturate(140%);
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.2s ease,
-        background 0.2s ease;
-    }
-
-    .projects a.theme-panel:hover,
-    .projects a.theme-panel:focus-visible {
-      border-color: rgba(170, 220, 255, 0.45);
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.28),
-        0 12px 36px rgba(0, 0, 0, 0.35),
-        0 0 24px rgba(0, 255, 255, 0.12);
-      transform: translateY(-2px);
-      outline: none;
-    }
-
-    .projects a .project-name {
-      display: block;
-      font-size: 1.05rem;
-      color: var(--lcd-text-primary, #e0fefe);
-    }
-
-    [data-theme="lcd-glass"] .projects a.theme-panel > span:not(.project-name) {
-      display: block;
-      margin-top: 0.3rem;
-      font-size: 0.75rem;
-      letter-spacing: 0.04em;
-      color: rgba(224, 254, 254, 0.55);
-      text-shadow: none;
-    }
-
-    footer {
-      margin-top: 2.75rem;
-      text-align: center;
-      font-size: 0.8rem;
-      letter-spacing: 0.06em;
-    }
-
-    footer a {
-      color: rgba(170, 220, 255, 0.7);
-      text-decoration: none;
-      transition: color 0.15s ease, text-shadow 0.15s ease;
-    }
-
-    footer a:hover,
-    footer a:focus-visible {
-      color: var(--lcd-text-primary, #e0fefe);
-      text-shadow: var(--theme-text-shadow);
-      outline: none;
-    }
-
-    /* Entrance motion */
-    .hero .logo,
-    .hero .tagline,
-    .obs-install,
-    .projects,
-    footer {
-      opacity: 0;
-      transform: translateY(12px);
-      animation: rise-in 0.7s ease forwards;
-    }
-
-    .hero .logo { animation-delay: 0.05s; }
-    .hero .tagline { animation-delay: 0.18s; }
-    .obs-install { animation-delay: 0.28s; }
-    .projects { animation-delay: 0.4s; }
-    footer { animation-delay: 0.54s; }
-
-    @keyframes rise-in {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .hero .logo,
-      .hero .tagline,
-      .obs-install,
-      .projects,
-      footer {
-        opacity: 1;
-        transform: none;
-        animation: none;
-      }
-
-      .projects a.theme-panel {
-        transition: none;
-      }
-
-      .projects a.theme-panel:hover,
-      .projects a.theme-panel:focus-visible {
-        transform: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="ui/menu-picker.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="backdrop" aria-hidden="true">
     <canvas id="lcd-backdrop" width="96" height="54"></canvas>
+    <div id="vignette"></div>
   </div>
 
   <div class="page">
@@ -394,121 +100,199 @@
     </footer>
   </div>
 
+  <div id="settings-menu">
+    <div class="menu-header">
+      <h2>Background</h2>
+      <div class="menu-header-buttons">
+        <button id="flip-side-button" aria-label="Move menu to other side">⇄</button>
+        <button id="close-menu-button" aria-label="Close settings">✕</button>
+      </div>
+    </div>
+
+    <p class="hint">Settings hidden: double-click the background or click the logo.</p>
+
+    <div class="settings-section" data-section="display">
+      <button id="display-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="display-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Display</button>
+      <div id="display-controls" class="section-panel">
+        <div class="setting-group">
+          <label id="palette-label"><span>Palette</span></label>
+          <div class="menu-picker" id="palette-picker"></div>
+        </div>
+        <div class="setting-group" id="custom-color-group" hidden>
+          <span class="group-label">Custom colors</span>
+          <div id="color-swatches" class="swatch-row"></div>
+          <div id="color-picker" aria-label="Custom color picker"></div>
+          <div class="color-hex-row">
+            <input id="color-input" type="text" inputmode="text" maxlength="7" spellcheck="false" aria-label="Custom color hex value" />
+            <button id="color-reset-button" class="small-button" type="button">Reset Color</button>
+          </div>
+        </div>
+        <div class="setting-group">
+          <label id="shape-label"><span>Shape</span></label>
+          <div class="menu-picker" id="shape-picker"></div>
+        </div>
+        <div id="shape-multiple-group" hidden>
+          <div class="setting-group">
+            <span class="group-label">Cycle shapes</span>
+            <div id="shape-grid" class="shape-grid"></div>
+          </div>
+          <div class="setting-group">
+            <label class="switch-row">
+              <input id="shape-random-toggle" type="checkbox" />
+              <span>Random order</span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <div class="range-control">
+              <div class="range-details">
+                <div class="range-label-row">
+                  <label for="cycle-slider"><span>Cycle time</span></label>
+                </div>
+                <div class="range-row">
+                  <input id="cycle-slider" type="range" min="1" max="30" step="0.5" />
+                </div>
+              </div>
+              <div class="range-meta">
+                <button type="button" class="reset-param" data-reset="cycle" aria-label="Reset cycle time" title="Reset cycle time">↺</button>
+                <span class="value-label" id="cycle-value"></span>
+              </div>
+            </div>
+          </div>
+          <div class="setting-group">
+            <div class="range-control">
+              <div class="range-details">
+                <div class="range-label-row">
+                  <label for="smooth-slider"><span>Smoothness</span></label>
+                </div>
+                <div class="range-row">
+                  <input id="smooth-slider" type="range" min="0" max="100" step="1" />
+                </div>
+              </div>
+              <div class="range-meta">
+                <button type="button" class="reset-param" data-reset="smooth" aria-label="Reset smoothness" title="Reset smoothness">↺</button>
+                <span class="value-label" id="smooth-value"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <label class="switch-row">
+            <input id="vignette-toggle" type="checkbox" />
+            <span>Vignette</span>
+          </label>
+        </div>
+        <div class="setting-group effect-control" id="vignette-strength-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="vignette-strength-slider"><span>Vignette strength</span></label>
+              </div>
+              <div class="range-row">
+                <input id="vignette-strength-slider" type="range" min="0" max="100" step="1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="vignetteStrength" aria-label="Reset vignette strength" title="Reset vignette strength">↺</button>
+              <span class="value-label" id="vignette-strength-value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" data-section="glitch">
+      <button id="glitch-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="glitch-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Glitch</button>
+      <div id="glitch-controls" class="section-panel" hidden>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-amount-slider"><span>Amount</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-amount-slider" type="range" min="0" max="1" step="0.01" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitch" aria-label="Reset glitch amount" title="Reset glitch amount">↺</button>
+              <span class="value-label" id="glitch-amount-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-shift-slider"><span>Band shift</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-shift-slider" type="range" min="0" max="1" step="0.01" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitchShift" aria-label="Reset band shift" title="Reset band shift">↺</button>
+              <span class="value-label" id="glitch-shift-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-chroma-slider"><span>Chroma</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-chroma-slider" type="range" min="0" max="1" step="0.01" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitchChroma" aria-label="Reset chroma" title="Reset chroma">↺</button>
+              <span class="value-label" id="glitch-chroma-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-bulge-slider"><span>Bulge</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-bulge-slider" type="range" min="0" max="1" step="0.01" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitchBulge" aria-label="Reset bulge" title="Reset bulge">↺</button>
+              <span class="value-label" id="glitch-bulge-value"></span>
+            </div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <div class="range-control">
+            <div class="range-details">
+              <div class="range-label-row">
+                <label for="glitch-rate-slider"><span>Rate</span></label>
+              </div>
+              <div class="range-row">
+                <input id="glitch-rate-slider" type="range" min="0.5" max="8" step="0.1" />
+              </div>
+            </div>
+            <div class="range-meta">
+              <button type="button" class="reset-param" data-reset="glitchRate" aria-label="Reset glitch rate" title="Reset glitch rate">↺</button>
+              <span class="value-label" id="glitch-rate-value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="reset-button" class="menu-action">Reset all</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+  <script src="abs/glitch-post.js"></script>
+  <script src="ui/menu-picker.js"></script>
   <script src="themes/lcd-glass/theme.js"></script>
-  <script>
-    (function () {
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      /* ---- LCD Glass geometric backdrop (low-res, pixel-scaled) ---- */
-      const canvas = document.getElementById("lcd-backdrop");
-      if (canvas) {
-        const ctx = canvas.getContext("2d", { alpha: false });
-        const W = canvas.width;
-        const H = canvas.height;
-        const image = ctx.createImageData(W, H);
-        const data = image.data;
-
-        // LCD Glass palette (RGB)
-        const PALETTE = [
-          [6, 11, 20],
-          [10, 22, 40],
-          [14, 34, 62],
-          [24, 56, 96],
-          [36, 78, 120],
-          [48, 100, 140],
-          [40, 120, 150],
-          [70, 40, 90]
-        ];
-
-        function paint(timeSec) {
-          const t = timeSec;
-          const cx = W * 0.5;
-          const cy = H * 0.42;
-          // Slow drift of the lattice origin
-          const ox = Math.sin(t * 0.12) * 6;
-          const oy = Math.cos(t * 0.09) * 4;
-          const ringPhase = t * 0.55;
-          const shear = t * 0.18;
-
-          for (let y = 0; y < H; y++) {
-            for (let x = 0; x < W; x++) {
-              const dx = x - cx - ox;
-              const dy = y - cy - oy;
-
-              // Manhattan diamond rings (expanding)
-              const manh = Math.abs(dx) + Math.abs(dy) * 1.2;
-              const rings = ((manh * 0.45 - ringPhase) % 4 + 4) % 4;
-              const ringBand = rings < 0.55 || rings > 3.45 ? 2 : rings < 1.1 ? 1 : 0;
-
-              // Isometric / diagonal lattice cells
-              const u = dx * 0.7 + dy * 0.4 + shear * 4;
-              const v = -dx * 0.4 + dy * 0.7 - shear * 3;
-              const cell = ((Math.floor(u / 5) + Math.floor(v / 5)) & 1);
-              const edgeU = Math.abs((u % 5 + 5) % 5 - 2.5);
-              const edgeV = Math.abs((v % 5 + 5) % 5 - 2.5);
-              const onGrid = edgeU < 0.55 || edgeV < 0.55 ? 1 : 0;
-
-              // Chequer brightness modulated by slow second wave
-              const pulse = Math.sin(manh * 0.2 - t * 0.4) * 0.5 + 0.5;
-
-              let level = 1 + cell + ringBand + onGrid;
-              if (pulse > 0.72) level += 1;
-              level = Math.max(0, Math.min(PALETTE.length - 1, level | 0));
-
-              // Sparse magenta flecks on bright grid intersections
-              let rgb = PALETTE[level];
-              if (onGrid && level >= 4 && ((x + y + (t * 3 | 0)) & 31) === 0) {
-                rgb = PALETTE[7];
-              }
-
-              const i = (y * W + x) * 4;
-              data[i] = rgb[0];
-              data[i + 1] = rgb[1];
-              data[i + 2] = rgb[2];
-              data[i + 3] = 255;
-            }
-          }
-          ctx.putImageData(image, 0, 0);
-        }
-
-        paint(0);
-
-        if (!reduceMotion) {
-          let raf = 0;
-          let last = 0;
-          const FRAME_MS = 50; // ~20fps — enough for ambient bg
-
-          function tick(now) {
-            raf = requestAnimationFrame(tick);
-            if (document.hidden) return;
-            if (now - last < FRAME_MS) return;
-            last = now;
-            paint(now * 0.001);
-          }
-
-          raf = requestAnimationFrame(tick);
-
-          document.addEventListener("visibilitychange", function () {
-            if (document.hidden) {
-              cancelAnimationFrame(raf);
-              raf = 0;
-            } else if (!raf) {
-              last = 0;
-              raf = requestAnimationFrame(tick);
-            }
-          });
-        }
-      }
-
-      /* ---- Tagline chromatic pulse ---- */
-      if (reduceMotion) return;
-
-      const pulseRoot = document.getElementById("pulse-root");
-      const effect = window.SeshThemes && window.SeshThemes.effects && window.SeshThemes.effects["lcd-glass"];
-      if (pulseRoot && effect && typeof effect.start === "function") {
-        effect.start(pulseRoot);
-      }
-    })();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

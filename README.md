@@ -7,6 +7,9 @@ the hosted site or serve the repository root with any static web server.
 
 **Hosted site:** <https://helpers.seshsofa.nl/>
 
+The landing page backdrop is configurable (double-click the background or click
+the logo). Settings and URL parameters: [notes.md](notes.md).
+
 ## Projects
 
 | App | What it does | Operator notes |
