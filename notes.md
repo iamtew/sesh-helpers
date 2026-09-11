@@ -5,7 +5,7 @@ lattice behind the project list. A Control UI panel configures **only that
 backdrop**. Logo, cards, tagline, and LCD Glass chrome stay as they are.
 
 The menu starts **closed**. Click the header logo, or double-click the
-background (not a project link), to open it. Close with ✕.
+background (not a project link), to open or close it. Close with ✕ as well.
 
 ## URL parameters
 
@@ -21,6 +21,9 @@ so a clean landing URL has no query. Missing params load as defaults.
 | `shapeRandom` | `false` | When multiple: random next shape instead of selected order |
 | `cycle` | `8` | Seconds until the next shape (`1`–`30`). Only when multiple |
 | `smooth` | `50` | Blend percent of each cycle (`0`–`100`; `0` = snap). Only when multiple |
+| `speed` | `1` | Animation time multiplier (`0.25`–`3`) |
+| `pixelSize` | `20` | Screen size of each canvas pixel in CSS px (`4`–`48`; bigger = chunkier) |
+| `cellSize` | `5` | Lattice pattern cell size in low-res pixels (`2`–`16`) |
 | `glitch` | `0` | Glitch master amount (`0`–`1`; `0` = off) |
 | `glitchShift` | `0.55` | Horizontal band shift strength (`0`–`1`) |
 | `glitchChroma` | `0.45` | Chromatic aberration fringe (`0`–`1`) |
@@ -50,7 +53,7 @@ from the selection excluding the current one.
 
 ## Runtime notes
 
-- Low-res 96×54 canvas, pixel-scaled to the viewport (~20fps).
+- Canvas resolution = viewport ÷ `pixelSize`, then pixel-scaled full-bleed (~20fps).
 - `prefers-reduced-motion: reduce` paints a static frame (no RAF loop, no
   shape cycling).
 - No `localStorage`. Reload the URL to restore the same backdrop.

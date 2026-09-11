@@ -82,7 +82,6 @@ const SHAPE_IDS = ["diamond", "circle", "square", "hex", "octagon", "star", "tri
 const SHAPE_SET = new Set(SHAPE_IDS);
 const SHAPE_MODE_IDS = new Set([...SHAPE_IDS, "multiple"]);
 const COLOR_COUNT = PALETTES.lcd.colors.length;
-const CELL_SIZE = 5;
 const FRAME_MS = 50;
 const REDUCE_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -151,6 +150,9 @@ const defaults = {
   shapeRandom: false,
   cycle: 8,
   smooth: 50,
+  speed: 1,
+  cellSize: 5,
+  pixelSize: 20,
   ...AbsGlitchPost.defaults,
   vignette: true,
   vignetteStrength: 33,
@@ -226,6 +228,18 @@ function clampSmooth(value) {
   return Math.min(100, Math.max(0, Math.round(value)));
 }
 
+function clampSpeed(value) {
+  return Math.min(3, Math.max(0.25, value));
+}
+
+function clampCellSize(value) {
+  return Math.min(16, Math.max(2, Math.round(value)));
+}
+
+function clampPixelSize(value) {
+  return Math.min(48, Math.max(4, Math.round(value)));
+}
+
 function clampVignetteStrength(value) {
   return Math.min(100, Math.max(0, Math.round(value)));
 }
@@ -250,6 +264,9 @@ let state = {
   shapeRandom: getBooleanParam("shapeRandom", defaults.shapeRandom),
   cycle: clampCycle(getNumberParam("cycle", defaults.cycle)),
   smooth: clampSmooth(getNumberParam("smooth", defaults.smooth)),
+  speed: clampSpeed(getNumberParam("speed", defaults.speed)),
+  cellSize: clampCellSize(getNumberParam("cellSize", defaults.cellSize)),
+  pixelSize: clampPixelSize(getNumberParam("pixelSize", defaults.pixelSize)),
   glitch: AbsGlitchPost.clampAmount(getNumberParam("glitch", defaults.glitch)),
   glitchShift: AbsGlitchPost.clampUnit(getNumberParam("glitchShift", defaults.glitchShift)),
   glitchChroma: AbsGlitchPost.clampUnit(getNumberParam("glitchChroma", defaults.glitchChroma)),
@@ -263,11 +280,24 @@ let state = {
 
 const canvas = document.getElementById("lcd-backdrop");
 const ctx = canvas.getContext("2d", { alpha: false });
-const W = canvas.width;
-const H = canvas.height;
-const image = ctx.createImageData(W, H);
-const data = image.data;
-const sourceData = new Uint8ClampedArray(data.length);
+let W = 0;
+let H = 0;
+let image = null;
+let data = null;
+let sourceData = null;
+
+function resizeCanvas() {
+  const nextW = Math.max(16, Math.round(window.innerWidth / state.pixelSize));
+  const nextH = Math.max(9, Math.round(window.innerHeight / state.pixelSize));
+  if (nextW === W && nextH === H && image) return;
+  W = nextW;
+  H = nextH;
+  canvas.width = W;
+  canvas.height = H;
+  image = ctx.createImageData(W, H);
+  data = image.data;
+  sourceData = new Uint8ClampedArray(data.length);
+}
 
 const vignetteEl = document.getElementById("vignette");
 const settingsMenu = document.getElementById("settings-menu");
@@ -286,6 +316,12 @@ const cycleSlider = document.getElementById("cycle-slider");
 const cycleValue = document.getElementById("cycle-value");
 const smoothSlider = document.getElementById("smooth-slider");
 const smoothValue = document.getElementById("smooth-value");
+const speedSlider = document.getElementById("speed-slider");
+const speedValue = document.getElementById("speed-value");
+const cellSizeSlider = document.getElementById("cell-size-slider");
+const cellSizeValue = document.getElementById("cell-size-value");
+const pixelSizeSlider = document.getElementById("pixel-size-slider");
+const pixelSizeValue = document.getElementById("pixel-size-value");
 const glitchAmountSlider = document.getElementById("glitch-amount-slider");
 const glitchAmountValue = document.getElementById("glitch-amount-value");
 const glitchShiftSlider = document.getElementById("glitch-shift-slider");
@@ -466,11 +502,13 @@ function shapePair(nowMs) {
 }
 
 function paint(timeSec, nowMs) {
+  if (!image) resizeCanvas();
   const lattice = currentLattice();
   const colors = lattice.colors;
   const fleckIndex = lattice.fleckIndex;
-  const half = CELL_SIZE / 2;
-  const edgeTol = Math.max(0.4, CELL_SIZE * 0.11);
+  const cellSize = state.cellSize;
+  const half = cellSize / 2;
+  const edgeTol = Math.max(0.4, cellSize * 0.11);
   const t = timeSec;
   const cx = W * 0.5;
   const cy = H * 0.42;
@@ -494,9 +532,9 @@ function paint(timeSec, nowMs) {
 
       const u = dx * 0.7 + dy * 0.4 + shear * 4;
       const v = -dx * 0.4 + dy * 0.7 - shear * 3;
-      const cell = (Math.floor(u / CELL_SIZE) + Math.floor(v / CELL_SIZE)) & 1;
-      const edgeU = Math.abs((u % CELL_SIZE + CELL_SIZE) % CELL_SIZE - half);
-      const edgeV = Math.abs((v % CELL_SIZE + CELL_SIZE) % CELL_SIZE - half);
+      const cell = (Math.floor(u / cellSize) + Math.floor(v / cellSize)) & 1;
+      const edgeU = Math.abs((u % cellSize + cellSize) % cellSize - half);
+      const edgeV = Math.abs((v % cellSize + cellSize) % cellSize - half);
       const onGrid = edgeU < edgeTol || edgeV < edgeTol ? 1 : 0;
 
       const pulse = Math.sin(manh * 0.2 - t * 0.4) * 0.5 + 0.5;
@@ -531,7 +569,7 @@ function tick(now) {
   if (document.hidden) return;
   if (now - last < FRAME_MS) return;
   last = now;
-  paint(now * 0.001, now);
+  paint(now * 0.001 * state.speed, now);
 }
 
 function startAnimation() {
@@ -551,7 +589,7 @@ function stopAnimation() {
 
 function repaintNow() {
   const nowMs = REDUCE_MOTION ? 0 : performance.now();
-  paint(nowMs * 0.001, nowMs);
+  paint(nowMs * 0.001 * state.speed, nowMs);
 }
 
 document.addEventListener("visibilitychange", () => {
@@ -579,6 +617,9 @@ function buildSearchParams(source, options = {}) {
     setIfChanged(out, "cycle", source.cycle, defaults.cycle);
     setIfChanged(out, "smooth", source.smooth, defaults.smooth);
   }
+  setIfChanged(out, "speed", source.speed, defaults.speed);
+  setIfChanged(out, "cellSize", source.cellSize, defaults.cellSize);
+  setIfChanged(out, "pixelSize", source.pixelSize, defaults.pixelSize);
   setIfChanged(out, "glitch", source.glitch, defaults.glitch);
   setIfChanged(out, "glitchShift", source.glitchShift, defaults.glitchShift);
   setIfChanged(out, "glitchChroma", source.glitchChroma, defaults.glitchChroma);
@@ -654,11 +695,15 @@ function renderSwatches() {
   });
 }
 
-function openSettings() {
-  if (state.settingsMode === "ON") return;
-  state.settingsMode = "ON";
+function setSettingsMode(mode) {
+  if (state.settingsMode === mode) return;
+  state.settingsMode = mode;
   applySettingsMode();
   updateURL();
+}
+
+function toggleSettings() {
+  setSettingsMode(state.settingsMode === "ON" ? "DISABLE" : "ON");
 }
 
 function syncInputs() {
@@ -676,6 +721,12 @@ function syncInputs() {
   cycleValue.textContent = `${state.cycle.toFixed(1)}s`;
   smoothSlider.value = state.smooth;
   smoothValue.textContent = `${state.smooth}%`;
+  speedSlider.value = state.speed;
+  speedValue.textContent = `${state.speed.toFixed(2)}x`;
+  cellSizeSlider.value = state.cellSize;
+  cellSizeValue.textContent = String(state.cellSize);
+  pixelSizeSlider.value = state.pixelSize;
+  pixelSizeValue.textContent = String(state.pixelSize);
   glitchAmountSlider.value = state.glitch;
   glitchAmountValue.textContent = AbsGlitchPost.formatPercent(state.glitch);
   glitchShiftSlider.value = state.glitchShift;
@@ -697,6 +748,7 @@ function applyAll() {
   applySide();
   syncInputs();
   resetShapeCycle();
+  resizeCanvas();
   repaintNow();
 }
 
@@ -707,6 +759,15 @@ function resetParam(key) {
       break;
     case "smooth":
       state.smooth = defaults.smooth;
+      break;
+    case "speed":
+      state.speed = defaults.speed;
+      break;
+    case "cellSize":
+      state.cellSize = defaults.cellSize;
+      break;
+    case "pixelSize":
+      state.pixelSize = defaults.pixelSize;
       break;
     case "glitch":
       state.glitch = defaults.glitch;
@@ -730,7 +791,10 @@ function resetParam(key) {
       return;
   }
   syncInputs();
-  if (key.startsWith("glitch")) repaintNow();
+  if (key === "speed" || key === "cellSize" || key === "pixelSize" || key.startsWith("glitch")) {
+    if (key === "pixelSize") resizeCanvas();
+    repaintNow();
+  }
   updateURL();
 }
 
@@ -764,12 +828,13 @@ document.addEventListener("click", (e) => {
   if (!(e.target instanceof Element)) return;
   if (e.target.closest("#settings-menu")) return;
   if (e.target.closest("a")) return;
-  openSettings();
+  if (e.target.closest(".logo-glitch")) return;
+  toggleSettings();
 });
 
 if (logo) {
   logo.addEventListener("click", () => {
-    openSettings();
+    toggleSettings();
   });
 }
 
@@ -780,9 +845,7 @@ flipSideButton.addEventListener("click", () => {
 });
 
 closeSettingsButton.addEventListener("click", () => {
-  state.settingsMode = "DISABLE";
-  applySettingsMode();
-  updateURL();
+  setSettingsMode("DISABLE");
 });
 
 colorInput.addEventListener("input", (e) => {
@@ -829,6 +892,28 @@ cycleSlider.addEventListener("input", (e) => {
 smoothSlider.addEventListener("input", (e) => {
   state.smooth = clampSmooth(Number.parseFloat(e.target.value));
   syncInputs();
+  updateURL();
+});
+
+speedSlider.addEventListener("input", (e) => {
+  state.speed = clampSpeed(Number.parseFloat(e.target.value));
+  syncInputs();
+  if (!REDUCE_MOTION) repaintNow();
+  updateURL();
+});
+
+cellSizeSlider.addEventListener("input", (e) => {
+  state.cellSize = clampCellSize(Number.parseFloat(e.target.value));
+  syncInputs();
+  repaintNow();
+  updateURL();
+});
+
+pixelSizeSlider.addEventListener("input", (e) => {
+  state.pixelSize = clampPixelSize(Number.parseFloat(e.target.value));
+  resizeCanvas();
+  syncInputs();
+  repaintNow();
   updateURL();
 });
 
@@ -893,6 +978,9 @@ resetButton.addEventListener("click", () => {
   state.shapeRandom = defaults.shapeRandom;
   state.cycle = defaults.cycle;
   state.smooth = defaults.smooth;
+  state.speed = defaults.speed;
+  state.cellSize = defaults.cellSize;
+  state.pixelSize = defaults.pixelSize;
   state.glitch = defaults.glitch;
   state.glitchShift = defaults.glitchShift;
   state.glitchChroma = defaults.glitchChroma;
@@ -909,6 +997,10 @@ resetButton.addEventListener("click", () => {
 
 applyAll();
 updateURL();
+window.addEventListener("resize", () => {
+  resizeCanvas();
+  repaintNow();
+});
 if (!REDUCE_MOTION) startAnimation();
 
 if (!REDUCE_MOTION) {
