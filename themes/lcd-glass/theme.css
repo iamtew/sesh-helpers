@@ -1,6 +1,6 @@
 /* LCD Glass — reusable overlay theme
    Host: set data-theme="lcd-glass" on <html> and class="theme-panel" on the glass surface.
-   Pulse: themes/lcd-glass/theme.js writes --theme-text-shadow on the panel (or an ancestor). */
+   Pulse + Pixi pane: themes/lcd-glass/theme.js (needs vendored PixiJS on the panel). */
 
 [data-theme="lcd-glass"] {
   --lcd-text-primary: #e0fefe;
@@ -39,6 +39,9 @@
 }
 
 [data-theme="lcd-glass"] .theme-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   color: var(--lcd-text-primary);
   background: linear-gradient(135deg, var(--lcd-glass-grad-a), var(--lcd-glass-grad-b));
   border: 1px solid var(--lcd-glass-border);
@@ -51,6 +54,31 @@
   text-shadow: var(--theme-text-shadow);
 }
 
+[data-theme="lcd-glass"] .theme-panel .lcd-glass-pixi {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+[data-theme="lcd-glass"] .theme-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+[data-theme="lcd-glass"] .theme-panel > .lcd-glass-pixi {
+  position: absolute;
+  z-index: 0;
+}
+
 [data-theme="lcd-glass"] .theme-panel * {
   text-shadow: var(--theme-text-shadow);
+}
+
+[data-theme="lcd-glass"] .theme-panel .lcd-glass-pixi {
+  text-shadow: none;
 }
