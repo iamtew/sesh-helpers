@@ -16,7 +16,7 @@ themes/
 ├── lcd-glass/
 │   ├── theme.json    # id, name, description, preferred fonts
 │   ├── theme.css     # tokens + .theme-panel surface
-│   └── theme.js      # optional effects (e.g. chromatic pulse) + catalog entry
+│   └── theme.js      # chromatic pulse + PixiJS pane (needs vendor/pixi)
 ├── sesh-glass/
 │   ├── theme.json
 │   ├── theme.css
@@ -64,7 +64,12 @@ Page background stays **transparent**.
 
 ## LCD Glass
 
-Frosted navy-cyan glass, ice-blue text, and a magenta/cyan chromatic pulse.
+Frosted navy-cyan glass pane, ice-blue text, and a magenta/cyan chromatic pulse.
+A **PixiJS** caustic wash, specular rim, and quiet ice specks sit behind the
+readout on `.theme-panel`. Hosts that offer this pane must load
+[`vendor/pixi/pixi.min.js`](../vendor/pixi/pixi.min.js) before `theme.js`. CSS
+gradient remains if Pixi is missing or `start()` is not a `.theme-panel`. Page
+background stays transparent.
 
 Preferred fonts — Display: `Better VCR`; Regular: `Better VCR`.
 
