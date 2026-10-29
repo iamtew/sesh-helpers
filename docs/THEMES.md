@@ -51,7 +51,7 @@ metadata for meat bags and tooling; current apps load the catalog entry register
 2. Set `document.documentElement.dataset.theme` to the theme `id`.
 3. Put `class="theme-panel"` on the glass surface (the banner box, not the page).
 4. Settings menu pickers read `window.SeshThemes.catalog` (each `theme.js` registers itself).
-5. Effects: `window.SeshThemes.effects[id].start(el)` / `.stop(el)` — pass the panel or an ancestor. Glass themes write `--theme-text-shadow` so child text pulses.
+5. Effects: `window.SeshThemes.effects[id].start(el)` / `.stop(el)` — pass the `.theme-panel` node. Pixi canvases attach to that element; an ancestor leaves fire/caustics behind the glass. Glass themes write `--theme-text-shadow` so child text pulses.
 6. When font URL params are missing, or fonts are reset / theme is changed, apply
    `preferredDisplay` / `preferredRegular` to the overlay field roles (see
    [`TYPOGRAPHY.md`](TYPOGRAPHY.md)).

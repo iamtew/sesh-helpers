@@ -860,15 +860,17 @@ function applyContent() {
 function applyTheme() {
   document.documentElement.dataset.theme = state.theme;
 
+  const livePanel = isPlaylistLayout(state.layout) ? playlistPanel : textLayout;
+  const idlePanel = livePanel === playlistPanel ? textLayout : playlistPanel;
   const effects = (window.SeshThemes && window.SeshThemes.effects) || {};
   for (const [id, effect] of Object.entries(effects)) {
-    if (typeof effect.stop === "function" && id !== state.theme) {
-      effect.stop(banner);
-    }
+    if (typeof effect.stop !== "function") continue;
+    effect.stop(idlePanel);
+    if (id !== state.theme) effect.stop(livePanel);
   }
   const active = effects[state.theme];
   if (active && typeof active.start === "function") {
-    active.start(banner);
+    active.start(livePanel);
   }
 
   applySize();
@@ -1081,13 +1083,14 @@ function applyLayout() {
   } else {
     clearPlaylistFetch();
   }
+
+  applyTheme();
 }
 
 function applyAll() {
   applyContent();
-  applyTheme();
-  applyFonts();
   applyLayout();
+  applyFonts();
   applyBackground();
   applyBannerPosition();
   applySettingsMode();
