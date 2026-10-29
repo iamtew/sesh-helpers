@@ -1,6 +1,6 @@
 /* Sesh Glass — reusable overlay theme
    Host: set data-theme="sesh-glass" on <html> and class="theme-panel" on the glass surface.
-   Pulse: themes/sesh-glass/theme.js writes --theme-text-shadow on the panel (or an ancestor). */
+   Pulse + Pixi fill: themes/sesh-glass/theme.js (needs vendored PixiJS). */
 
 [data-theme="sesh-glass"] {
   --sesh-text-primary: #fff6e8;
@@ -57,7 +57,9 @@
 [data-theme="sesh-glass"] .theme-panel {
   position: relative;
   isolation: isolate;
+  overflow: hidden;
   color: var(--sesh-text-primary);
+  /* CSS gradient is the fallback if Pixi never boots */
   background: linear-gradient(135deg, var(--sesh-glass-grad-a), var(--sesh-glass-grad-b));
   border: 1px solid var(--sesh-glass-border);
   border-radius: var(--banner-radius, var(--sesh-radius-panel));
@@ -71,14 +73,25 @@
   text-shadow: var(--theme-text-shadow);
 }
 
-/* Opposite gradient punched into staggered dots, lightened over the glass */
+[data-theme="sesh-glass"] .theme-panel .sesh-glass-pixi {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+/* Opposite gradient punched into staggered dots, lightened over the glass / Pixi fill */
 [data-theme="sesh-glass"] .theme-panel::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
   background: linear-gradient(
     135deg,
     var(--sesh-halftone-grad-a),
@@ -102,9 +115,18 @@
 
 [data-theme="sesh-glass"] .theme-panel > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+}
+
+[data-theme="sesh-glass"] .theme-panel > .sesh-glass-pixi {
+  position: absolute;
+  z-index: 0;
 }
 
 [data-theme="sesh-glass"] .theme-panel * {
   text-shadow: var(--theme-text-shadow);
+}
+
+[data-theme="sesh-glass"] .theme-panel .sesh-glass-pixi {
+  text-shadow: none;
 }
