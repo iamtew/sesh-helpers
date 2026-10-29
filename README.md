@@ -78,6 +78,11 @@ Then open <http://localhost:8000/>. No package install or clanker ritual is requ
 [docs/README.md](docs/README.md) indexes the implementation contracts and clanker
 onboarding. App-specific operator instructions live beside each app in `notes.md`.
 
+## Credits
+
+Third-party fonts, icons, and scripts live under [`vendor/`](vendor/). Licenses:
+[CREDITS.md](CREDITS.md).
+
 ## License
 
 AGPL-3.0 — see [LICENSE](LICENSE).

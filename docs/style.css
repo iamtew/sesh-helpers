@@ -43,10 +43,11 @@ a {
   --docs-accent: rgba(0, 255, 255, 0.45);
 }
 
-[data-theme="sesh-glass"] {
+[data-theme="sesh-glass"],
+[data-theme="sesh-glass-old"] {
   --docs-text: var(--sesh-text-primary, #fff6e8);
   --docs-text-muted: rgba(255, 246, 232, 0.62);
-  --docs-border: var(--sesh-glass-border, rgba(255, 230, 90, 0.32));
+  --docs-border: var(--sesh-glass-border, var(--sesh-glass-old-border, rgba(255, 230, 90, 0.32)));
   --docs-chrome-bg: rgba(40, 8, 8, 0.72);
   --docs-chrome-hover: rgba(242, 13, 13, 0.35);
   --docs-chrome-active: rgba(229, 242, 13, 0.22);
@@ -146,6 +147,7 @@ a {
 /* Sesh Glass + 3026 D3C0 decorative layers come from themes/*/theme.css
    (.theme-panel::before halftone / sunburst). Ensure header controls stay above. */
 [data-theme="sesh-glass"] .top-bar.theme-panel > *,
+[data-theme="sesh-glass-old"] .top-bar.theme-panel > *,
 [data-theme="3026-d3c0"] .top-bar.theme-panel > * {
   position: relative;
   z-index: 1;
@@ -201,8 +203,8 @@ a {
 }
 
 .github-icon {
-  width: 1rem;
-  height: 1rem;
+  font-size: 1.05rem;
+  line-height: 1;
   flex-shrink: 0;
 }
 
@@ -237,7 +239,8 @@ a {
   color: #e0fefe;
 }
 
-[data-theme="sesh-glass"] .theme-control select option {
+[data-theme="sesh-glass"] .theme-control select option,
+[data-theme="sesh-glass-old"] .theme-control select option {
   background-color: #1a0808;
   color: #fff6e8;
 }
@@ -434,28 +437,11 @@ a {
 
 .file-icon {
   flex-shrink: 0;
+  font-size: 1.05rem;
+  line-height: 1;
   width: 1.1rem;
-  height: 1.35rem;
-  margin-top: 0.1rem;
-  border-radius: 2px;
-  border: 1px solid var(--docs-border);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 40%),
-    rgba(0, 0, 0, 0.3);
-  position: relative;
-}
-
-.file-icon::after {
-  content: "";
-  position: absolute;
-  top: -1px;
-  right: -1px;
-  width: 0.45rem;
-  height: 0.45rem;
-  background: var(--docs-chrome-bg);
-  border-left: 1px solid var(--docs-border);
-  border-bottom: 1px solid var(--docs-border);
-  border-bottom-left-radius: 2px;
+  text-align: center;
+  color: var(--docs-text-muted);
 }
 
 .file-meta {
@@ -640,7 +626,7 @@ a {
 .doc-content {
   padding: 1.35rem 1.65rem 2rem;
   background: rgba(0, 0, 0, 0.08);
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: 'Geist', sans-serif;
   line-height: 1.65;
 }
 

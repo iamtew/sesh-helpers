@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>Diamond — ABS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../../vendor/fonts/ui.css" />
+  <link rel="stylesheet" href="../../vendor/tabler-icons/tabler-icons.min.css" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="../../ui/menu-picker.css" />
 </head>
@@ -15,15 +17,15 @@
     <div class="menu-header">
       <h2>Diamond</h2>
       <div class="menu-header-buttons">
-        <button id="flip-side-button" aria-label="Move menu to other side">⇄</button>
-        <button id="close-menu-button" aria-label="Close settings">✕</button>
+        <button id="flip-side-button" aria-label="Move menu to other side"><span class="ti ti-arrows-exchange" aria-hidden="true"></span></button>
+        <button id="close-menu-button" aria-label="Close settings"><span class="ti ti-x" aria-hidden="true"></span></button>
       </div>
     </div>
 
     <p class="hint">Settings hidden: double-click to reopen. ABS backdrop — use Copy URL for OBS for clean output.</p>
 
     <div class="settings-section" data-section="animation">
-      <button id="animation-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="animation-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Animation</button>
+      <button id="animation-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="animation-controls" data-section-toggle><span class="section-toggle-icon ti ti-chevron-down" aria-hidden="true"></span>Animation</button>
       <div id="animation-controls" class="section-panel">
         <div class="setting-group">
           <div class="range-control">
@@ -36,7 +38,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="speed" aria-label="Reset speed" title="Reset speed">↺</button>
+              <button type="button" class="reset-param" data-reset="speed" aria-label="Reset speed" title="Reset speed"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="speed-value"></span>
             </div>
           </div>
@@ -52,7 +54,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="cellSize" aria-label="Reset cell size" title="Reset cell size">↺</button>
+              <button type="button" class="reset-param" data-reset="cellSize" aria-label="Reset cell size" title="Reset cell size"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="cell-size-value"></span>
             </div>
           </div>
@@ -61,7 +63,7 @@
     </div>
 
     <div class="settings-section" data-section="glitch">
-      <button id="glitch-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="glitch-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Glitch</button>
+      <button id="glitch-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="glitch-controls" data-section-toggle><span class="section-toggle-icon ti ti-chevron-right" aria-hidden="true"></span>Glitch</button>
       <div id="glitch-controls" class="section-panel" hidden>
         <div class="setting-group">
           <div class="range-control">
@@ -74,7 +76,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitch" aria-label="Reset glitch amount" title="Reset glitch amount">↺</button>
+              <button type="button" class="reset-param" data-reset="glitch" aria-label="Reset glitch amount" title="Reset glitch amount"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-amount-value"></span>
             </div>
           </div>
@@ -90,7 +92,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitchShift" aria-label="Reset band shift" title="Reset band shift">↺</button>
+              <button type="button" class="reset-param" data-reset="glitchShift" aria-label="Reset band shift" title="Reset band shift"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-shift-value"></span>
             </div>
           </div>
@@ -106,7 +108,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitchChroma" aria-label="Reset chroma" title="Reset chroma">↺</button>
+              <button type="button" class="reset-param" data-reset="glitchChroma" aria-label="Reset chroma" title="Reset chroma"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-chroma-value"></span>
             </div>
           </div>
@@ -122,7 +124,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitchBulge" aria-label="Reset bulge" title="Reset bulge">↺</button>
+              <button type="button" class="reset-param" data-reset="glitchBulge" aria-label="Reset bulge" title="Reset bulge"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-bulge-value"></span>
             </div>
           </div>
@@ -138,7 +140,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitchRate" aria-label="Reset glitch rate" title="Reset glitch rate">↺</button>
+              <button type="button" class="reset-param" data-reset="glitchRate" aria-label="Reset glitch rate" title="Reset glitch rate"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-rate-value"></span>
             </div>
           </div>
@@ -147,7 +149,7 @@
     </div>
 
     <div class="settings-section" data-section="display">
-      <button id="display-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="display-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Display</button>
+      <button id="display-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="display-controls" data-section-toggle><span class="section-toggle-icon ti ti-chevron-right" aria-hidden="true"></span>Display</button>
       <div id="display-controls" class="section-panel" hidden>
         <div class="setting-group">
           <label id="palette-label"><span>Palette</span></label>
@@ -170,7 +172,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="vignetteStrength" aria-label="Reset vignette strength" title="Reset vignette strength">↺</button>
+              <button type="button" class="reset-param" data-reset="vignetteStrength" aria-label="Reset vignette strength" title="Reset vignette strength"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="vignette-strength-value"></span>
             </div>
           </div>

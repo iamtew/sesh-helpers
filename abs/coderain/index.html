@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>Code Rain — ABS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../../vendor/fonts/ui.css" />
+  <link rel="stylesheet" href="../../vendor/tabler-icons/tabler-icons.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,15 +15,15 @@
     <div class="menu-header">
       <h2>Code Rain</h2>
       <div class="menu-header-buttons">
-        <button id="flip-side-button" aria-label="Move menu to other side">⇄</button>
-        <button id="close-menu-button" aria-label="Close settings">✕</button>
+        <button id="flip-side-button" aria-label="Move menu to other side"><span class="ti ti-arrows-exchange" aria-hidden="true"></span></button>
+        <button id="close-menu-button" aria-label="Close settings"><span class="ti ti-x" aria-hidden="true"></span></button>
       </div>
     </div>
 
     <p class="hint">Settings hidden: double-click to reopen. ABS backdrop — use Copy URL for OBS for clean output. Transparent background turns this into an overlay.</p>
 
     <div class="settings-section" data-section="animation">
-      <button id="animation-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="animation-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏷</span>Animation</button>
+      <button id="animation-toggle" class="setting-toggle" type="button" aria-expanded="true" aria-controls="animation-controls" data-section-toggle><span class="section-toggle-icon ti ti-chevron-down" aria-hidden="true"></span>Animation</button>
       <div id="animation-controls" class="section-panel">
         <div class="setting-group">
           <div class="range-control">
@@ -34,7 +36,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="speed" aria-label="Reset speed" title="Reset speed">↺</button>
+              <button type="button" class="reset-param" data-reset="speed" aria-label="Reset speed" title="Reset speed"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="speed-value"></span>
             </div>
           </div>
@@ -50,7 +52,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="size" aria-label="Reset size" title="Reset size">↺</button>
+              <button type="button" class="reset-param" data-reset="size" aria-label="Reset size" title="Reset size"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="size-value"></span>
             </div>
           </div>
@@ -87,7 +89,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="motion" aria-label="Reset motion" title="Reset motion">↺</button>
+              <button type="button" class="reset-param" data-reset="motion" aria-label="Reset motion" title="Reset motion"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="motion-value"></span>
             </div>
           </div>
@@ -96,7 +98,7 @@
     </div>
 
     <div class="settings-section" data-section="color">
-      <button id="color-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="color-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Color</button>
+      <button id="color-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="color-controls" data-section-toggle><span class="section-toggle-icon ti ti-chevron-right" aria-hidden="true"></span>Color</button>
       <div id="color-controls" class="section-panel" hidden>
         <div class="setting-group">
           <span class="group-label">Rain</span>
@@ -118,7 +120,7 @@
                 </div>
               </div>
               <div class="range-meta">
-                <button type="button" class="reset-param" data-reset="spin" aria-label="Reset rotation" title="Reset rotation">↺</button>
+                <button type="button" class="reset-param" data-reset="spin" aria-label="Reset rotation" title="Reset rotation"><span class="ti ti-restore" aria-hidden="true"></span></button>
                 <span class="value-label" id="spin-value"></span>
               </div>
             </div>
@@ -136,7 +138,7 @@
     </div>
 
     <div class="settings-section" data-section="glitch">
-      <button id="glitch-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="glitch-controls" data-section-toggle><span class="section-toggle-icon" aria-hidden="true">⏵</span>Glitch</button>
+      <button id="glitch-toggle" class="setting-toggle" type="button" aria-expanded="false" aria-controls="glitch-controls" data-section-toggle><span class="section-toggle-icon ti ti-chevron-right" aria-hidden="true"></span>Glitch</button>
       <div id="glitch-controls" class="section-panel" hidden>
         <div class="setting-group">
           <div class="range-control">
@@ -149,7 +151,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitch" aria-label="Reset glitch amount" title="Reset glitch amount">↺</button>
+              <button type="button" class="reset-param" data-reset="glitch" aria-label="Reset glitch amount" title="Reset glitch amount"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-amount-value"></span>
             </div>
           </div>
@@ -165,7 +167,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitchShift" aria-label="Reset band shift" title="Reset band shift">↺</button>
+              <button type="button" class="reset-param" data-reset="glitchShift" aria-label="Reset band shift" title="Reset band shift"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-shift-value"></span>
             </div>
           </div>
@@ -181,7 +183,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitchChroma" aria-label="Reset chroma" title="Reset chroma">↺</button>
+              <button type="button" class="reset-param" data-reset="glitchChroma" aria-label="Reset chroma" title="Reset chroma"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-chroma-value"></span>
             </div>
           </div>
@@ -197,7 +199,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitchBulge" aria-label="Reset bulge" title="Reset bulge">↺</button>
+              <button type="button" class="reset-param" data-reset="glitchBulge" aria-label="Reset bulge" title="Reset bulge"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-bulge-value"></span>
             </div>
           </div>
@@ -213,7 +215,7 @@
               </div>
             </div>
             <div class="range-meta">
-              <button type="button" class="reset-param" data-reset="glitchRate" aria-label="Reset glitch rate" title="Reset glitch rate">↺</button>
+              <button type="button" class="reset-param" data-reset="glitchRate" aria-label="Reset glitch rate" title="Reset glitch rate"><span class="ti ti-restore" aria-hidden="true"></span></button>
               <span class="value-label" id="glitch-rate-value"></span>
             </div>
           </div>
@@ -229,7 +231,7 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+  <script src="../../vendor/iro/iro.min.js"></script>
   <script src="../glitch-post.js"></script>
   <script src="app.js"></script>
 </body>

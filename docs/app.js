@@ -83,6 +83,7 @@
     return [
       { id: "lcd-glass", name: "LCD Glass" },
       { id: "sesh-glass", name: "Sesh Glass" },
+      { id: "sesh-glass-old", name: "Sesh Glass (old)" },
       { id: "3026-d3c0", name: "3026 D3C0" }
     ];
   }
@@ -268,7 +269,7 @@
     link.dataset.slug = entry.slug;
     link.title = entry.path;
     link.innerHTML =
-      `<span class="file-icon" aria-hidden="true"></span>` +
+      `<span class="file-icon ti ti-file-text" aria-hidden="true"></span>` +
       `<span class="file-meta">` +
       `<span class="file-name">${escapeHtml(basename(entry.path))}</span>` +
       `</span>`;

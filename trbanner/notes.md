@@ -36,7 +36,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `title` | Banner title | `Trick Request by:` |
 | `user` | Requester name | `Modney Rullen` |
 | `message` | Request text | `Do a kickflip!` |
-| `theme` | Overlay theme id (`lcd-glass` · `sesh-glass` · `3026-d3c0`) | `lcd-glass` |
+| `theme` | Overlay theme id (`lcd-glass` · `sesh-glass` · `sesh-glass-old` · `3026-d3c0`) | `lcd-glass` |
 | `titleFont` / `userFont` / `messageFont` | Font **index** in combined list (0–11) | theme preferred Display / Regular when unset |
 | `titleSize` | Title font size (px, 12–96) | `20` |
 | `userSize` | User font size (px, 12–96) | `26` |
@@ -103,7 +103,7 @@ Changing **Theme** applies that theme’s preferred fonts (title/user → Displa
 | `6` | Flapdoodle | Regular |
 | `7` | Londrina Solid | Regular |
 | `8` | Pill Gothic 600mg | Regular |
-| `9` | Segoe UI | Regular |
+| `9` | Geist | Regular |
 | `10` | Lemondrop | Display |
 | `11` | Brighton Sans NBP | Regular |
 

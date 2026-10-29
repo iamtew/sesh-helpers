@@ -1,3 +1,8 @@
+function setToggleIcon(icon, open) {
+  if (!icon) return;
+  icon.classList.toggle("ti-chevron-down", !!open);
+  icon.classList.toggle("ti-chevron-right", !open);
+}
 // Shard — ABS recursive stained-glass polygon mosaic.
 // Query string is the complete shareable config for meat bags and OBS.
 
@@ -1374,13 +1379,13 @@ sectionToggles.forEach((toggle) => {
       const otherIcon = other.querySelector(".section-toggle-icon");
       other.setAttribute("aria-expanded", "false");
       otherPanel.hidden = true;
-      if (otherIcon) otherIcon.textContent = "⏵";
+      setToggleIcon(otherIcon, false);
     });
 
     if (willOpen) {
       toggle.setAttribute("aria-expanded", "true");
       panel.hidden = false;
-      if (icon) icon.textContent = "⏷";
+      setToggleIcon(icon, true);
     }
   });
 });

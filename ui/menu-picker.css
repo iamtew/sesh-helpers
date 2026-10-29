@@ -38,10 +38,11 @@
 }
 
 .menu-picker-trigger .menu-picker-caret {
+  display: inline-block;
   flex-shrink: 0;
   opacity: 0.85;
   color: var(--accent, #00ffff);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .menu-picker[data-open="true"] .menu-picker-caret {

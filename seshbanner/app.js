@@ -1,3 +1,8 @@
+function setToggleIcon(icon, open) {
+  if (!icon) return;
+  icon.classList.toggle("ti-chevron-down", !!open);
+  icon.classList.toggle("ti-chevron-right", !open);
+}
 // Sesh Banner runtime. Clanker contract: every persisted edit applies live and
 // rewrites the complete URL that a meat bag can paste into OBS.
 // --- CONFIG ---------------------------------------------------------
@@ -16,7 +21,7 @@ const REGULAR_FONTS = [
   "Flapdoodle",
   "Londrina Solid",
   "Pill Gothic 600mg",
-  "Segoe UI",
+  "Geist",
   "Brighton Sans NBP"
 ];
 
@@ -35,7 +40,7 @@ const ALL_FONTS = [
   "Flapdoodle",
   "Londrina Solid",
   "Pill Gothic 600mg",
-  "Segoe UI",
+  "Geist",
   "Lemondrop",
   "Brighton Sans NBP"
 ];
@@ -209,6 +214,13 @@ function getThemeCatalog() {
       preferredRegular: "Londrina Solid"
     },
     {
+      id: "sesh-glass-old",
+      name: "Sesh Glass (old)",
+      description: "",
+      preferredDisplay: "Monster Chiller",
+      preferredRegular: "Londrina Solid"
+    },
+    {
       id: "3026-d3c0",
       name: "3026 D3C0",
       description: "",
@@ -278,6 +290,7 @@ function resolveFontParam(raw, fonts, fallbackFont) {
     return fonts[index] ?? fonts[fallbackIndex];
   }
 
+  if (trimmed === "Segoe UI") return fonts.includes("Geist") ? "Geist" : fonts[fallbackIndex];
   return fonts.includes(trimmed) ? trimmed : fonts[fallbackIndex];
 }
 
@@ -1134,7 +1147,7 @@ function setOpenSection(section) {
     const panel = document.getElementById(toggle.getAttribute("aria-controls"));
     const isOpen = toggle.closest("[data-section]") === section;
     toggle.setAttribute("aria-expanded", String(isOpen));
-    toggle.querySelector(".section-toggle-icon").textContent = isOpen ? "⏷" : "⏵";
+    setToggleIcon(toggle.querySelector(".section-toggle-icon"), isOpen);
     panel.hidden = !isOpen;
   }
 }

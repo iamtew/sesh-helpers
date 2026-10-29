@@ -43,6 +43,7 @@ sesh-helpers/
 ├── app.js                    # Landing backdrop paint + Control UI
 ├── notes.md                  # Landing backdrop URL parameter contract
 ├── README.md                 # Human overview
+├── CREDITS.md                # Vendored third-party licenses
 ├── LICENSE                   # AGPL-3.0
 ├── CNAME                     # GitHub Pages custom domain
 ├── img/
@@ -69,9 +70,11 @@ sesh-helpers/
 ├── ui/                       # Shared Control UI widgets
 │   ├── menu-picker.js        # Custom dropdown (OBS Interact–safe; no native <select>)
 │   └── menu-picker.css
+├── vendor/                   # Offline copies of fonts, icons, Pixi, Iro, marked
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
-│   ├── sesh-glass/           # Sesh Glass — red-lime glass + halftone + chromatic pulse
+│   ├── sesh-glass/           # Sesh Glass — red-lime glass + Pixi warp + halftone
+│   ├── sesh-glass-old/       # Original static Sesh Glass (halftone, no Pixi)
 │   └── 3026-d3c0/            # 3026 D3C0 — HTB Lite art deco (navy + #9fef00)
 ├── docs/
 │   ├── index.html            # Docs viewer — browse spec markdown in the browser
@@ -103,6 +106,7 @@ sesh-helpers/
 | `abs/fractals/` | **Exists** | Fractals WebGL zoomer; per-app palettes in `notes.md` |
 | `abs/digicamo/` | **Exists** | Digicamo pixel digicam backdrop; per-app palettes in `notes.md` |
 | `themes/` | **Exists** | Shared overlay themes; see [`THEMES.md`](THEMES.md) |
+| `vendor/` | **Exists** | Offline fonts, Tabler Icons, PixiJS, Iro, marked; see [`CREDITS.md`](../CREDITS.md) |
 | `ui/` | **Exists** | Shared Control UI widgets (menu picker for OBS Interact) |
 | `*/notes.md` | **Exists** | Operator setup and complete URL parameter contracts |
 | `seshbanner/playlist.js` | **Exists** | Public YouTube playlist extraction and ticker formatting |
@@ -152,7 +156,7 @@ These are intentionally undecided. Do not guess; update docs or ask.
 |-------|--------|
 | Tech stack | Static HTML/JS/CSS per helper app; no build step |
 | Control UI | Framework in [`Control_UI.md`](Control_UI.md); reference in `spotsmoke/` |
-| Overlay themes | [`THEMES.md`](THEMES.md); LCD Glass, Sesh Glass |
+| Overlay themes | [`THEMES.md`](THEMES.md); LCD Glass, Sesh Glass, Sesh Glass (old), 3026 D3C0 |
 | Deployment / hosting | GitHub Pages (repo root), `https://helpers.seshsofa.nl/` |
 | Shared Control UI module | TBD — extract from Spot Smoke if useful |
 | Authentication / operator roles | TBD |

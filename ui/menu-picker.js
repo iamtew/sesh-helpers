@@ -65,9 +65,8 @@
     const valueEl = document.createElement("span");
     valueEl.className = "menu-picker-value";
     const caret = document.createElement("span");
-    caret.className = "menu-picker-caret";
+    caret.className = "menu-picker-caret ti ti-chevron-down";
     caret.setAttribute("aria-hidden", "true");
-    caret.textContent = "▾";
     trigger.append(valueEl, caret);
 
     const list = document.createElement("ul");

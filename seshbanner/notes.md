@@ -38,7 +38,7 @@ Page background is **transparent** so the banner composites over your scene. Do 
 | `prefixFont` | Prefix font index (0–11, layout 3) | theme Display preferred |
 | `prefixSize` | Prefix font size (px, 16–96, layout 3) | `38` |
 | `layout` | `1` inline · `2` stacked accent · `3` YouTube playlist | `1` |
-| `theme` | Overlay theme id (`lcd-glass` · `sesh-glass` · `3026-d3c0`) | `lcd-glass` |
+| `theme` | Overlay theme id (`lcd-glass` · `sesh-glass` · `sesh-glass-old` · `3026-d3c0`) | `lcd-glass` |
 | `titleFont` / `messageFont` | Font **index** in combined list (0–11) | theme preferred Display / Regular when unset |
 | `titleSize` | Title font size (px, 16–96) | `38` |
 | `messageSize` | Message font size (px, 12–64) | `18` |
@@ -108,7 +108,7 @@ See [`docs/TYPOGRAPHY.md`](../docs/TYPOGRAPHY.md). Title and message pickers sha
 
 Changing **Theme** applies that theme’s preferred fonts (title/prefix → Display, message → Regular). Fonts can still be overridden in this section afterward.
 
-**Combined index (`titleFont` / `messageFont` / `prefixFont`):** `0` Monster Chiller · `1` YouMurderer BB · `2` Streetmark · `3` Germania One · `4` Konstruktor · `5` Better VCR · `6` Flapdoodle · `7` Londrina Solid · `8` Pill Gothic 600mg · `9` Segoe UI · `10` Lemondrop · `11` Brighton Sans NBP
+**Combined index (`titleFont` / `messageFont` / `prefixFont`):** `0` Monster Chiller · `1` YouMurderer BB · `2` Streetmark · `3` Germania One · `4` Konstruktor · `5` Better VCR · `6` Flapdoodle · `7` Londrina Solid · `8` Pill Gothic 600mg · `9` Geist · `10` Lemondrop · `11` Brighton Sans NBP
 
 Legacy URLs that still use font names are accepted on load, then rewritten to indices.
 

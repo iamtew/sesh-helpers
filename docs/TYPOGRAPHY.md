@@ -8,20 +8,20 @@ Do not reorder this list unless you also provide URL migration logic. Old meat-b
 bookmarks would otherwise wake up wearing the wrong typeface. New faces are
 **appended** so indices `0`–`9` stay stable.
 
-| Index | Font family | Group | Import |
-|-------|-------------|-------|--------|
-| `0` | `Monster Chiller` | Display | `https://fonts.cdnfonts.com/css/monster-chiller` |
-| `1` | `YouMurderer BB` | Display | `https://fonts.cdnfonts.com/css/youmurderer-bb` |
-| `2` | `Streetmark` | Display | `https://fonts.cdnfonts.com/css/streetmark` |
-| `3` | `Germania One` | Display | `https://fonts.cdnfonts.com/css/germania-one` |
-| `4` | `Konstruktor` | Display | `https://fonts.cdnfonts.com/css/konstruktor` |
-| `5` | `Better VCR` | Display & Regular | `https://fonts.cdnfonts.com/css/better-vcr` |
-| `6` | `Flapdoodle` | Regular | `https://fonts.cdnfonts.com/css/flapdoodle` |
-| `7` | `Londrina Solid` | Regular | `https://fonts.cdnfonts.com/css/londrina-solid` |
-| `8` | `Pill Gothic 600mg` | Regular | `https://fonts.cdnfonts.com/css/pill-gothic-600mg` |
-| `9` | `Segoe UI` | Regular | `https://fonts.cdnfonts.com/css/segoe-ui-4` |
-| `10` | `Lemondrop` | Display | `https://fonts.cdnfonts.com/css/lemondrop` |
-| `11` | `Brighton Sans NBP` | Regular | `https://fonts.cdnfonts.com/css/brighton-sans-nbp` |
+| Index | Font family | Group | Vendored sheet |
+|-------|-------------|-------|----------------|
+| `0` | `Monster Chiller` | Display | [`vendor/fonts/overlay.css`](../vendor/fonts/overlay.css) |
+| `1` | `YouMurderer BB` | Display | same |
+| `2` | `Streetmark` | Display | same |
+| `3` | `Germania One` | Display | same |
+| `4` | `Konstruktor` | Display | same |
+| `5` | `Better VCR` | Display & Regular | overlay + [`vendor/fonts/ui.css`](../vendor/fonts/ui.css) |
+| `6` | `Flapdoodle` | Regular | overlay |
+| `7` | `Londrina Solid` | Regular | overlay |
+| `8` | `Pill Gothic 600mg` | Regular | overlay |
+| `9` | `Geist` | Regular | overlay + ui (replaces former Segoe UI at this index) |
+| `10` | `Lemondrop` | Display | overlay |
+| `11` | `Brighton Sans NBP` | Regular | overlay |
 
 **Better VCR** sits in both roles: it is a valid Display face and a valid Regular face.
 Overlay pickers always offer the full combined list.
@@ -30,14 +30,16 @@ Overlay pickers always offer the full combined list.
 
 ## Implementation contract
 
-- Import all twelve faces in banner stylesheets before displaying the font picker.
+- Import all twelve faces via [`vendor/fonts/overlay.css`](../vendor/fonts/overlay.css)
+  in banner HTML before displaying the font picker.
 - Quote family names and provide a generic fallback, for example
   `font-family: 'Better VCR', monospace`.
 - Persist the catalog index, not the family name. Current code still accepts legacy
-  family-name URLs and rewrites them to indices.
+  family-name URLs and rewrites them to indices. Legacy `Segoe UI` names map to
+  index `9` (**Geist**).
 - The settings menu uses **Better VCR**; overlay fields may use any catalog entry.
-- These are third-party CDN fonts. If the CDN is unavailable, browser fallbacks render
-  the overlay—the clanker should not block startup waiting for a font.
+- Faces are vendored (see [`CREDITS.md`](../CREDITS.md)). Do not block startup waiting
+  for a font; browser fallbacks still render the overlay if a file is missing.
 
 ---
 
@@ -57,6 +59,7 @@ default theme). Meat bags can still pick any catalog face in the Fonts section.
 |-------|---------|---------|
 | LCD Glass | `Better VCR` | `Better VCR` |
 | Sesh Glass | `Monster Chiller` | `Londrina Solid` |
+| Sesh Glass (old) | `Monster Chiller` | `Londrina Solid` |
 | 3026 D3C0 | `Lemondrop` | `Brighton Sans NBP` |
 
 Themes register `preferredDisplay` / `preferredRegular` on their

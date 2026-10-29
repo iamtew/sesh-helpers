@@ -27,6 +27,7 @@ contracts the code already implements; app-specific operator notes live beside e
 | [Control_UI.md](Control_UI.md) | Implementers + clankers | Settings menu framework pattern |
 | [THEMES.md](THEMES.md) | Implementers + clankers | Shared overlay themes + preferred fonts |
 | [TYPOGRAPHY.md](TYPOGRAPHY.md) | Implementers + clankers | Font catalog indices + theme preferred faces |
+| [../CREDITS.md](../CREDITS.md) | Humans | Vendored third-party licenses |
 | [../notes.md](../notes.md) | Humans | Landing page backdrop settings and URL parameters |
 | [../spotsmoke/notes.md](../spotsmoke/notes.md) | OBS operators | Spot Smoke setup and URL parameters |
 | [../seshbanner/notes.md](../seshbanner/notes.md) | OBS operators | Sesh Banner setup and URL parameters |

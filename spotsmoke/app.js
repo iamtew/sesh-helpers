@@ -1,3 +1,8 @@
+function setToggleIcon(icon, open) {
+  if (!icon) return;
+  icon.classList.toggle("ti-chevron-down", !!open);
+  icon.classList.toggle("ti-chevron-right", !open);
+}
 // Spot Smoke runtime. Clanker contract: the query string is the complete,
 // shareable configuration for meat bags and OBS.
 // --- CONFIG ---------------------------------------------------------
@@ -169,7 +174,7 @@ function setOpenSection(section) {
     const panel = document.getElementById(toggle.getAttribute("aria-controls"));
     const isOpen = toggle.closest("[data-section]") === section;
     toggle.setAttribute("aria-expanded", String(isOpen));
-    toggle.querySelector(".section-toggle-icon").textContent = isOpen ? "⏷" : "⏵";
+    setToggleIcon(toggle.querySelector(".section-toggle-icon"), isOpen);
     panel.hidden = !isOpen;
   }
 }

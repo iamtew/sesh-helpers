@@ -42,7 +42,7 @@ Almost all simple web apps in this repo are meant for **OBS Browser Sources**. T
 | Load `?menu=DISABLE` | Start hidden | — |
 | **Copy URL for OBS** | — | Copy config URL with `menu=DISABLE` |
 
-- Double-click always opens when hidden. Hide only via ✕ or OBS URL.
+- Double-click always opens when hidden. Hide only via Close or OBS URL.
 - Clicks inside `#settings-menu` never hit the background handler.
 - Hooks: `#settings-menu.open`, `body.settings-mode`.
 
@@ -54,11 +54,11 @@ Fixed panel, one edge, ~300px, scrollable, dark glass + blur.
 
 ```text
 ┌──────────────────────────────┐
-│ [App title]    [utils…][✕]  │
+│ [App title]    [utils…][x]  │
 │ Hint (optional)              │
-│ ▼ Section A   (one open)     │
+│ v Section A   (one open)     │
 │   …controls…                 │
-│ ▶ Section B                  │
+│ > Section B                  │
 │ [ Test ] [ Reset ]           │
 │ [ Copy URL ] [ Copy for OBS ]│
 └──────────────────────────────┘
@@ -68,11 +68,11 @@ Fixed panel, one edge, ~300px, scrollable, dark glass + blur.
 |------|----------|-------|
 | Title | yes | App name |
 | Utils | optional | Help, checkerboard, flip side… (**ABS:** no checkerboard — canvas is the backdrop) |
-| ✕ Close | yes | Sets `menu=DISABLE` |
-| Accordion | yes | One section open; `aria-expanded` + `hidden` |
+| Close (`ti-x`) | yes | Sets `menu=DISABLE` |
+| Accordion | yes | One section open; `aria-expanded` + `hidden`. Chevrons are Tabler (`ti-chevron-down` / `ti-chevron-right`) |
 | Flip side | optional | `side=left\|right` in URL; apps default to **right** |
 
-**Controls:** range (label + slider + per-param **↺** reset + value, on `input`),
+**Controls:** range (label + slider + per-param restore (`ti-restore`) reset + value, on `input`),
 toggle (+ disable dependents), color (picker + hex sync), buttons (primary /
 destructive / small), **menu picker** (custom button + listbox — never native
 `<select>`; OBS Interact’s CEF does not handle OS select popups). Shared impl:
