@@ -1,7 +1,8 @@
 /* LCD Glass — reusable overlay theme
    Host: set data-theme="lcd-glass" on <html> and class="theme-panel" on the glass surface.
    Pulse + Pixi pane: themes/lcd-glass/theme.js (needs vendored PixiJS on the panel).
-   CRT overlay: ::before scanlines + scan jitter, ::after sweep + horizontal chroma tears (CSS only). */
+   CRT overlay: ::before scanlines + scan jitter, ::after sweep + horizontal chroma tears,
+   plus a tiny staggered readout tear on title/message (CSS only). */
 
 [data-theme="lcd-glass"] {
   --lcd-text-primary: #e0fefe;
@@ -286,8 +287,81 @@
   }
 }
 
+/* Readout glyphs: 1px chroma tear, staggered so lines don't jump as a block.
+   Skip marquee-track — that element already owns transform for the ticker. */
+[data-theme="lcd-glass"] .theme-panel .banner-title,
+[data-theme="lcd-glass"] .theme-panel .playlist-name,
+[data-theme="lcd-glass"] .theme-panel .playlist-prefix {
+  animation: lcd-glass-text-tear 14s steps(1, end) infinite;
+}
+
+[data-theme="lcd-glass"] .theme-panel .banner-message {
+  animation: lcd-glass-text-tear 14s steps(1, end) infinite;
+  animation-delay: -5.6s;
+}
+
+[data-theme="lcd-glass"] .theme-panel .banner-user {
+  animation: lcd-glass-text-tear 14s steps(1, end) infinite;
+  animation-delay: -9.2s;
+}
+
+@keyframes lcd-glass-text-tear {
+  0%,
+  22%,
+  22.7%,
+  47%,
+  47.6%,
+  71%,
+  71.8%,
+  88%,
+  88.6%,
+  100% {
+    transform: translateX(0);
+    filter: none;
+  }
+  22.25% {
+    transform: translateX(1px);
+    filter:
+      drop-shadow(-1.5px 0 0 rgba(255, 0, 255, 0.18))
+      drop-shadow(1.5px 0 0 rgba(0, 255, 255, 0.14));
+  }
+  22.45% {
+    transform: translateX(-1px);
+    filter:
+      drop-shadow(1px 0 0 rgba(255, 0, 255, 0.14))
+      drop-shadow(-1px 0 0 rgba(0, 255, 255, 0.12));
+  }
+  47.2% {
+    transform: translateX(-1px);
+    filter:
+      drop-shadow(1.5px 0 0 rgba(255, 0, 255, 0.16))
+      drop-shadow(-1.5px 0 0 rgba(0, 255, 255, 0.12));
+  }
+  71.25% {
+    transform: translateX(1px);
+    filter:
+      drop-shadow(-1px 0 0 rgba(255, 0, 255, 0.16))
+      drop-shadow(1px 0 0 rgba(0, 255, 255, 0.12));
+  }
+  71.45% {
+    transform: translateX(-1px);
+    filter: none;
+  }
+  88.25% {
+    transform: translateX(1px);
+    filter:
+      drop-shadow(-1.5px 0 0 rgba(255, 0, 255, 0.15))
+      drop-shadow(1.5px 0 0 rgba(0, 255, 255, 0.12));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  [data-theme="lcd-glass"] .theme-panel::before {
+  [data-theme="lcd-glass"] .theme-panel::before,
+  [data-theme="lcd-glass"] .theme-panel .banner-title,
+  [data-theme="lcd-glass"] .theme-panel .banner-message,
+  [data-theme="lcd-glass"] .theme-panel .banner-user,
+  [data-theme="lcd-glass"] .theme-panel .playlist-name,
+  [data-theme="lcd-glass"] .theme-panel .playlist-prefix {
     animation: none;
   }
 

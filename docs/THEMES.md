@@ -67,7 +67,8 @@ Page background stays **transparent**.
 Frosted navy-cyan glass pane, ice-blue text, and a magenta/cyan chromatic pulse.
 A **PixiJS** caustic wash, specular rim, and quiet ice specks sit behind the
 readout on `.theme-panel`. CSS CRT scanlines sit over that wash (under the
-text), with a slow phosphor sweep and a few horizontal chroma jitters — no extra JS.
+text), with a slow phosphor sweep, a few horizontal chroma jitters, and a
+tiny staggered readout tear — no extra JS.
 Hosts that offer this pane must load
 [`vendor/pixi/pixi.min.js`](../vendor/pixi/pixi.min.js) before `theme.js`. CSS
 gradient remains if Pixi is missing or `start()` is not a `.theme-panel`. Page
