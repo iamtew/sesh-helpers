@@ -1,0 +1,19 @@
+---
+description: Meat Bag hosts localhost; Clanker does not start or stop the local webserver
+alwaysApply: true
+---
+
+# Local development server
+
+Meat Bag hosts the localhost server. Repo root is the webroot — serve it with a
+local webserver, preferably port **8000** (`http://localhost:8000/`). Example
+command lives under Local development in [`README.md`](../../README.md).
+
+Meat Bag knows this machine better than Clanker.
+
+- **Clanker does not start** the server. No `python -m http.server`, no other
+  bind-and-listen. If it is not running, remind Meat Bag and wait.
+- **Clanker does not stop or clean up** after itself. Meat Bag started the
+  process; Meat Bag owns it.
+- Browser checks use the Meat Bag URL (default `http://localhost:8000/...`).
+  Do not open the HTML as `file://`.
