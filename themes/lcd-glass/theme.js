@@ -457,7 +457,7 @@
       id: THEME_ID,
       name: "LCD Glass",
       description:
-        "Frosted navy-cyan glass pane with a PixiJS caustic wash, specular rim, ice phosphor specks, and a magenta/cyan chromatic pulse on the ice-blue readout.",
+        "Frosted navy-cyan glass pane with a PixiJS caustic wash, specular rim, ice phosphor specks, CRT scanlines with occasional horizontal glitch jitters, and a magenta/cyan chromatic pulse on the ice-blue readout.",
       preferredDisplay: "Better VCR",
       preferredRegular: "Better VCR"
     });

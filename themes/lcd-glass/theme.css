@@ -1,6 +1,7 @@
 /* LCD Glass — reusable overlay theme
    Host: set data-theme="lcd-glass" on <html> and class="theme-panel" on the glass surface.
-   Pulse + Pixi pane: themes/lcd-glass/theme.js (needs vendored PixiJS on the panel). */
+   Pulse + Pixi pane: themes/lcd-glass/theme.js (needs vendored PixiJS on the panel).
+   CRT overlay: ::before scanlines + scan jitter, ::after sweep + horizontal chroma tears (CSS only). */
 
 [data-theme="lcd-glass"] {
   --lcd-text-primary: #e0fefe;
@@ -52,6 +53,248 @@
   backdrop-filter: blur(var(--lcd-blur-amount)) saturate(var(--lcd-saturate-amount));
   -webkit-backdrop-filter: blur(var(--lcd-blur-amount)) saturate(var(--lcd-saturate-amount));
   text-shadow: var(--theme-text-shadow);
+}
+
+/* z-order: pixi (0) → CRT overlay (1) → text (2) */
+[data-theme="lcd-glass"] .theme-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(6, 22, 44, 0.07) 0,
+    rgba(6, 22, 44, 0.07) 1px,
+    rgba(0, 255, 255, 0.045) 1px,
+    rgba(0, 255, 255, 0.045) 2px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.78;
+  animation: lcd-glass-scan-jitter 7.4s steps(1, end) infinite;
+}
+
+[data-theme="lcd-glass"] .theme-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 255, 255, 0.05) 42%,
+    rgba(224, 254, 254, 0.16) 50%,
+    rgba(209, 76, 255, 0.07) 58%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 28%;
+  mix-blend-mode: screen;
+  opacity: 0.62;
+  animation: lcd-glass-crt 8.2s linear infinite;
+}
+
+/* Hold frames keep the sweep moving; short spikes are horizontal RGB tears. */
+@keyframes lcd-glass-crt {
+  0% {
+    background-position: 0 -30%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.55;
+  }
+  9.6% {
+    background-position: 0 4%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.55;
+  }
+  9.75% {
+    background-position: 0 5%;
+    transform: translateX(8px);
+    clip-path: inset(22% -10px 72% -10px);
+    box-shadow:
+      -7px 0 0 rgba(255, 0, 255, 0.28),
+      7px 0 0 rgba(0, 255, 255, 0.22);
+    opacity: 0.92;
+  }
+  10% {
+    background-position: 0 6%;
+    transform: translateX(-4px);
+    clip-path: inset(24% -10px 70% -10px);
+    box-shadow:
+      6px 0 0 rgba(255, 0, 255, 0.2),
+      -6px 0 0 rgba(0, 255, 255, 0.18);
+    opacity: 0.88;
+  }
+  10.2% {
+    background-position: 0 7%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.55;
+  }
+  27.4% {
+    background-position: 0 48%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.55;
+  }
+  27.55% {
+    background-position: 0 49%;
+    transform: translateX(-9px);
+    clip-path: inset(58% -10px 36% -10px);
+    box-shadow:
+      8px 0 0 rgba(255, 0, 255, 0.3),
+      -8px 0 0 rgba(0, 255, 255, 0.24);
+    opacity: 0.95;
+  }
+  27.8% {
+    background-position: 0 50%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.55;
+  }
+  48.2% {
+    background-position: 0 92%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.55;
+  }
+  48.35% {
+    background-position: 0 93%;
+    transform: translateX(6px);
+    clip-path: inset(8% -10px 86% -10px);
+    box-shadow:
+      -6px 0 0 rgba(255, 0, 255, 0.26),
+      6px 0 0 rgba(0, 255, 255, 0.2);
+    opacity: 0.9;
+  }
+  48.55% {
+    background-position: 0 94%;
+    transform: translateX(-7px);
+    clip-path: inset(11% -10px 82% -10px);
+    box-shadow:
+      7px 0 0 rgba(255, 0, 255, 0.22),
+      -5px 0 0 rgba(0, 255, 255, 0.18);
+    opacity: 0.9;
+  }
+  48.75% {
+    background-position: 0 95%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.55;
+  }
+  69.1% {
+    background-position: 0 128%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.55;
+  }
+  69.25% {
+    background-position: 0 129%;
+    transform: translateX(10px);
+    clip-path: inset(41% -10px 52% -10px);
+    box-shadow:
+      -8px 0 0 rgba(255, 0, 255, 0.32),
+      8px 0 0 rgba(0, 255, 255, 0.26);
+    opacity: 0.95;
+  }
+  69.5% {
+    background-position: 0 130%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.55;
+  }
+  86.3% {
+    background-position: 0 148%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.4;
+  }
+  86.45% {
+    background-position: 0 149%;
+    transform: translateX(-6px);
+    clip-path: inset(74% -10px 20% -10px);
+    box-shadow:
+      6px 0 0 rgba(255, 0, 255, 0.24),
+      -6px 0 0 rgba(0, 255, 255, 0.2);
+    opacity: 0.88;
+  }
+  86.7% {
+    background-position: 0 150%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.4;
+  }
+  100% {
+    background-position: 0 170%;
+    transform: translateX(0);
+    clip-path: inset(0);
+    box-shadow: none;
+    opacity: 0.35;
+  }
+}
+
+@keyframes lcd-glass-scan-jitter {
+  0%,
+  14%,
+  15.2%,
+  33%,
+  33.7%,
+  51%,
+  52.2%,
+  72%,
+  72.7%,
+  91%,
+  91.9%,
+  100% {
+    transform: translateX(0);
+  }
+  14.4% {
+    transform: translateX(4px);
+  }
+  14.8% {
+    transform: translateX(-2px);
+  }
+  33.3% {
+    transform: translateX(-5px);
+  }
+  51.4% {
+    transform: translateX(6px);
+  }
+  51.8% {
+    transform: translateX(-3px);
+  }
+  72.3% {
+    transform: translateX(3px);
+  }
+  91.5% {
+    transform: translateX(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="lcd-glass"] .theme-panel::before {
+    animation: none;
+  }
+
+  [data-theme="lcd-glass"] .theme-panel::after {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 [data-theme="lcd-glass"] .theme-panel .lcd-glass-pixi {
