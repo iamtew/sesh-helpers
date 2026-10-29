@@ -73,7 +73,7 @@ sesh-helpers/
 ├── vendor/                   # Offline copies of fonts, icons, Pixi, Iro, marked
 ├── themes/                   # Shared overlay themes (see THEMES.md)
 │   ├── lcd-glass/            # LCD Glass — frosted cyan glass + chromatic pulse
-│   ├── sesh-glass/           # Sesh Glass — red-lime glass + Pixi warp + halftone
+│   ├── sesh-glass/           # Sesh Glass — red-lime glass + Pixi fire + embers
 │   ├── sesh-glass-old/       # Original static Sesh Glass (halftone, no Pixi)
 │   └── 3026-d3c0/            # 3026 D3C0 — HTB Lite art deco (navy + #9fef00)
 ├── docs/

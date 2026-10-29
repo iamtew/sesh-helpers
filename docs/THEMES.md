@@ -20,7 +20,7 @@ themes/
 ├── sesh-glass/
 │   ├── theme.json
 │   ├── theme.css
-│   └── theme.js          # red pulse + PixiJS warp (needs vendor/pixi)
+│   └── theme.js          # red pulse + PixiJS fire (needs vendor/pixi)
 ├── sesh-glass-old/
 │   ├── theme.json
 │   ├── theme.css
@@ -71,10 +71,10 @@ Preferred fonts — Display: `Better VCR`; Regular: `Better VCR`.
 ## Sesh Glass
 
 Frosted red-to-lime glass (`#F20D0D` → `#E5F20D`), warm readout text, a red
-(`#F20D0D`) glow pulse, a halftone dot screen, and a **PixiJS** animated warp of
-the same gradient inside `.theme-panel`. Hosts that offer this theme must load
+(`#F20D0D`) glow pulse, and a **PixiJS** fire bed along the bottom of
+`.theme-panel` with rising embers. Hosts that offer this theme must load
 [`vendor/pixi/pixi.min.js`](../vendor/pixi/pixi.min.js) before `theme.js`. CSS
-gradient remains if Pixi is missing. Page background stays transparent.
+bottom-up gradient remains if Pixi is missing. Page background stays transparent.
 
 Preferred fonts — Display: `Monster Chiller`; Regular: `Londrina Solid`.
 
