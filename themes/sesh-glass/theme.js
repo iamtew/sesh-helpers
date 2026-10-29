@@ -52,6 +52,41 @@
     run.raf = requestAnimationFrame(tick);
   }
 
+  function hash2(ix, iy) {
+    const s = Math.sin(ix * 127.1 + iy * 311.7) * 43758.5453;
+    return (s - Math.floor(s)) * 2 - 1;
+  }
+
+  function n2(x, y) {
+    const ix = Math.floor(x);
+    const iy = Math.floor(y);
+    const fx = x - ix;
+    const fy = y - iy;
+    const ux = fx * fx * (3 - 2 * fx);
+    const uy = fy * fy * (3 - 2 * fy);
+    const a = hash2(ix, iy);
+    const b = hash2(ix + 1, iy);
+    const c = hash2(ix, iy + 1);
+    const d = hash2(ix + 1, iy + 1);
+    return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
+  }
+
+  function fbm2(x, y) {
+    return (
+      n2(x, y) * 0.5 +
+      n2(x * 2.07 + 3.1, y * 1.93 + 8.2) * 0.28 +
+      n2(x * 4.13 + 1.7, y * 3.71 + 5.4) * 0.14 +
+      n2(x * 8.03, y * 7.19) * 0.08
+    );
+  }
+
+  // Weak spring + noisy accel so values wander instead of rocking 1D noise.
+  function wander(state, key, velKey, accel, dt, spring, damp) {
+    state[velKey] += (accel - state[key] * spring) * dt;
+    state[velKey] *= Math.exp(-damp * dt);
+    state[key] += state[velKey] * dt;
+  }
+
   function noiseCanvas(w, h, alpha) {
     const c = document.createElement("canvas");
     c.width = w;
@@ -93,11 +128,11 @@
     const lean = variant === 1 ? -10 : variant === 2 ? 10 : 0;
 
     ctx.globalCompositeOperation = "lighter";
-    paintBlob(ctx, w, h * 0.88, w * 0.42, h * 0.2, lean * 0.15, "rgba(180,28,6,0.9)", "rgba(120,16,0,0.28)");
-    paintBlob(ctx, w, h * 0.68, w * 0.32, h * 0.22, lean * 0.4, "rgba(242,13,13,0.75)", "rgba(90,8,0,0.12)");
-    paintBlob(ctx, w, h * 0.46, w * 0.22, h * 0.22, -lean * 0.35, "rgba(255,70,0,0.65)", "rgba(242,13,13,0.1)");
-    paintBlob(ctx, w, h * 0.26, w * 0.13, h * 0.2, lean * 0.25, "rgba(229,242,13,0.5)", "rgba(255,80,0,0.08)");
-    paintBlob(ctx, w, h * 0.08, w * 0.07, h * 0.14, 0, "rgba(255,255,230,0.32)", "rgba(229,242,13,0.04)");
+    paintBlob(ctx, w, h * 0.88, w * 0.42, h * 0.2, lean * 0.15, "rgba(242,13,13,0.95)", "rgba(180,20,0,0.35)");
+    paintBlob(ctx, w, h * 0.68, w * 0.32, h * 0.22, lean * 0.4, "rgba(255,77,0,0.9)", "rgba(242,13,13,0.2)");
+    paintBlob(ctx, w, h * 0.46, w * 0.22, h * 0.22, -lean * 0.35, "rgba(255,170,0,0.8)", "rgba(255,77,0,0.15)");
+    paintBlob(ctx, w, h * 0.26, w * 0.13, h * 0.2, lean * 0.25, "rgba(255,200,40,0.45)", "rgba(255,170,0,0.08)");
+    paintBlob(ctx, w, h * 0.08, w * 0.07, h * 0.14, 0, "rgba(229,242,13,0.35)", "rgba(255,200,40,0.05)");
 
     ctx.globalCompositeOperation = "destination-in";
     const fade = ctx.createLinearGradient(0, h, 0, 0);
@@ -122,8 +157,8 @@
     c.height = h;
     const ctx = c.getContext("2d");
     const g = ctx.createRadialGradient(w / 2, h * 0.8, 2, w / 2, h * 0.65, w * 0.55);
-    g.addColorStop(0, "rgba(210,45,8,0.92)");
-    g.addColorStop(0.4, "rgba(160,22,4,0.6)");
+    g.addColorStop(0, "rgba(255,77,0,0.95)");
+    g.addColorStop(0.4, "rgba(242,13,13,0.7)");
     g.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
@@ -197,7 +232,15 @@
       baseA: spec.baseA,
       coal: !!spec.coal,
       tw: spec.tw,
-      th: spec.th
+      th: spec.th,
+      sway: 0,
+      lick: 0,
+      rot: 0,
+      flick: 0,
+      vs: 0,
+      vl: 0,
+      vr: 0,
+      vf: 0
     };
   }
 
@@ -224,7 +267,7 @@
         sp: 1.05 + i * 0.12,
         sxMul: 0.7,
         syMul: 0.16,
-        baseA: 0.9,
+        baseA: 0.95,
         coal: true,
         add: false,
         tw: COAL_W,
@@ -242,13 +285,14 @@
         sp: 1.6 + (i % 5) * 0.35,
         sxMul: 0.16 + (i % 4) * 0.04,
         syMul: [0.95, 1.55, 1.1, 1.35, 1.75, 1.0, 1.5, 1.2, 1.65, 1.05, 1.42, 1.8, 0.98, 1.28][i],
-        baseA: hot ? 0.55 : 0.7,
+        baseA: hot ? 0.7 : 0.85,
         coal: false,
         add: hot,
         tw: WISP_W,
         th: WISP_H
       };
       const f = makeFlameSprite(PIXI, wisps[i % wisps.length], spec);
+      f.s.tint = [0xffffff, 0xff6a3c, 0xffaa44, 0xf20d0d, 0xffffff, 0xff8833][i % 6];
       flameLayer.addChild(f.s);
       flames.push(f);
     }
@@ -269,7 +313,7 @@
 
     const grain = new Tiling({ texture: grainTex, width: w, height: h });
     grain.blendMode = "multiply";
-    grain.alpha = 0.22;
+    grain.alpha = 0.12;
     app.stage.addChild(grain);
 
     const embers = [];
@@ -314,28 +358,40 @@
     const w = app.renderer.width;
     const h = app.renderer.height;
 
-    fire.grain.tilePosition.y -= 28 * dt;
+    fire.grain.tilePosition.y -= 40 * dt;
     if (fire.disp) {
-      fire.disp.tilePosition.x += 38 * dt;
-      fire.disp.tilePosition.y -= 52 * dt;
+      fire.disp.tilePosition.x += (40 + 28 * fbm2(t * 0.55, t * 0.33 + 4)) * dt;
+      fire.disp.tilePosition.y -= (58 + 32 * fbm2(t * 0.44 + 5, t * 0.62)) * dt;
+    }
+    if (fire.dispFilter && fire.dispFilter.scale) {
+      const bx = Math.max(16, w * 0.18);
+      const by = Math.max(18, h * 0.22);
+      const breathe = 0.85 + 0.2 * (0.5 + 0.5 * fbm2(t * 0.32, t * 0.41 + 2));
+      fire.dispFilter.scale.x = bx * breathe;
+      fire.dispFilter.scale.y = by * (0.9 + 0.15 * (0.5 + 0.5 * fbm2(t * 0.36 + 6, t * 0.19)));
     }
 
     for (let i = 0; i < fire.flames.length; i++) {
       const f = fire.flames[i];
-      const flicker =
-        0.55 +
-        0.25 * Math.abs(Math.sin(t * f.sp + f.ph)) +
-        0.2 * Math.abs(Math.sin(t * f.sp * 2.6 + f.ph * 0.5));
-      const sx = w * f.sxMul * (0.92 + 0.1 * Math.sin(t * f.sp * 0.6 + f.ph));
+      const tx = t * (0.52 + f.sp * 0.14) + f.ph;
+      const ty = t * (0.71 + f.ph * 0.04) + i * 0.7;
+      wander(f, "sway", "vs", fbm2(tx, ty) * 11, dt, 1.8, 3.8);
+      wander(f, "lick", "vl", fbm2(tx + 11, ty * 1.17 + 3) * 20, dt, 2.4, 4.6);
+      wander(f, "rot", "vr", fbm2(ty + 7, tx * 0.83) * 14, dt, 2.1, 4.2);
+      wander(f, "flick", "vf", fbm2(tx * 1.3 + 19, ty + 5) * 10, dt, 2.6, 3.8);
+      const nSway = f.sway;
+      const nLick = f.lick;
+      const flicker = 0.62 + 0.28 * (0.5 + 0.5 * Math.max(-1, Math.min(1, f.flick)));
+      const sx = w * f.sxMul * (0.94 + 0.08 * Math.max(-1, Math.min(1, nSway)));
       const sy = h * f.syMul * (f.coal ? 0.9 + 0.12 * flicker : 0.88 + 0.22 * flicker);
       f.s.x =
         w * f.nx +
-        Math.sin(t * f.sp * 0.9 + f.ph) * w * (f.coal ? 0.02 : 0.05) +
-        Math.sin(t * f.sp * 1.8 + f.ph * 1.3) * w * (f.coal ? 0.008 : 0.028);
+        nSway * w * (f.coal ? 0.018 : 0.055) +
+        nLick * w * (f.coal ? 0.006 : 0.022);
       f.s.y = h + h * 0.04;
       f.s.scale.set(sx / f.tw, sy / f.th);
-      f.s.rotation = f.coal ? 0 : Math.sin(t * f.sp * 0.85 + f.ph) * 0.2;
-      f.s.skew.x = f.coal ? 0 : Math.sin(t * f.sp * 1.25 + f.ph) * 0.32;
+      f.s.rotation = f.coal ? 0 : f.rot * 0.2;
+      f.s.skew.x = f.coal ? 0 : nLick * 0.32;
       f.s.alpha = f.baseA * (f.coal ? 0.88 + 0.12 * flicker : 0.7 + 0.3 * flicker);
     }
 

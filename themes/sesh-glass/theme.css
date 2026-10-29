@@ -6,10 +6,10 @@
   --sesh-text-primary: #fff6e8;
   --sesh-text-base: #eee;
 
-  --sesh-glass-grad-a: rgba(176, 22, 6, 0.88);
-  --sesh-glass-grad-b: rgba(242, 13, 13, 0.7);
-  --sesh-glass-grad-c: rgba(255, 90, 10, 0.52);
-  --sesh-glass-grad-d: rgba(229, 242, 13, 0.2);
+  --sesh-glass-grad-a: rgba(242, 13, 13, 0.88);
+  --sesh-glass-grad-b: rgba(255, 77, 0, 0.72);
+  --sesh-glass-grad-c: rgba(255, 170, 0, 0.48);
+  --sesh-glass-grad-d: rgba(229, 242, 13, 0.22);
   --sesh-glass-border: rgba(255, 230, 90, 0.32);
   --sesh-glass-inset-highlight: rgba(255, 255, 255, 0.18);
   --sesh-glass-shadow: rgba(0, 0, 0, 0.25);
